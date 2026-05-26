@@ -1,0 +1,10 @@
+name = "worldcup2026-league"
+main = "workers/index.js"
+compatibility_date = "2026-05-01"
+
+[[kv_namespaces]]
+binding = "WC2026_USERS"
+id = "9dac303f4e65465286d93530463856ef"
+
+[triggers]
+crons = ["0 * * * *"]

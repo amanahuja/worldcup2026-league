@@ -273,7 +273,7 @@ export async function handlePostKnockoutPredictions(request, env, session) {
 
   if (match_id && predicted_winner) {
     if (!['home', 'away'].includes(predicted_winner)) {
-      return new Response(JSON.stringify({ error: 'Knockout picks must be home or away' }), {
+      return new Response(JSON.stringify({ error: 'Invalid predicted_winner value for knockout match' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       });
