@@ -1,0 +1,73 @@
+# Knockout default predictions
+# Seeded from slot tier: group winners (1x) beat runners-up (2x) beat third-place (3x).
+# Ties within the same tier default to home.
+# Slot labels (e.g. 1A, 2B, 3ABCDF) used until real teams are known after June 28.
+# Admin-created — applied to any knockout match where the user has not made a pick.
+
+tiebreaker_goals: null
+
+defaults:
+  R32_73:
+    predicted_winner: home  # 2A vs 2B
+  R32_74:
+    predicted_winner: home  # 1E vs 3ABCDF
+  R32_75:
+    predicted_winner: home  # 1F vs 2C
+  R32_76:
+    predicted_winner: home  # 1C vs 2F
+  R32_77:
+    predicted_winner: home  # 1I vs 3CDFGH
+  R32_78:
+    predicted_winner: home  # 2E vs 2I
+  R32_79:
+    predicted_winner: home  # 1A vs 3CEFHI
+  R32_80:
+    predicted_winner: home  # 1L vs 3EHIJK
+  R32_81:
+    predicted_winner: home  # 1D vs 3BEFIJ
+  R32_82:
+    predicted_winner: home  # 1G vs 3AEHIJ
+  R32_83:
+    predicted_winner: home  # 2K vs 2L
+  R32_84:
+    predicted_winner: home  # 1H vs 2J
+  R32_85:
+    predicted_winner: home  # 1B vs 3EFGIJ
+  R32_86:
+    predicted_winner: home  # 1J vs 2H
+  R32_87:
+    predicted_winner: home  # 1K vs 3DEIJL
+  R32_88:
+    predicted_winner: home  # 2D vs 2G
+  R16_89:
+    predicted_winner: home  # W74 vs W77
+  R16_90:
+    predicted_winner: home  # W73 vs W75
+  R16_91:
+    predicted_winner: home  # W76 vs W78
+  R16_92:
+    predicted_winner: home  # W79 vs W80
+  R16_93:
+    predicted_winner: home  # W83 vs W84
+  R16_94:
+    predicted_winner: home  # W81 vs W82
+  R16_95:
+    predicted_winner: home  # W86 vs W88
+  R16_96:
+    predicted_winner: home  # W85 vs W87
+  QF_97:
+    predicted_winner: home  # W89 vs W90
+  QF_98:
+    predicted_winner: home  # W93 vs W94
+  QF_99:
+    predicted_winner: home  # W91 vs W92
+  QF_100:
+    predicted_winner: home  # W95 vs W96
+  SF_101:
+    predicted_winner: home  # W97 vs W98
+  SF_102:
+    predicted_winner: home  # W99 vs W100
+  FINAL:
+    predicted_winner: home  # W101 vs W102
+  THIRD:
+    predicted_winner: home  # L101 vs L102
