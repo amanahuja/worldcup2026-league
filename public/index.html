@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WC 2026 Fantasy</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+<!-- ── Top bar ──────────────────────────────────────────── -->
+<header class="topbar">
+  <div>
+    <div class="topbar__title">WC 2026 Fantasy</div>
+  </div>
+  <button class="btn btn--primary" id="cta-btn" onclick="App.ctaClick()">Make predictions</button>
+</header>
+
+<!-- ── Main content ─────────────────────────────────────── -->
+<main class="page-wrap" id="main">
+
+  <div class="last-updated hidden" id="last-updated"></div>
+
+  <!-- Leaderboard -->
+  <div class="section-title">Leaderboard</div>
+
+  <!-- Podium (top 3) -->
+  <div class="podium" id="podium">
+    <div class="podium__slot podium__slot--2" id="pod-2">
+      <div class="podium__block">
+        <div class="podium__avatar" id="pod-2-avatar">—</div>
+        <div class="podium__name" id="pod-2-name">—</div>
+        <div class="podium__score" id="pod-2-score">—</div>
+      </div>
+      <div class="podium__rank">2nd</div>
+    </div>
+    <div class="podium__slot podium__slot--1" id="pod-1">
+      <div class="podium__block">
+        <div class="podium__avatar" id="pod-1-avatar">—</div>
+        <div class="podium__name" id="pod-1-name">—</div>
+        <div class="podium__score" id="pod-1-score">—</div>
+      </div>
+      <div class="podium__rank">1st</div>
+    </div>
+    <div class="podium__slot podium__slot--3" id="pod-3">
+      <div class="podium__block">
+        <div class="podium__avatar" id="pod-3-avatar">—</div>
+        <div class="podium__name" id="pod-3-name">—</div>
+        <div class="podium__score" id="pod-3-score">—</div>
+      </div>
+      <div class="podium__rank">3rd</div>
+    </div>
+  </div>
+
+  <!-- Full ranked list -->
+  <table class="lb-table" id="lb-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Player</th>
+        <th style="text-align:right">Pts</th>
+      </tr>
+    </thead>
+    <tbody id="lb-body">
+      <tr><td colspan="3" class="text-muted" style="padding:20px;text-align:center">Loading…</td></tr>
+    </tbody>
+  </table>
+
+  <!-- Match results section -->
+  <div class="section-title" style="margin-top:28px">Match Results</div>
+
+  <!-- Stage toggle tabs -->
+  <div class="tab-strip" id="results-stage-tabs">
+    <button class="tab tab--active" data-stage="groups" onclick="App.setResultsStage('groups')">Group Stage</button>
+    <button class="tab" data-stage="knockout" onclick="App.setResultsStage('knockout')">Knockout</button>
+  </div>
+
+  <!-- Group stage results -->
+  <div id="results-groups">
+    <div class="groups-grid" id="results-groups-grid">
+      <div class="text-muted" style="padding:20px;text-align:center;grid-column:1/-1">Loading…</div>
+    </div>
+  </div>
+
+  <!-- Knockout results (hidden until tab selected) -->
+  <div id="results-knockout" class="hidden">
+    <div class="bracket-round-tabs" id="results-ko-tabs"></div>
+    <div id="results-ko-view"></div>
+  </div>
+
+</main>
+
+<!-- ── Login modal ──────────────────────────────────────── -->
+<div class="modal-backdrop hidden" id="login-modal">
+  <div class="modal">
+    <div class="modal__title">Sign in</div>
+    <div class="modal__sub">Enter the name and passphrase you received from the admin.</div>
+    <form onsubmit="App.submitLogin(event)">
+      <div class="form-group">
+        <label class="form-label" for="login-username">Name</label>
+        <input class="form-input" type="text" id="login-username" autocomplete="username"
+               autocapitalize="none" autocorrect="off" spellcheck="false" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="login-passphrase">Passphrase</label>
+        <input class="form-input" type="password" id="login-passphrase" autocomplete="current-password" required>
+      </div>
+      <button class="btn btn--primary" style="width:100%" type="submit" id="login-submit-btn">Sign in</button>
+      <div class="form-error" id="login-error"></div>
+    </form>
+  </div>
+</div>
+
+<script src="/js/app.js"></script>
+<script>
+  // Boot the results page
+  App.initResults();
+</script>
+</body>
+</html>

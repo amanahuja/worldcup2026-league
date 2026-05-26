@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Predictions — WC 2026 Fantasy</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+<!-- ── Top bar ──────────────────────────────────────────── -->
+<header class="topbar">
+  <div>
+    <div class="topbar__title">My Predictions</div>
+    <div class="topbar__sub" id="topbar-username"></div>
+  </div>
+  <a class="btn btn--ghost" href="/">Results</a>
+</header>
+
+<!-- ── Main content ─────────────────────────────────────── -->
+<main class="page-wrap" id="main">
+
+  <!-- Page-level tab strip: Group Stage / Knockout / 3rd Place -->
+  <div class="tab-strip" id="page-tabs">
+    <button class="tab tab--active" data-tab="groups"   onclick="App.setTab('groups')">Group Stage</button>
+    <button class="tab"             data-tab="knockout" onclick="App.setTab('knockout')">Knockout</button>
+    <button class="tab"             data-tab="third"    onclick="App.setTab('third')">3rd Place</button>
+  </div>
+
+  <!-- ── Group Stage tab ─────────────────────────────────── -->
+  <div id="tab-groups">
+    <div class="lock-banner hidden" id="groups-banner"></div>
+    <div class="groups-grid" id="groups-grid">
+      <div class="text-muted" style="padding:20px;text-align:center;grid-column:1/-1">Loading…</div>
+    </div>
+  </div>
+
+  <!-- ── Knockout tab ────────────────────────────────────── -->
+  <div id="tab-knockout" class="hidden">
+    <div class="lock-banner hidden" id="knockout-banner"></div>
+    <!-- Round sub-tabs: R32 / R16 / QF / SF / Final -->
+    <div class="bracket-round-tabs" id="ko-round-tabs">
+      <button class="round-tab round-tab--active" data-round="R32"   onclick="App.setKoRound('R32')">R32</button>
+      <button class="round-tab"                   data-round="R16"   onclick="App.setKoRound('R16')">R16</button>
+      <button class="round-tab"                   data-round="QF"    onclick="App.setKoRound('QF')">QF</button>
+      <button class="round-tab"                   data-round="SF"    onclick="App.setKoRound('SF')">SF</button>
+      <button class="round-tab"                   data-round="Final" onclick="App.setKoRound('Final')">Final</button>
+    </div>
+    <div class="bracket-view" id="ko-bracket-view">
+      <div class="text-muted" style="padding:20px;text-align:center">Loading…</div>
+    </div>
+  </div>
+
+  <!-- ── 3rd Place tab ───────────────────────────────────── -->
+  <div id="tab-third" class="hidden">
+    <div class="lock-banner hidden" id="third-banner"></div>
+    <div id="third-match-container">
+      <div class="text-muted" style="padding:20px;text-align:center">Loading…</div>
+    </div>
+  </div>
+
+</main>
+
+<!-- Save indicator -->
+<div class="save-indicator" id="save-indicator">Saved</div>
+
+<script src="/js/app.js"></script>
+<script>
+  App.initPredictions();
+</script>
+</body>
+</html>
