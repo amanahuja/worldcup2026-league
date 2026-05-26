@@ -1,0 +1,617 @@
+# World Cup 2026 — Group Stage Fixtures
+# Source: openfootball/worldcup.json
+# Generated: 2026-05-26
+
+groups:
+  A:
+    teams: [Mexico, South Africa, South Korea, Czech Republic]
+    matches:
+      - id: G_A1
+        home: Mexico
+        away: South Africa
+        home_abbr: MEX
+        away_abbr: RSA
+        date: "2026-06-11"
+        kickoff_utc: "2026-06-11T19:00:00Z"
+        venue: "Mexico City"
+      - id: G_A2
+        home: South Korea
+        away: Czech Republic
+        home_abbr: KOR
+        away_abbr: CZE
+        date: "2026-06-11"
+        kickoff_utc: "2026-06-12T02:00:00Z"
+        venue: "Guadalajara (Zapopan)"
+      - id: G_A3
+        home: Czech Republic
+        away: South Africa
+        home_abbr: CZE
+        away_abbr: RSA
+        date: "2026-06-18"
+        kickoff_utc: "2026-06-18T16:00:00Z"
+        venue: "Atlanta"
+      - id: G_A4
+        home: Mexico
+        away: South Korea
+        home_abbr: MEX
+        away_abbr: KOR
+        date: "2026-06-18"
+        kickoff_utc: "2026-06-19T01:00:00Z"
+        venue: "Guadalajara (Zapopan)"
+      - id: G_A5
+        home: Czech Republic
+        away: Mexico
+        home_abbr: CZE
+        away_abbr: MEX
+        date: "2026-06-24"
+        kickoff_utc: "2026-06-25T01:00:00Z"
+        venue: "Mexico City"
+      - id: G_A6
+        home: South Africa
+        away: South Korea
+        home_abbr: RSA
+        away_abbr: KOR
+        date: "2026-06-24"
+        kickoff_utc: "2026-06-25T01:00:00Z"
+        venue: "Monterrey (Guadalupe)"
+  B:
+    teams: [Canada, Bosnia & Herzegovina, Qatar, Switzerland]
+    matches:
+      - id: G_B1
+        home: Canada
+        away: Bosnia & Herzegovina
+        home_abbr: CAN
+        away_abbr: BIH
+        date: "2026-06-12"
+        kickoff_utc: "2026-06-12T19:00:00Z"
+        venue: "Toronto"
+      - id: G_B2
+        home: Qatar
+        away: Switzerland
+        home_abbr: QAT
+        away_abbr: SUI
+        date: "2026-06-13"
+        kickoff_utc: "2026-06-13T19:00:00Z"
+        venue: "San Francisco Bay Area (Santa Clara)"
+      - id: G_B3
+        home: Switzerland
+        away: Bosnia & Herzegovina
+        home_abbr: SUI
+        away_abbr: BIH
+        date: "2026-06-18"
+        kickoff_utc: "2026-06-18T19:00:00Z"
+        venue: "Los Angeles (Inglewood)"
+      - id: G_B4
+        home: Canada
+        away: Qatar
+        home_abbr: CAN
+        away_abbr: QAT
+        date: "2026-06-18"
+        kickoff_utc: "2026-06-18T22:00:00Z"
+        venue: "Vancouver"
+      - id: G_B5
+        home: Switzerland
+        away: Canada
+        home_abbr: SUI
+        away_abbr: CAN
+        date: "2026-06-24"
+        kickoff_utc: "2026-06-24T19:00:00Z"
+        venue: "Vancouver"
+      - id: G_B6
+        home: Bosnia & Herzegovina
+        away: Qatar
+        home_abbr: BIH
+        away_abbr: QAT
+        date: "2026-06-24"
+        kickoff_utc: "2026-06-24T19:00:00Z"
+        venue: "Seattle"
+  C:
+    teams: [Brazil, Morocco, Haiti, Scotland]
+    matches:
+      - id: G_C1
+        home: Brazil
+        away: Morocco
+        home_abbr: BRA
+        away_abbr: MAR
+        date: "2026-06-13"
+        kickoff_utc: "2026-06-13T22:00:00Z"
+        venue: "New York/New Jersey (East Rutherford)"
+      - id: G_C2
+        home: Haiti
+        away: Scotland
+        home_abbr: HAI
+        away_abbr: SCO
+        date: "2026-06-13"
+        kickoff_utc: "2026-06-14T01:00:00Z"
+        venue: "Boston (Foxborough)"
+      - id: G_C3
+        home: Scotland
+        away: Morocco
+        home_abbr: SCO
+        away_abbr: MAR
+        date: "2026-06-19"
+        kickoff_utc: "2026-06-19T22:00:00Z"
+        venue: "Boston (Foxborough)"
+      - id: G_C4
+        home: Brazil
+        away: Haiti
+        home_abbr: BRA
+        away_abbr: HAI
+        date: "2026-06-19"
+        kickoff_utc: "2026-06-20T00:30:00Z"
+        venue: "Philadelphia"
+      - id: G_C5
+        home: Scotland
+        away: Brazil
+        home_abbr: SCO
+        away_abbr: BRA
+        date: "2026-06-24"
+        kickoff_utc: "2026-06-24T22:00:00Z"
+        venue: "Miami (Miami Gardens)"
+      - id: G_C6
+        home: Morocco
+        away: Haiti
+        home_abbr: MAR
+        away_abbr: HAI
+        date: "2026-06-24"
+        kickoff_utc: "2026-06-24T22:00:00Z"
+        venue: "Atlanta"
+  D:
+    teams: [USA, Paraguay, Australia, Turkey]
+    matches:
+      - id: G_D1
+        home: USA
+        away: Paraguay
+        home_abbr: USA
+        away_abbr: PAR
+        date: "2026-06-12"
+        kickoff_utc: "2026-06-13T01:00:00Z"
+        venue: "Los Angeles (Inglewood)"
+      - id: G_D2
+        home: Australia
+        away: Turkey
+        home_abbr: AUS
+        away_abbr: TUR
+        date: "2026-06-13"
+        kickoff_utc: "2026-06-14T04:00:00Z"
+        venue: "Vancouver"
+      - id: G_D3
+        home: USA
+        away: Australia
+        home_abbr: USA
+        away_abbr: AUS
+        date: "2026-06-19"
+        kickoff_utc: "2026-06-19T19:00:00Z"
+        venue: "Seattle"
+      - id: G_D4
+        home: Turkey
+        away: Paraguay
+        home_abbr: TUR
+        away_abbr: PAR
+        date: "2026-06-19"
+        kickoff_utc: "2026-06-20T03:00:00Z"
+        venue: "San Francisco Bay Area (Santa Clara)"
+      - id: G_D5
+        home: Turkey
+        away: USA
+        home_abbr: TUR
+        away_abbr: USA
+        date: "2026-06-25"
+        kickoff_utc: "2026-06-26T02:00:00Z"
+        venue: "Los Angeles (Inglewood)"
+      - id: G_D6
+        home: Paraguay
+        away: Australia
+        home_abbr: PAR
+        away_abbr: AUS
+        date: "2026-06-25"
+        kickoff_utc: "2026-06-26T02:00:00Z"
+        venue: "San Francisco Bay Area (Santa Clara)"
+  E:
+    teams: [Germany, Curaçao, Ivory Coast, Ecuador]
+    matches:
+      - id: G_E1
+        home: Germany
+        away: Curaçao
+        home_abbr: GER
+        away_abbr: CUW
+        date: "2026-06-14"
+        kickoff_utc: "2026-06-14T17:00:00Z"
+        venue: "Houston"
+      - id: G_E2
+        home: Ivory Coast
+        away: Ecuador
+        home_abbr: CIV
+        away_abbr: ECU
+        date: "2026-06-14"
+        kickoff_utc: "2026-06-14T23:00:00Z"
+        venue: "Philadelphia"
+      - id: G_E3
+        home: Germany
+        away: Ivory Coast
+        home_abbr: GER
+        away_abbr: CIV
+        date: "2026-06-20"
+        kickoff_utc: "2026-06-20T20:00:00Z"
+        venue: "Toronto"
+      - id: G_E4
+        home: Ecuador
+        away: Curaçao
+        home_abbr: ECU
+        away_abbr: CUW
+        date: "2026-06-20"
+        kickoff_utc: "2026-06-21T00:00:00Z"
+        venue: "Kansas City"
+      - id: G_E5
+        home: Curaçao
+        away: Ivory Coast
+        home_abbr: CUW
+        away_abbr: CIV
+        date: "2026-06-25"
+        kickoff_utc: "2026-06-25T20:00:00Z"
+        venue: "Philadelphia"
+      - id: G_E6
+        home: Ecuador
+        away: Germany
+        home_abbr: ECU
+        away_abbr: GER
+        date: "2026-06-25"
+        kickoff_utc: "2026-06-25T20:00:00Z"
+        venue: "New York/New Jersey (East Rutherford)"
+  F:
+    teams: [Netherlands, Japan, Sweden, Tunisia]
+    matches:
+      - id: G_F1
+        home: Netherlands
+        away: Japan
+        home_abbr: NED
+        away_abbr: JPN
+        date: "2026-06-14"
+        kickoff_utc: "2026-06-14T20:00:00Z"
+        venue: "Dallas (Arlington)"
+      - id: G_F2
+        home: Sweden
+        away: Tunisia
+        home_abbr: SWE
+        away_abbr: TUN
+        date: "2026-06-14"
+        kickoff_utc: "2026-06-15T02:00:00Z"
+        venue: "Monterrey (Guadalupe)"
+      - id: G_F3
+        home: Netherlands
+        away: Sweden
+        home_abbr: NED
+        away_abbr: SWE
+        date: "2026-06-20"
+        kickoff_utc: "2026-06-20T17:00:00Z"
+        venue: "Houston"
+      - id: G_F4
+        home: Tunisia
+        away: Japan
+        home_abbr: TUN
+        away_abbr: JPN
+        date: "2026-06-20"
+        kickoff_utc: "2026-06-21T04:00:00Z"
+        venue: "Monterrey (Guadalupe)"
+      - id: G_F5
+        home: Japan
+        away: Sweden
+        home_abbr: JPN
+        away_abbr: SWE
+        date: "2026-06-25"
+        kickoff_utc: "2026-06-25T23:00:00Z"
+        venue: "Dallas (Arlington)"
+      - id: G_F6
+        home: Tunisia
+        away: Netherlands
+        home_abbr: TUN
+        away_abbr: NED
+        date: "2026-06-25"
+        kickoff_utc: "2026-06-25T23:00:00Z"
+        venue: "Kansas City"
+  G:
+    teams: [Belgium, Egypt, Iran, New Zealand]
+    matches:
+      - id: G_G1
+        home: Belgium
+        away: Egypt
+        home_abbr: BEL
+        away_abbr: EGY
+        date: "2026-06-15"
+        kickoff_utc: "2026-06-15T19:00:00Z"
+        venue: "Seattle"
+      - id: G_G2
+        home: Iran
+        away: New Zealand
+        home_abbr: IRN
+        away_abbr: NZL
+        date: "2026-06-15"
+        kickoff_utc: "2026-06-16T01:00:00Z"
+        venue: "Los Angeles (Inglewood)"
+      - id: G_G3
+        home: Belgium
+        away: Iran
+        home_abbr: BEL
+        away_abbr: IRN
+        date: "2026-06-21"
+        kickoff_utc: "2026-06-21T19:00:00Z"
+        venue: "Los Angeles (Inglewood)"
+      - id: G_G4
+        home: New Zealand
+        away: Egypt
+        home_abbr: NZL
+        away_abbr: EGY
+        date: "2026-06-21"
+        kickoff_utc: "2026-06-22T01:00:00Z"
+        venue: "Vancouver"
+      - id: G_G5
+        home: Egypt
+        away: Iran
+        home_abbr: EGY
+        away_abbr: IRN
+        date: "2026-06-26"
+        kickoff_utc: "2026-06-27T03:00:00Z"
+        venue: "Seattle"
+      - id: G_G6
+        home: New Zealand
+        away: Belgium
+        home_abbr: NZL
+        away_abbr: BEL
+        date: "2026-06-26"
+        kickoff_utc: "2026-06-27T03:00:00Z"
+        venue: "Vancouver"
+  H:
+    teams: [Spain, Cape Verde, Saudi Arabia, Uruguay]
+    matches:
+      - id: G_H1
+        home: Spain
+        away: Cape Verde
+        home_abbr: ESP
+        away_abbr: CPV
+        date: "2026-06-15"
+        kickoff_utc: "2026-06-15T16:00:00Z"
+        venue: "Atlanta"
+      - id: G_H2
+        home: Saudi Arabia
+        away: Uruguay
+        home_abbr: KSA
+        away_abbr: URU
+        date: "2026-06-15"
+        kickoff_utc: "2026-06-15T22:00:00Z"
+        venue: "Miami (Miami Gardens)"
+      - id: G_H3
+        home: Spain
+        away: Saudi Arabia
+        home_abbr: ESP
+        away_abbr: KSA
+        date: "2026-06-21"
+        kickoff_utc: "2026-06-21T16:00:00Z"
+        venue: "Atlanta"
+      - id: G_H4
+        home: Uruguay
+        away: Cape Verde
+        home_abbr: URU
+        away_abbr: CPV
+        date: "2026-06-21"
+        kickoff_utc: "2026-06-21T22:00:00Z"
+        venue: "Miami (Miami Gardens)"
+      - id: G_H5
+        home: Cape Verde
+        away: Saudi Arabia
+        home_abbr: CPV
+        away_abbr: KSA
+        date: "2026-06-26"
+        kickoff_utc: "2026-06-27T00:00:00Z"
+        venue: "Houston"
+      - id: G_H6
+        home: Uruguay
+        away: Spain
+        home_abbr: URU
+        away_abbr: ESP
+        date: "2026-06-26"
+        kickoff_utc: "2026-06-27T00:00:00Z"
+        venue: "Guadalajara (Zapopan)"
+  I:
+    teams: [France, Senegal, Iraq, Norway]
+    matches:
+      - id: G_I1
+        home: France
+        away: Senegal
+        home_abbr: FRA
+        away_abbr: SEN
+        date: "2026-06-16"
+        kickoff_utc: "2026-06-16T19:00:00Z"
+        venue: "New York/New Jersey (East Rutherford)"
+      - id: G_I2
+        home: Iraq
+        away: Norway
+        home_abbr: IRQ
+        away_abbr: NOR
+        date: "2026-06-16"
+        kickoff_utc: "2026-06-16T22:00:00Z"
+        venue: "Boston (Foxborough)"
+      - id: G_I3
+        home: France
+        away: Iraq
+        home_abbr: FRA
+        away_abbr: IRQ
+        date: "2026-06-22"
+        kickoff_utc: "2026-06-22T21:00:00Z"
+        venue: "Philadelphia"
+      - id: G_I4
+        home: Norway
+        away: Senegal
+        home_abbr: NOR
+        away_abbr: SEN
+        date: "2026-06-22"
+        kickoff_utc: "2026-06-23T00:00:00Z"
+        venue: "New York/New Jersey (East Rutherford)"
+      - id: G_I5
+        home: Norway
+        away: France
+        home_abbr: NOR
+        away_abbr: FRA
+        date: "2026-06-26"
+        kickoff_utc: "2026-06-26T19:00:00Z"
+        venue: "Boston (Foxborough)"
+      - id: G_I6
+        home: Senegal
+        away: Iraq
+        home_abbr: SEN
+        away_abbr: IRQ
+        date: "2026-06-26"
+        kickoff_utc: "2026-06-26T19:00:00Z"
+        venue: "Toronto"
+  J:
+    teams: [Argentina, Algeria, Austria, Jordan]
+    matches:
+      - id: G_J1
+        home: Argentina
+        away: Algeria
+        home_abbr: ARG
+        away_abbr: ALG
+        date: "2026-06-16"
+        kickoff_utc: "2026-06-17T01:00:00Z"
+        venue: "Kansas City"
+      - id: G_J2
+        home: Austria
+        away: Jordan
+        home_abbr: AUT
+        away_abbr: JOR
+        date: "2026-06-16"
+        kickoff_utc: "2026-06-17T04:00:00Z"
+        venue: "San Francisco Bay Area (Santa Clara)"
+      - id: G_J3
+        home: Argentina
+        away: Austria
+        home_abbr: ARG
+        away_abbr: AUT
+        date: "2026-06-22"
+        kickoff_utc: "2026-06-22T17:00:00Z"
+        venue: "Dallas (Arlington)"
+      - id: G_J4
+        home: Jordan
+        away: Algeria
+        home_abbr: JOR
+        away_abbr: ALG
+        date: "2026-06-22"
+        kickoff_utc: "2026-06-23T03:00:00Z"
+        venue: "San Francisco Bay Area (Santa Clara)"
+      - id: G_J5
+        home: Algeria
+        away: Austria
+        home_abbr: ALG
+        away_abbr: AUT
+        date: "2026-06-27"
+        kickoff_utc: "2026-06-28T02:00:00Z"
+        venue: "Kansas City"
+      - id: G_J6
+        home: Jordan
+        away: Argentina
+        home_abbr: JOR
+        away_abbr: ARG
+        date: "2026-06-27"
+        kickoff_utc: "2026-06-28T02:00:00Z"
+        venue: "Dallas (Arlington)"
+  K:
+    teams: [Portugal, DR Congo, Uzbekistan, Colombia]
+    matches:
+      - id: G_K1
+        home: Portugal
+        away: DR Congo
+        home_abbr: POR
+        away_abbr: COD
+        date: "2026-06-17"
+        kickoff_utc: "2026-06-17T17:00:00Z"
+        venue: "Houston"
+      - id: G_K2
+        home: Uzbekistan
+        away: Colombia
+        home_abbr: UZB
+        away_abbr: COL
+        date: "2026-06-17"
+        kickoff_utc: "2026-06-18T02:00:00Z"
+        venue: "Mexico City"
+      - id: G_K3
+        home: Portugal
+        away: Uzbekistan
+        home_abbr: POR
+        away_abbr: UZB
+        date: "2026-06-23"
+        kickoff_utc: "2026-06-23T17:00:00Z"
+        venue: "Houston"
+      - id: G_K4
+        home: Colombia
+        away: DR Congo
+        home_abbr: COL
+        away_abbr: COD
+        date: "2026-06-23"
+        kickoff_utc: "2026-06-24T02:00:00Z"
+        venue: "Guadalajara (Zapopan)"
+      - id: G_K5
+        home: Colombia
+        away: Portugal
+        home_abbr: COL
+        away_abbr: POR
+        date: "2026-06-27"
+        kickoff_utc: "2026-06-27T23:30:00Z"
+        venue: "Miami (Miami Gardens)"
+      - id: G_K6
+        home: DR Congo
+        away: Uzbekistan
+        home_abbr: COD
+        away_abbr: UZB
+        date: "2026-06-27"
+        kickoff_utc: "2026-06-27T23:30:00Z"
+        venue: "Atlanta"
+  L:
+    teams: [England, Croatia, Ghana, Panama]
+    matches:
+      - id: G_L1
+        home: England
+        away: Croatia
+        home_abbr: ENG
+        away_abbr: CRO
+        date: "2026-06-17"
+        kickoff_utc: "2026-06-17T20:00:00Z"
+        venue: "Dallas (Arlington)"
+      - id: G_L2
+        home: Ghana
+        away: Panama
+        home_abbr: GHA
+        away_abbr: PAN
+        date: "2026-06-17"
+        kickoff_utc: "2026-06-17T23:00:00Z"
+        venue: "Toronto"
+      - id: G_L3
+        home: England
+        away: Ghana
+        home_abbr: ENG
+        away_abbr: GHA
+        date: "2026-06-23"
+        kickoff_utc: "2026-06-23T20:00:00Z"
+        venue: "Boston (Foxborough)"
+      - id: G_L4
+        home: Panama
+        away: Croatia
+        home_abbr: PAN
+        away_abbr: CRO
+        date: "2026-06-23"
+        kickoff_utc: "2026-06-23T23:00:00Z"
+        venue: "Toronto"
+      - id: G_L5
+        home: Panama
+        away: England
+        home_abbr: PAN
+        away_abbr: ENG
+        date: "2026-06-27"
+        kickoff_utc: "2026-06-27T21:00:00Z"
+        venue: "New York/New Jersey (East Rutherford)"
+      - id: G_L6
+        home: Croatia
+        away: Ghana
+        home_abbr: CRO
+        away_abbr: GHA
+        date: "2026-06-27"
+        kickoff_utc: "2026-06-27T21:00:00Z"
+        venue: "Philadelphia"
