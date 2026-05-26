@@ -43,31 +43,7 @@ function matchRound(matchId) {
 // GitHub helpers
 // ---------------------------------------------------------------------------
 
-function githubHeaders(token) {
-  return {
-    'Authorization': `Bearer ${token}`,
-    'Accept': 'application/vnd.github+json',
-    'X-GitHub-Api-Version': '2022-11-28',
-    'User-Agent': 'worldcup2026-league-worker',
-  };
-}
-
-async function githubGet(path, env) {
-  const url = `https://api.github.com/repos/${env.GITHUB_REPO}/contents/${path}?ref=${env.GITHUB_BRANCH}`;
-  const res = await fetch(url, { headers: githubHeaders(env.GITHUB_TOKEN) });
-  if (res.status === 404) return null;
-  if (!res.ok) throw new Error(`GitHub GET ${path} failed: ${res.status}`);
-  const json = await res.json();
-  return { content: atob(json.content.replace(/\n/g, '')), sha: json.sha };
-}
-
-async function listDirectory(path, env) {
-  const url = `https://api.github.com/repos/${env.GITHUB_REPO}/contents/${path}?ref=${env.GITHUB_BRANCH}`;
-  const res = await fetch(url, { headers: githubHeaders(env.GITHUB_TOKEN) });
-  if (!res.ok) return [];
-  const items = await res.json();
-  return items.filter(i => i.type === 'file').map(i => i.name);
-}
+import { githubGet, githubPut, listDirectory } from './github.js';
 
 // ---------------------------------------------------------------------------
 // Minimal YAML parsers
@@ -173,12 +149,13 @@ function parseGroupsYaml(text) {
       }
       continue;
     }
-    if (indent === 6 && inMatches) {
-      if (trimmed.startsWith('- id:')) {
+    if (inMatches) {
+      if (indent === 6 && trimmed.startsWith('- id:')) {
         currentMatch = { id: trimmed.replace('- id:', '').trim() };
         groups.get(currentGroup).matches.push(currentMatch);
-      } else if (currentMatch) {
-        const m = trimmed.match(/^([\w_]+):\s*"?([^"]+)"?$/);
+      } else if (indent === 8 && currentMatch) {
+        // field lines under the match list item (home:, away:, home_abbr:, etc.)
+        const m = trimmed.match(/^([\w_]+):\s*"?([^"]*)"?\s*$/);
         if (m) currentMatch[m[1]] = m[2].trim();
       }
     }
@@ -561,12 +538,33 @@ export async function handleGetScores(request, env, session) {
   const sf2Done = results.get('SF_102')?.status === 'completed';
   const thirdLocked = sf1Done && sf2Done;
 
+  // Build fixtures map: group letter → array of match objects (for UI rendering)
+  const fixtures = {};
+  for (const [letter, data] of groupsData) {
+    fixtures[letter] = data.matches.map(m => ({
+      id:         m.id,
+      home:       m.home,
+      away:       m.away,
+      home_abbr:  m.home_abbr,
+      away_abbr:  m.away_abbr,
+      date:       m.date,
+      kickoff_utc: m.kickoff_utc,
+    }));
+  }
+
+  // Annotate standings with hasResults so the UI knows whether to show
+  // qualification highlights (green = actual) vs not at all (pre-tournament)
+  const standingsOut = {};
+  for (const [g, s] of groupStandings.entries()) {
+    const hasResults = s.some(t => t.played > 0);
+    standingsOut[g] = { teams: s, hasResults };
+  }
+
   return new Response(JSON.stringify({
     last_updated,
     leaderboard,
-    standings: Object.fromEntries(
-      [...groupStandings.entries()].map(([g, s]) => [g, s])
-    ),
+    standings: standingsOut,
+    fixtures,
     bracket: Object.fromEntries(
       [...bracket.entries()].map(([id, m]) => [id, m])
     ),

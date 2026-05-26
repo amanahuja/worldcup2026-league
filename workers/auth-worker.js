@@ -96,10 +96,11 @@ export async function handleLogin(request, env) {
   };
   const token = await signPayload(payload, env.SESSION_SECRET);
 
+  const isLocalhost = new URL(request.url).hostname === 'localhost';
   const cookie = [
     `${COOKIE_NAME}=${token}`,
     'HttpOnly',
-    'Secure',
+    ...(isLocalhost ? [] : ['Secure']),
     'SameSite=Lax',
     `Max-Age=${SESSION_TTL_SECONDS}`,
     'Path=/',

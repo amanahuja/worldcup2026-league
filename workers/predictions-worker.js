@@ -40,47 +40,7 @@ function isLocked(window) {
 // GitHub Contents API helpers
 // ---------------------------------------------------------------------------
 
-function githubHeaders(token) {
-  return {
-    'Authorization': `Bearer ${token}`,
-    'Accept': 'application/vnd.github+json',
-    'X-GitHub-Api-Version': '2022-11-28',
-    'User-Agent': 'worldcup2026-league-worker',
-  };
-}
-
-async function githubGet(path, env) {
-  const url = `https://api.github.com/repos/${env.GITHUB_REPO}/contents/${path}?ref=${env.GITHUB_BRANCH}`;
-  const res = await fetch(url, { headers: githubHeaders(env.GITHUB_TOKEN) });
-  if (res.status === 404) return null;
-  if (!res.ok) throw new Error(`GitHub GET ${path} failed: ${res.status}`);
-  const json = await res.json();
-  // content is base64-encoded
-  return {
-    content: atob(json.content.replace(/\n/g, '')),
-    sha: json.sha,
-  };
-}
-
-async function githubPut(path, content, sha, env) {
-  const url = `https://api.github.com/repos/${env.GITHUB_REPO}/contents/${path}`;
-  const body = {
-    message: `Update ${path}`,
-    content: btoa(unescape(encodeURIComponent(content))),
-    branch: env.GITHUB_BRANCH,
-    ...(sha ? { sha } : {}),
-  };
-  const res = await fetch(url, {
-    method: 'PUT',
-    headers: { ...githubHeaders(env.GITHUB_TOKEN), 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  });
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`GitHub PUT ${path} failed: ${res.status} ${err}`);
-  }
-  return res.json();
-}
+import { githubGet, githubPut } from './github.js';
 
 // ---------------------------------------------------------------------------
 // Minimal YAML serialiser for prediction files
