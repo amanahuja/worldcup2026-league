@@ -1,0 +1,162 @@
+# Group stage default predictions
+# Seeded from FIFA rankings (May 2026).
+# Higher-ranked team wins; draw where rankings are within 5 places.
+# Admin-created — applied to any match where the user has not made a pick.
+
+defaults:
+  # Group A
+  G_A1:
+    predicted_winner: home  # Mexico (#14) vs South Africa (#42)
+  G_A2:
+    predicted_winner: home  # South Korea (#18) vs Czech Republic (#33)
+  G_A3:
+    predicted_winner: home  # Czech Republic (#33) vs South Africa (#42)
+  G_A4:
+    predicted_winner: draw  # Mexico (#14) vs South Korea (#18)
+  G_A5:
+    predicted_winner: away  # Czech Republic (#33) vs Mexico (#14)
+  G_A6:
+    predicted_winner: away  # South Africa (#42) vs South Korea (#18)
+  # Group B
+  G_B1:
+    predicted_winner: home  # Canada (#22) vs Bosnia & Herzegovina (#48)
+  G_B2:
+    predicted_winner: away  # Qatar (#44) vs Switzerland (#15)
+  G_B3:
+    predicted_winner: home  # Switzerland (#15) vs Bosnia & Herzegovina (#48)
+  G_B4:
+    predicted_winner: home  # Canada (#22) vs Qatar (#44)
+  G_B5:
+    predicted_winner: home  # Switzerland (#15) vs Canada (#22)
+  G_B6:
+    predicted_winner: draw  # Bosnia & Herzegovina (#48) vs Qatar (#44)
+  # Group C
+  G_C1:
+    predicted_winner: home  # Brazil (#5) vs Morocco (#12)
+  G_C2:
+    predicted_winner: away  # Haiti (#60) vs Scotland (#30)
+  G_C3:
+    predicted_winner: away  # Scotland (#30) vs Morocco (#12)
+  G_C4:
+    predicted_winner: home  # Brazil (#5) vs Haiti (#60)
+  G_C5:
+    predicted_winner: away  # Scotland (#30) vs Brazil (#5)
+  G_C6:
+    predicted_winner: home  # Morocco (#12) vs Haiti (#60)
+  # Group D
+  G_D1:
+    predicted_winner: home  # USA (#13) vs Paraguay (#40)
+  G_D2:
+    predicted_winner: draw  # Australia (#23) vs Turkey (#24)
+  G_D3:
+    predicted_winner: home  # USA (#13) vs Australia (#23)
+  G_D4:
+    predicted_winner: home  # Turkey (#24) vs Paraguay (#40)
+  G_D5:
+    predicted_winner: away  # Turkey (#24) vs USA (#13)
+  G_D6:
+    predicted_winner: away  # Paraguay (#40) vs Australia (#23)
+  # Group E
+  G_E1:
+    predicted_winner: home  # Germany (#9) vs Curaçao (#65)
+  G_E2:
+    predicted_winner: away  # Ivory Coast (#37) vs Ecuador (#21)
+  G_E3:
+    predicted_winner: home  # Germany (#9) vs Ivory Coast (#37)
+  G_E4:
+    predicted_winner: home  # Ecuador (#21) vs Curaçao (#65)
+  G_E5:
+    predicted_winner: away  # Curaçao (#65) vs Ivory Coast (#37)
+  G_E6:
+    predicted_winner: away  # Ecuador (#21) vs Germany (#9)
+  # Group F
+  G_F1:
+    predicted_winner: home  # Netherlands (#7) vs Japan (#20)
+  G_F2:
+    predicted_winner: draw  # Sweden (#28) vs Tunisia (#31)
+  G_F3:
+    predicted_winner: home  # Netherlands (#7) vs Sweden (#28)
+  G_F4:
+    predicted_winner: away  # Tunisia (#31) vs Japan (#20)
+  G_F5:
+    predicted_winner: home  # Japan (#20) vs Sweden (#28)
+  G_F6:
+    predicted_winner: away  # Tunisia (#31) vs Netherlands (#7)
+  # Group G
+  G_G1:
+    predicted_winner: home  # Belgium (#6) vs Egypt (#38)
+  G_G2:
+    predicted_winner: home  # Iran (#32) vs New Zealand (#46)
+  G_G3:
+    predicted_winner: home  # Belgium (#6) vs Iran (#32)
+  G_G4:
+    predicted_winner: away  # New Zealand (#46) vs Egypt (#38)
+  G_G5:
+    predicted_winner: away  # Egypt (#38) vs Iran (#32)
+  G_G6:
+    predicted_winner: away  # New Zealand (#46) vs Belgium (#6)
+  # Group H
+  G_H1:
+    predicted_winner: home  # Spain (#4) vs Cape Verde (#47)
+  G_H2:
+    predicted_winner: away  # Saudi Arabia (#41) vs Uruguay (#17)
+  G_H3:
+    predicted_winner: home  # Spain (#4) vs Saudi Arabia (#41)
+  G_H4:
+    predicted_winner: home  # Uruguay (#17) vs Cape Verde (#47)
+  G_H5:
+    predicted_winner: away  # Cape Verde (#47) vs Saudi Arabia (#41)
+  G_H6:
+    predicted_winner: away  # Uruguay (#17) vs Spain (#4)
+  # Group I
+  G_I1:
+    predicted_winner: home  # France (#2) vs Senegal (#19)
+  G_I2:
+    predicted_winner: away  # Iraq (#49) vs Norway (#27)
+  G_I3:
+    predicted_winner: home  # France (#2) vs Iraq (#49)
+  G_I4:
+    predicted_winner: away  # Norway (#27) vs Senegal (#19)
+  G_I5:
+    predicted_winner: away  # Norway (#27) vs France (#2)
+  G_I6:
+    predicted_winner: home  # Senegal (#19) vs Iraq (#49)
+  # Group J
+  G_J1:
+    predicted_winner: home  # Argentina (#1) vs Algeria (#29)
+  G_J2:
+    predicted_winner: home  # Austria (#26) vs Jordan (#45)
+  G_J3:
+    predicted_winner: home  # Argentina (#1) vs Austria (#26)
+  G_J4:
+    predicted_winner: away  # Jordan (#45) vs Algeria (#29)
+  G_J5:
+    predicted_winner: draw  # Algeria (#29) vs Austria (#26)
+  G_J6:
+    predicted_winner: away  # Jordan (#45) vs Argentina (#1)
+  # Group K
+  G_K1:
+    predicted_winner: home  # Portugal (#8) vs DR Congo (#36)
+  G_K2:
+    predicted_winner: away  # Uzbekistan (#50) vs Colombia (#10)
+  G_K3:
+    predicted_winner: home  # Portugal (#8) vs Uzbekistan (#50)
+  G_K4:
+    predicted_winner: home  # Colombia (#10) vs DR Congo (#36)
+  G_K5:
+    predicted_winner: draw  # Colombia (#10) vs Portugal (#8)
+  G_K6:
+    predicted_winner: home  # DR Congo (#36) vs Uzbekistan (#50)
+  # Group L
+  G_L1:
+    predicted_winner: home  # England (#3) vs Croatia (#16)
+  G_L2:
+    predicted_winner: draw  # Ghana (#39) vs Panama (#43)
+  G_L3:
+    predicted_winner: home  # England (#3) vs Ghana (#39)
+  G_L4:
+    predicted_winner: away  # Panama (#43) vs Croatia (#16)
+  G_L5:
+    predicted_winner: away  # Panama (#43) vs England (#3)
+  G_L6:
+    predicted_winner: home  # Croatia (#16) vs Ghana (#39)
