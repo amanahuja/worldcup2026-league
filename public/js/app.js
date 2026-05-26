@@ -165,7 +165,7 @@ const App = (() => {
         luEl.classList.remove('hidden');
       }
     } catch {
-      _scores = { leaderboard: [], standings: {}, bracket: {} };
+      _scores = { leaderboard: [], standings: {}, fixtures: {}, bracket: {} };
     }
   }
 
@@ -223,17 +223,16 @@ const App = (() => {
     grid.innerHTML = groups.map(g => renderResultsGroupCard(g, standings[g])).join('');
   }
 
-  function renderResultsGroupCard(letter, standings) {
-    const results = _scores?.bracket || {};
-    const me = _session?.username;
-    // User predictions (if loaded on results page we'd need to fetch — skip for now, show scores only)
-    const topTwo = standings.slice(0, 2).map(s => s.team);
+  function renderResultsGroupCard(letter, standingsObj) {
+    // standingsObj is now { teams: [...], hasResults: bool }
+    const teams      = standingsObj?.teams || standingsObj || [];
+    const hasResults = standingsObj?.hasResults || false;
+    const fixtures   = (_scores?.fixtures || {})[letter] || [];
+    const matchResults = _scores?.matches || {};
 
-    const standingsRows = standings.map((s, i) => `
-      <tr class="${i < 2 ? 'qualified-actual' : ''}">
-        <td class="standings-team">
-          <span class="team-name" title="${s.team}">${s.team}</span>
-        </td>
+    const standingsRows = teams.map((s, i) => `
+      <tr class="${i < 2 && hasResults ? 'qualified-actual' : ''}">
+        <td><span style="font-size:0.7rem;font-weight:600;display:block;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${s.team}">${s.team}</span></td>
         <td>${s.played}</td>
         <td>${s.won}</td>
         <td>${s.drawn}</td>
@@ -241,6 +240,26 @@ const App = (() => {
         <td class="pts">${s.pts}</td>
       </tr>
     `).join('');
+
+    const fixtureRows = fixtures.map(m => {
+      const result = (_scores?.bracket || {})[m.id] || {};
+      const status = result.status || 'scheduled';
+      let scoreStr;
+      if (status === 'completed') {
+        scoreStr = `${result.home_score ?? 0} – ${result.away_score ?? 0}`;
+      } else {
+        scoreStr = fmtDate(m.kickoff_utc);
+      }
+      return `
+        <div class="fixture">
+          <div class="fixture__header">
+            <span class="fixture__team">${m.home}</span>
+            <span class="fixture__score${status === 'live' ? ' fixture__score--live' : ''}">${scoreStr}</span>
+            <span class="fixture__team fixture__team--away">${m.away}</span>
+          </div>
+        </div>
+      `;
+    }).join('');
 
     return `
       <div class="group-card">
@@ -252,10 +271,10 @@ const App = (() => {
               <th>P</th><th>W</th><th>D</th><th>L</th><th>Pts</th>
             </tr>
           </thead>
-          <tbody>${standingsRows}</tbody>
+          <tbody>${standingsRows || '<tr><td colspan="6" style="padding:6px;color:var(--c-muted);font-size:0.7rem;text-align:center">—</td></tr>'}</tbody>
         </table>
         <div class="fixtures-divider">Fixtures</div>
-        <div id="results-fixtures-${letter}"></div>
+        ${fixtureRows || '<div style="padding:6px 10px;font-size:0.7rem;color:var(--c-muted)">—</div>'}
       </div>
     `;
   }
@@ -318,11 +337,10 @@ const App = (() => {
 
   function renderGroupsTab() {
     if (!_scores || !_predictions) return;
-    const groupsYaml = _scores.standings || {};
-    const groups = Object.keys(groupsYaml).sort();
+    const standingsMap = _scores.standings || {};
+    const groups = Object.keys(standingsMap).sort();
     const locked = _predictions.groups?.locked;
-    const picks = _predictions.groups?.predictions || {};
-    const results = {}; // actual results from _scores
+    const picks  = _predictions.groups?.predictions || {};
 
     const banner = document.getElementById('groups-banner');
     if (banner) {
@@ -338,45 +356,18 @@ const App = (() => {
 
     const grid = document.getElementById('groups-grid');
     if (!grid) return;
-    grid.innerHTML = groups.map(g => renderGroupCard(g, groupsYaml[g], picks, locked)).join('');
+    grid.innerHTML = groups.map(g => renderGroupCard(g, standingsMap[g], picks, locked)).join('');
   }
 
-  function getGroupFixtures(groupLetter) {
-    // Derive fixture list from standings data + groups.yaml embedded in scores response
-    // For the predictions page we rely on match IDs encoded as G_A1..G_L6
-    const fixtures = [];
-    for (let i = 1; i <= 6; i++) {
-      fixtures.push({ id: `G_${groupLetter}${i}` });
-    }
-    return fixtures;
-  }
+  function renderGroupCard(letter, standingsObj, picks, locked) {
+    // standingsObj is { teams: [...], hasResults: bool }
+    const teams      = standingsObj?.teams || standingsObj || [];
+    const hasResults = standingsObj?.hasResults || false;
+    const fixtures   = (_scores?.fixtures || {})[letter] || [];
 
-  /**
-   * Derives predicted standings from current picks + defaults for a group.
-   * standings param comes from /api/scores if available (actual), else derived from picks.
-   */
-  function derivePickedStandings(groupLetter, groupTeams, picks) {
-    const stats = {};
-    for (const team of groupTeams) {
-      stats[team] = { team, played: 0, won: 0, drawn: 0, lost: 0, pts: 0 };
-    }
-
-    // We don't have the fixture home/away from standings alone — use known fixture pattern
-    // from groups.yaml. For simplicity encode fixture home/away in the ID's expected pick.
-    // The actual home/away is loaded via _scores.bracket or derived from groups.yaml.
-    // Since scores-worker doesn't expose per-group fixtures explicitly in GET /api/scores,
-    // we'll derive standings from actual results if available, or show predictions-based.
-    // This is an approximation — full implementation reads groups.yaml structure.
-    return Object.values(stats).sort((a, b) => b.pts - a.pts || b.won - a.won || a.team.localeCompare(b.team));
-  }
-
-  function renderGroupCard(letter, standingsData, picks, locked) {
-    const teams = standingsData?.map(s => s.team) || [];
-    const isLive = standingsData?.some(s => s.played > 0);
-
-    // Build standings rows
-    const standingsRows = (standingsData || []).map((s, i) => `
-      <tr class="${i < 2 ? (isLive ? 'qualified-actual' : 'qualified') : ''}">
+    // Standings rows — only show qualification highlight if games have been played
+    const standingsRows = teams.map((s, i) => `
+      <tr class="${i < 2 && hasResults ? 'qualified-actual' : ''}">
         <td>
           <span style="font-size:0.7rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;max-width:72px" title="${s.team}">${s.team}</span>
         </td>
@@ -388,13 +379,13 @@ const App = (() => {
       </tr>
     `).join('');
 
-    // Build fixture rows (match IDs G_X1..G_X6)
-    const fixtureRows = [1,2,3,4,5,6].map(i => {
-      const matchId = `G_${letter}${i}`;
-      const pick = picks[matchId];
-      const winner = pick?.predicted_winner;
+    // Fixture rows — use real home/away/abbr/date from fixtures data
+    const fixtureRows = fixtures.map(m => {
+      const pick      = picks[m.id];
+      const winner    = pick?.predicted_winner;
       const isDefault = pick?._default;
-      return renderFixtureRow(matchId, null, null, null, winner, isDefault, locked, 'groups');
+      const score     = fmtDate(m.kickoff_utc); // pre-tournament: show date
+      return renderFixtureRow(m.id, m.home_abbr, m.away_abbr, score, winner, isDefault, locked, 'groups');
     }).join('');
 
     return `
@@ -410,7 +401,7 @@ const App = (() => {
           <tbody>${standingsRows || '<tr><td colspan="6" style="padding:6px;color:var(--c-muted);font-size:0.7rem;text-align:center">—</td></tr>'}</tbody>
         </table>
         <div class="fixtures-divider">Fixtures</div>
-        ${fixtureRows}
+        ${fixtureRows || '<div style="padding:6px 10px;font-size:0.7rem;color:var(--c-muted)">—</div>'}
       </div>
     `;
   }
