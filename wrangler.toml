@@ -8,3 +8,7 @@ id = "9dac303f4e65465286d93530463856ef"
 
 [triggers]
 crons = ["0 * * * *"]
+
+[vars]
+GITHUB_REPO="amanahuja/worldcup2026-league"
+GITHUB_BRANCH="main"
