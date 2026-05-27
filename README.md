@@ -8,8 +8,6 @@ A lightweight prediction league for the FIFA World Cup 2026. Friends pay a small
 
 See [RULES.md](./RULES.md) for full scoring rules and how the tiebreaker works.
 
----
-
 ## Features
 
 - Predict outcomes for all 104 matches — group stage, knockout rounds, and the third-place playoff
@@ -22,14 +20,10 @@ See [RULES.md](./RULES.md) for full scoring rules and how the tiebreaker works.
 
 Privacy disclosure: See [RULES.md](./RULES.md), but, basically, everything is publicly visible here on github, and I had to use a cookie for the UI to work. 
 
----
-
 ## Data Sources for World Cup Results
 
 - **[OpenLigaDB](https://api.openligadb.de)** — live match results, updated hourly via cron worker (`wm26` / `2026` league)
 - **[openfootball/worldcup](https://github.com/openfootball/worldcup)** ([openfootball.github.io](https://openfootball.github.io/)) — reference fixture and results data
-
----
 
 ## Screenshots
 
@@ -44,16 +38,12 @@ Privacy disclosure: See [RULES.md](./RULES.md), but, basically, everything is pu
   </tr>
 </table>
 
----
-
 ## Tech Stack
 
 - **Frontend:** Static HTML/CSS/JS on Cloudflare Pages
 - **Backend:** Cloudflare Workers (auth, predictions, results, scoring)
 - **Data:** YAML files in this repo, written by workers via GitHub Contents API
 - **Auth:** HMAC-signed session cookies, credentials stored in Cloudflare KV
-
----
 
 ## This was vibe coded
 
@@ -66,9 +56,3 @@ Having a clear spec in my head helped — being one of the target users made tha
 **Process:** I used Claude.ai (browser) to work through the specs, do research, find data sources, and iterate on the design. Then I used [OpenCode](https://opencode.ai) as a coding agent to implement. The Cloudflare setup I did manually. Most of the vibe coding happened while doing house errands — except for UX iterations (requires actually looking at a screen) and some troubleshooting (same).
 
 I always attempt to use local and less-powerful models, both to reduce costs and to reduce environmental impact. For this project I used Kimi k2.6 as a main model, and Claude Sonnet 4.6 for the more complex tasks. 
-
----
-
-## Author
-
-by [amanahuja](https://amanahuja.me). 
