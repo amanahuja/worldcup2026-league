@@ -197,6 +197,9 @@ const App = (() => {
     if (!btn) return;
     if (_session?.username) {
       btn.textContent = 'Edit Predictions';
+      // Show username in topbar sub-line (results page only)
+      const sub = document.getElementById('topbar-username');
+      if (sub) sub.textContent = _session.username;
     } else {
       btn.textContent = 'Enter Predictions';
     }
