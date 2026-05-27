@@ -512,6 +512,12 @@ a:hover { text-decoration: underline; }
 .pred-overlay--correct { color: var(--c-green); }
 .pred-overlay--wrong   { color: var(--c-red); }
 
+/* Score color overlay — correct pick = green, wrong = red */
+.fixture__score--correct  { color: var(--c-green) !important; font-weight: 700; }
+.fixture__score--wrong    { color: var(--c-red)   !important; font-weight: 700; }
+.ko-card__score--correct  { color: var(--c-green) !important; font-weight: 700; }
+.ko-card__score--wrong    { color: var(--c-red)   !important; font-weight: 700; }
+
 /* ── Login modal ─────────────────────────────────────────── */
 .modal-backdrop {
   position: fixed;

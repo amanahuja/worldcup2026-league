@@ -560,11 +560,23 @@ export async function handleGetScores(request, env, session) {
     standingsOut[g] = { teams: s, hasResults };
   }
 
+  // Serialize match results for client-side overlay (status + winner per match)
+  const matchResults = {};
+  for (const [id, r] of results.entries()) {
+    matchResults[id] = {
+      status:     r.status,
+      home_score: r.home_score,
+      away_score: r.away_score,
+      winner:     r.winner || deriveWinner(r),
+    };
+  }
+
   return new Response(JSON.stringify({
     last_updated,
     leaderboard,
     standings: standingsOut,
     fixtures,
+    match_results: matchResults,
     bracket: Object.fromEntries(
       [...bracket.entries()].map(([id, m]) => [id, m])
     ),

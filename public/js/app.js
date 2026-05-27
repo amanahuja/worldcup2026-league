@@ -154,6 +154,18 @@ const App = (() => {
     setInterval(tick, 30000); // update every 30s
   }
 
+  // Returns the active stage + knockout round based on today's date
+  function getActiveStage() {
+    const now = Date.now();
+    const d = (y, m, day) => new Date(`2026-${String(m).padStart(2,'0')}-${String(day).padStart(2,'0')}T00:00:00Z`).getTime();
+    if (now < d(2026,6,28))  return { stage: 'groups',   round: null };
+    if (now < d(2026,7,4))   return { stage: 'knockout', round: 'R32' };
+    if (now < d(2026,7,9))   return { stage: 'knockout', round: 'R16' };
+    if (now < d(2026,7,13))  return { stage: 'knockout', round: 'QF' };
+    if (now < d(2026,7,17))  return { stage: 'knockout', round: 'SF' };
+    return                          { stage: 'knockout', round: 'Final' };
+  }
+
   async function initResults() {
     _session = { username: getSessionUsername() };
     updateCtaBtn();
@@ -164,13 +176,20 @@ const App = (() => {
       showLoginModal();
     }
 
-    await loadScores();
-    renderLeaderboard();
-    renderResultsGroups();
+    // Load scores always; load predictions only if logged in (for overlay)
+    await Promise.all([
+      loadScores(),
+      _session.username ? loadPredictions() : Promise.resolve(),
+    ]);
 
-    document.getElementById('results-stage-tabs')
-      ?.querySelectorAll('[data-stage]')
-      .forEach(t => t.classList.toggle('tab--active', t.dataset.stage === _currentResultsStage));
+    renderLeaderboard();
+
+    // Auto-navigate to the active stage
+    const { stage, round } = getActiveStage();
+    _currentResultsStage = stage;
+    if (round) _currentKoRound = round;
+
+    setResultsStage(stage);
   }
 
   function updateCtaBtn() {
@@ -269,20 +288,35 @@ const App = (() => {
       </tr>
     `).join('');
 
+    const userPicks = _predictions?.groups?.predictions || {};
+    const matchResults = _scores?.match_results || {};
+
     const fixtureRows = fixtures.map(m => {
-      const result = (_scores?.bracket || {})[m.id] || {};
+      const result = matchResults[m.id] || {};
       const status = result.status || 'scheduled';
-      let scoreStr;
+      let scoreStr, scoreClass;
+
       if (status === 'completed') {
         scoreStr = `${result.home_score ?? 0} – ${result.away_score ?? 0}`;
+        // Overlay: compare user's pick to actual winner
+        const pick = userPicks[m.id]?.predicted_winner;
+        if (pick && _session?.username) {
+          scoreClass = pick === result.winner
+            ? 'fixture__score--correct'
+            : 'fixture__score--wrong';
+        }
+      } else if (status === 'live') {
+        scoreStr  = `${result.home_score ?? 0} – ${result.away_score ?? 0}`;
+        scoreClass = 'fixture__score--live';
       } else {
         scoreStr = fmtDate(m.kickoff_utc);
       }
+
       return `
         <div class="fixture">
           <div class="fixture__header">
             <span class="fixture__team">${m.home}</span>
-            <span class="fixture__score${status === 'live' ? ' fixture__score--live' : ''}">${scoreStr}</span>
+            <span class="fixture__score ${scoreClass || ''}">${scoreStr}</span>
             <span class="fixture__team fixture__team--away">${m.away}</span>
           </div>
         </div>
@@ -314,13 +348,37 @@ const App = (() => {
     document.querySelectorAll('#results-stage-tabs [data-stage]').forEach(t => {
       t.classList.toggle('tab--active', t.dataset.stage === stage);
     });
+    if (stage === 'groups') renderResultsGroups();
     if (stage === 'knockout') renderResultsKnockout();
   }
 
   function renderResultsKnockout() {
-    const container = document.getElementById('results-ko-view');
-    if (!container) return;
-    container.innerHTML = '<div class="text-muted" style="padding:20px;text-align:center">Knockout round starts June 28th!</div>';
+    // Check if knockout has started
+    if (Date.now() < new Date('2026-06-28T00:00:00Z').getTime()) {
+      const container = document.getElementById('results-ko-view');
+      if (container) container.innerHTML = '<div class="text-muted" style="padding:20px;text-align:center">Knockout round starts June 28th!</div>';
+      return;
+    }
+
+    // Render round tabs into #results-ko-tabs
+    const tabsEl = document.getElementById('results-ko-tabs');
+    if (tabsEl) {
+      tabsEl.innerHTML = ['R32','R16','QF','SF','Final'].map(r => `
+        <button class="round-tab ${r === _currentKoRound ? 'round-tab--active' : ''}"
+          onclick="App.setResultsKoRound('${r}')">${r}</button>
+      `).join('');
+    }
+
+    // Render bracket into #results-ko-view (read-only)
+    renderKoBracketView(_currentKoRound, 'results-ko-view', true);
+  }
+
+  function setResultsKoRound(round) {
+    _currentKoRound = round;
+    document.querySelectorAll('#results-ko-tabs .round-tab').forEach(t => {
+      t.classList.toggle('round-tab--active', t.textContent === round);
+    });
+    renderKoBracketView(round, 'results-ko-view', true);
   }
 
   // ── Predictions page ─────────────────────────────────────
@@ -662,10 +720,10 @@ const App = (() => {
     return predicted;
   }
 
-  function renderKoBracketView(round) {
-    const container = document.getElementById('ko-bracket-view');
+  function renderKoBracketView(round, containerId = 'ko-bracket-view', readOnly = false) {
+    const container = document.getElementById(containerId);
     if (!container) return;
-    const locked   = _predictions?.knockout?.locked;
+    const locked   = readOnly || _predictions?.knockout?.locked;
     const picks    = _predictions?.knockout?.predictions || {};
     const matchIds = KO_ROUNDS[round] || [];
     const nextRound = NEXT_ROUND[round];
@@ -675,21 +733,32 @@ const App = (() => {
 
     // Derive predicted team names for all bracket slots from user's picks
     const predicted = derivePredictedBracket(picks);
+    const matchResultsMap = _scores?.match_results || {};
 
-    // Build left column (current round)
-    const leftCards = matchIds.map((id, idx) => {
-      const bm     = predicted[id] || {};
-      const home   = bm.home || 'TBD';
-      const away   = bm.away || 'TBD';
-      const pick   = picks[id];
-      const winner = pick?.predicted_winner;
+    // Returns the CSS class for the score span based on prediction vs result
+    function koScoreClass(id, pickWinner, status) {
+      if (status !== 'completed' || !pickWinner || !_session?.username) return '';
+      const actual = matchResultsMap[id]?.winner;
+      if (!actual) return '';
+      return pickWinner === actual ? 'ko-card__score--correct' : 'ko-card__score--wrong';
+    }
+
+    // Helper to build a single ko card (used in both leftCards and leftPair)
+    function buildKoCard(id) {
+      const bm        = predicted[id] || {};
+      const home      = bm.home || 'TBD';
+      const away      = bm.away || 'TBD';
+      const pick      = picks[id];
+      const winner    = pick?.predicted_winner;
       const isDefault = pick?._default;
       const serverResult = (_scores?.bracket || {})[id];
-      const status = serverResult?.status || 'scheduled';
-      const score  = status === 'completed'
+      const status    = serverResult?.status || 'scheduled';
+      const scoreStr  = status === 'completed'
         ? `${serverResult.home_score ?? 0} – ${serverResult.away_score ?? 0}`
         : '—';
-
+      const scoreClass = status === 'live'
+        ? 'ko-card__score--live'
+        : koScoreClass(id, winner, status);
       const ha = abbr(home), aa = abbr(away);
 
       function btnClass(side) {
@@ -701,7 +770,7 @@ const App = (() => {
         <div class="ko-card" id="ko-${id}">
           <div class="ko-card__matchup">
             <span class="ko-card__team" title="${home}">${home}</span>
-            <span class="ko-card__score${status === 'live' ? ' ko-card__score--live' : ''}">${score}</span>
+            <span class="ko-card__score ${scoreClass}">${scoreStr}</span>
             <span class="ko-card__team ko-card__team--away" title="${away}">${away}</span>
           </div>
           <div class="ko-card__buttons">
@@ -712,7 +781,10 @@ const App = (() => {
           </div>
         </div>
       `;
-    }).join('');
+    }
+
+    // Build left column (current round)
+    const leftCards = matchIds.map(id => buildKoCard(id)).join('');
 
     // Build right column — each next-round card paired with two left-column cards.
     // Wrap in a flex container per pair so each right card vertically centres
@@ -728,40 +800,8 @@ const App = (() => {
         const rHome = rbm.home || 'TBD';
         const rAway = rbm.away || 'TBD';
 
-        // Left pair cards (re-rendered inline for pairing)
-        const leftPair = [leftId1, leftId2].filter(Boolean).map(id => {
-          const bm     = predicted[id] || {};
-          const home   = bm.home || 'TBD';
-          const away   = bm.away || 'TBD';
-          const pick   = picks[id];
-          const winner = pick?.predicted_winner;
-          const isDefault = pick?._default;
-          const serverResult = (_scores?.bracket || {})[id];
-          const status = serverResult?.status || 'scheduled';
-          const score  = status === 'completed'
-            ? `${serverResult.home_score ?? 0} – ${serverResult.away_score ?? 0}`
-            : '—';
-          const ha = abbr(home), aa = abbr(away);
-          function btnClass(side) {
-            if (winner === side) return isDefault ? 'pick-btn pick-btn--default' : 'pick-btn pick-btn--selected';
-            return 'pick-btn';
-          }
-          return `
-            <div class="ko-card" id="ko-${id}">
-              <div class="ko-card__matchup">
-                <span class="ko-card__team" title="${home}">${home}</span>
-                <span class="ko-card__score${status === 'live' ? ' ko-card__score--live' : ''}">${score}</span>
-                <span class="ko-card__team ko-card__team--away" title="${away}">${away}</span>
-              </div>
-              <div class="ko-card__buttons">
-                <button class="pick-btn ${btnClass('home')}" data-side="home" ${locked ? 'disabled' : ''}
-                  onclick="App.pick('${id}', 'home', 'knockout')">${ha}</button>
-                <button class="pick-btn ${btnClass('away')}" data-side="away" ${locked ? 'disabled' : ''}
-                  onclick="App.pick('${id}', 'away', 'knockout')">${aa}</button>
-              </div>
-            </div>
-          `;
-        }).join('');
+        // Left pair cards — reuse shared builder
+        const leftPair = [leftId1, leftId2].filter(Boolean).map(id => buildKoCard(id)).join('');
 
         const rightCard = rightId ? `
           <div class="ko-card ko-card--dim" style="align-self:center">
@@ -919,6 +959,7 @@ const App = (() => {
     setTab,
     setKoRound,
     setResultsStage,
+    setResultsKoRound,
     pick,
     saveTiebreaker,
   };
