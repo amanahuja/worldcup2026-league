@@ -461,8 +461,14 @@ const App = (() => {
     if (!section.predictions) section.predictions = {};
     section.predictions[matchId] = { predicted_winner: value, _default: false };
 
-    // Re-render the fixture row
-    updateFixtureRow(matchId, value, false, section.locked, window);
+    // Re-render the relevant card
+    if (window === 'groups') {
+      updateFixtureRow(matchId, value, false, section.locked);
+    } else {
+      updateKoCard(matchId, value, false);
+      // Re-render the current bracket view to propagate the pick to next round
+      renderKoBracketView(_currentKoRound);
+    }
 
     // Save to API
     const endpoint = window === 'groups' ? '/api/predictions/groups' : '/api/predictions/knockout';
@@ -479,7 +485,7 @@ const App = (() => {
     }
   }
 
-  function updateFixtureRow(matchId, winner, isDefault, locked, window) {
+  function updateFixtureRow(matchId, winner, isDefault, locked) {
     const el = document.getElementById(`fixture-${matchId}`);
     if (!el) return;
     const btns = el.querySelectorAll('.pick-btn');
@@ -487,6 +493,18 @@ const App = (() => {
     btns.forEach((btn, i) => {
       const side = sides[i];
       btn.className = 'pick-btn' + (side === 'draw' ? ' pick-btn--draw' : '');
+      if (winner === side) {
+        btn.classList.add(isDefault ? 'pick-btn--default' : 'pick-btn--selected');
+      }
+    });
+  }
+
+  function updateKoCard(matchId, winner, isDefault) {
+    const el = document.getElementById(`ko-${matchId}`);
+    if (!el) return;
+    el.querySelectorAll('.pick-btn').forEach(btn => {
+      const side = btn.dataset.side;
+      btn.className = 'pick-btn';
       if (winner === side) {
         btn.classList.add(isDefault ? 'pick-btn--default' : 'pick-btn--selected');
       }
@@ -531,34 +549,99 @@ const App = (() => {
     renderKoBracketView(round);
   }
 
+  /**
+   * Derive predicted bracket from user's current knockout picks.
+   * Mirrors the server-side bracket logic but client-side, using picks not results.
+   * Returns Map<matchId → { home, away }> with team names where known.
+   */
+  function derivePredictedBracket(picks) {
+    const bracket = _scores?.bracket || {};
+    const predicted = {};
+
+    // R32: teams come from server bracket (group stage results → seedings)
+    // Use server bracket home/away as the base; picks tell us who advances
+    for (const id of KO_ROUNDS.R32) {
+      const bm = bracket[id] || {};
+      predicted[id] = { home: bm.home || null, away: bm.away || null };
+    }
+
+    // For each subsequent round, derive home/away from the previous round's picks
+    const FEEDERS = {
+      R16_89:  ['R32_74','R32_77'], R16_90:  ['R32_73','R32_75'],
+      R16_91:  ['R32_76','R32_78'], R16_92:  ['R32_79','R32_80'],
+      R16_93:  ['R32_83','R32_84'], R16_94:  ['R32_81','R32_82'],
+      R16_95:  ['R32_86','R32_88'], R16_96:  ['R32_85','R32_87'],
+      QF_97:   ['R16_89','R16_90'], QF_98:   ['R16_93','R16_94'],
+      QF_99:   ['R16_91','R16_92'], QF_100:  ['R16_95','R16_96'],
+      SF_101:  ['QF_97','QF_98'],   SF_102:  ['QF_99','QF_100'],
+      FINAL:   ['SF_101','SF_102'], THIRD:   ['SF_101','SF_102'],
+    };
+
+    function winnerOf(matchId) {
+      // Use actual result if completed, otherwise user's pick
+      const serverResult = bracket[matchId];
+      if (serverResult?.status === 'completed' && serverResult.winner) {
+        const pm = predicted[matchId] || {};
+        return serverResult.winner === 'home' ? pm.home : pm.away;
+      }
+      const pick = picks[matchId]?.predicted_winner;
+      if (!pick) return null;
+      const pm = predicted[matchId] || {};
+      return pick === 'home' ? pm.home : pm.away;
+    }
+
+    for (const rounds of [KO_ROUNDS.R16, KO_ROUNDS.QF, KO_ROUNDS.SF, ['FINAL']]) {
+      for (const id of rounds) {
+        const [f1, f2] = FEEDERS[id] || [];
+        predicted[id] = {
+          home: f1 ? winnerOf(f1) : null,
+          away: f2 ? winnerOf(f2) : null,
+        };
+      }
+    }
+
+    // THIRD: losers of SF
+    const sf1Pick = picks['SF_101']?.predicted_winner;
+    const sf2Pick = picks['SF_102']?.predicted_winner;
+    const sf1 = predicted['SF_101'] || {};
+    const sf2 = predicted['SF_102'] || {};
+    predicted['THIRD'] = {
+      home: sf1Pick ? (sf1Pick === 'home' ? sf1.away : sf1.home) : null,
+      away: sf2Pick ? (sf2Pick === 'home' ? sf2.away : sf2.home) : null,
+    };
+
+    return predicted;
+  }
+
   function renderKoBracketView(round) {
     const container = document.getElementById('ko-bracket-view');
     if (!container) return;
-    const locked = _predictions?.knockout?.locked;
-    const picks   = _predictions?.knockout?.predictions || {};
-    const bracket = _scores?.bracket || {};
+    const locked   = _predictions?.knockout?.locked;
+    const picks    = _predictions?.knockout?.predictions || {};
     const matchIds = KO_ROUNDS[round] || [];
     const nextRound = NEXT_ROUND[round];
-    const nextIds = nextRound ? KO_ROUNDS[nextRound] : [];
+    const nextIds  = nextRound ? KO_ROUNDS[nextRound] : [];
 
     if (!matchIds.length) { container.innerHTML = ''; return; }
 
+    // Derive predicted team names for all bracket slots from user's picks
+    const predicted = derivePredictedBracket(picks);
+
     // Build left column (current round)
     const leftCards = matchIds.map((id, idx) => {
-      const bm = bracket[id] || {};
-      const home = bm.home || '?';
-      const away = bm.away || '?';
-      const winner = picks[id]?.predicted_winner;
-      const isDefault = picks[id]?._default;
-      const result = _scores?.bracket?.[id];
-      const status = result?.status || 'scheduled';
-      const score = status === 'completed'
-        ? `${result.home_score ?? 0} – ${result.away_score ?? 0}`
-        : (bm.date ? fmtDate(bm.date) : '—');
+      const bm     = predicted[id] || {};
+      const home   = bm.home || 'TBD';
+      const away   = bm.away || 'TBD';
+      const pick   = picks[id];
+      const winner = pick?.predicted_winner;
+      const isDefault = pick?._default;
+      const serverResult = (_scores?.bracket || {})[id];
+      const status = serverResult?.status || 'scheduled';
+      const score  = status === 'completed'
+        ? `${serverResult.home_score ?? 0} – ${serverResult.away_score ?? 0}`
+        : '—';
 
-      // Abbreviate long team names
-      const ha = abbr(home);
-      const aa = abbr(away);
+      const ha = abbr(home), aa = abbr(away);
 
       function btnClass(side) {
         if (winner === side) return isDefault ? 'pick-btn pick-btn--default' : 'pick-btn pick-btn--selected';
@@ -566,44 +649,97 @@ const App = (() => {
       }
 
       return `
-        <div class="ko-card" id="ko-${id}" data-idx="${idx}">
+        <div class="ko-card" id="ko-${id}">
           <div class="ko-card__matchup">
             <span class="ko-card__team" title="${home}">${home}</span>
             <span class="ko-card__score${status === 'live' ? ' ko-card__score--live' : ''}">${score}</span>
             <span class="ko-card__team ko-card__team--away" title="${away}">${away}</span>
           </div>
           <div class="ko-card__buttons">
-            <button class="pick-btn ${btnClass('home')}" ${locked ? 'disabled' : ''}
+            <button class="pick-btn ${btnClass('home')}" data-side="home" ${locked ? 'disabled' : ''}
               onclick="App.pick('${id}', 'home', 'knockout')">${ha}</button>
-            <button class="pick-btn ${btnClass('away')}" ${locked ? 'disabled' : ''}
+            <button class="pick-btn ${btnClass('away')}" data-side="away" ${locked ? 'disabled' : ''}
               onclick="App.pick('${id}', 'away', 'knockout')">${aa}</button>
           </div>
         </div>
       `;
     }).join('');
 
-    // Build right column (next round — dimmed)
-    let rightCards = '';
+    // Build right column — each next-round card paired with two left-column cards.
+    // Wrap in a flex container per pair so each right card vertically centres
+    // between its two feeders without needing JS measurements.
+    let pairedHtml = '';
     if (nextIds.length) {
-      rightCards = nextIds.map(id => {
-        const bm = bracket[id] || {};
-        return `
-          <div class="ko-card ko-card--dim">
+      // Group left cards into pairs, each pair beside one right card
+      for (let i = 0; i < matchIds.length; i += 2) {
+        const leftId1 = matchIds[i];
+        const leftId2 = matchIds[i + 1];
+        const rightId = nextIds[i / 2];
+        const rbm = predicted[rightId] || {};
+        const rHome = rbm.home || 'TBD';
+        const rAway = rbm.away || 'TBD';
+
+        // Left pair cards (re-rendered inline for pairing)
+        const leftPair = [leftId1, leftId2].filter(Boolean).map(id => {
+          const bm     = predicted[id] || {};
+          const home   = bm.home || 'TBD';
+          const away   = bm.away || 'TBD';
+          const pick   = picks[id];
+          const winner = pick?.predicted_winner;
+          const isDefault = pick?._default;
+          const serverResult = (_scores?.bracket || {})[id];
+          const status = serverResult?.status || 'scheduled';
+          const score  = status === 'completed'
+            ? `${serverResult.home_score ?? 0} – ${serverResult.away_score ?? 0}`
+            : '—';
+          const ha = abbr(home), aa = abbr(away);
+          function btnClass(side) {
+            if (winner === side) return isDefault ? 'pick-btn pick-btn--default' : 'pick-btn pick-btn--selected';
+            return 'pick-btn';
+          }
+          return `
+            <div class="ko-card" id="ko-${id}">
+              <div class="ko-card__matchup">
+                <span class="ko-card__team" title="${home}">${home}</span>
+                <span class="ko-card__score${status === 'live' ? ' ko-card__score--live' : ''}">${score}</span>
+                <span class="ko-card__team ko-card__team--away" title="${away}">${away}</span>
+              </div>
+              <div class="ko-card__buttons">
+                <button class="pick-btn ${btnClass('home')}" data-side="home" ${locked ? 'disabled' : ''}
+                  onclick="App.pick('${id}', 'home', 'knockout')">${ha}</button>
+                <button class="pick-btn ${btnClass('away')}" data-side="away" ${locked ? 'disabled' : ''}
+                  onclick="App.pick('${id}', 'away', 'knockout')">${aa}</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        const rightCard = rightId ? `
+          <div class="ko-card ko-card--dim" style="align-self:center">
             <div class="ko-card__matchup">
-              <span class="ko-card__team ko-card__placeholder">${bm.home || 'TBD'}</span>
+              <span class="ko-card__team ko-card__placeholder" title="${rHome}">${rHome}</span>
               <span class="ko-card__score">—</span>
-              <span class="ko-card__team ko-card__team--away ko-card__placeholder">${bm.away || 'TBD'}</span>
+              <span class="ko-card__team ko-card__team--away ko-card__placeholder" title="${rAway}">${rAway}</span>
             </div>
           </div>
+        ` : '';
+
+        pairedHtml += `
+          <div style="display:flex;gap:8px;align-items:stretch;margin-bottom:12px">
+            <div style="flex:0 0 60%;display:flex;flex-direction:column;gap:8px">${leftPair}</div>
+            <div style="flex:0 0 4%;display:flex;align-items:center;justify-content:center">
+              <div style="width:1px;height:60%;background:var(--c-border)"></div>
+            </div>
+            <div style="flex:0 0 34%;display:flex;align-items:center">${rightCard}</div>
+          </div>
         `;
-      }).join('');
+      }
     }
 
     // Tiebreaker (Final tab only)
     let tiebreakerHtml = '';
     if (round === 'Final') {
       const tb = _predictions?.knockout?.tiebreaker_goals;
-      const tbLocked = locked;
       tiebreakerHtml = `
         <div class="tiebreaker">
           <div class="tiebreaker__label">How many total goals will be scored in the Final?</div>
@@ -612,7 +748,7 @@ const App = (() => {
               id="tiebreaker-input"
               value="${tb !== null && tb !== undefined ? tb : ''}"
               placeholder="—"
-              ${tbLocked ? 'disabled' : ''}
+              ${locked ? 'disabled' : ''}
               oninput="App.saveTiebreaker(this.value)">
             <span class="tiebreaker__hint">whole goals only</span>
           </div>
@@ -620,21 +756,8 @@ const App = (() => {
       `;
     }
 
-    // SVG connector lines — drawn via JS after render
-    const connectorHtml = nextIds.length
-      ? `<div class="bracket-connector" id="ko-connector"></div>`
-      : '';
-
     if (nextIds.length) {
-      container.innerHTML = `
-        <div style="display:flex;gap:0;align-items:flex-start">
-          <div style="flex:0 0 62%;display:flex;flex-direction:column;gap:12px">${leftCards}</div>
-          ${connectorHtml}
-          <div style="flex:0 0 34%;opacity:0.4;display:flex;flex-direction:column;gap:12px">${rightCards}</div>
-        </div>
-        ${tiebreakerHtml}
-      `;
-      requestAnimationFrame(() => drawConnectors(matchIds.length, nextIds.length));
+      container.innerHTML = pairedHtml + tiebreakerHtml;
     } else {
       container.innerHTML = `
         <div style="display:flex;flex-direction:column;gap:12px">${leftCards}</div>
@@ -663,37 +786,7 @@ const App = (() => {
     return known[name] || name.slice(0, 3).toUpperCase();
   }
 
-  // ── SVG connector lines ───────────────────────────────────
-
-  function drawConnectors(leftCount, rightCount) {
-    const container = document.getElementById('ko-connector');
-    if (!container) return;
-    const leftCards = document.querySelectorAll('[id^="ko-R"], [id^="ko-Q"], [id^="ko-S"], [id^="ko-F"]');
-    if (!leftCards.length) return;
-
-    const containerRect = container.getBoundingClientRect();
-    const h = containerRect.height || 400;
-    const w = 20;
-
-    // Build SVG paths connecting pairs
-    let paths = '';
-    for (let i = 0; i < leftCount - 1; i += 2) {
-      const c1 = leftCards[i];
-      const c2 = leftCards[i + 1];
-      if (!c1 || !c2) continue;
-      const r1 = c1.getBoundingClientRect();
-      const r2 = c2.getBoundingClientRect();
-      const y1 = r1.top + r1.height / 2 - containerRect.top;
-      const y2 = r2.top + r2.height / 2 - containerRect.top;
-      const ym = (y1 + y2) / 2;
-      paths += `<polyline points="0,${y1} ${w/2},${y1} ${w/2},${ym} ${w},${ym}" fill="none" stroke="var(--c-border)" stroke-width="1"/>`;
-      paths += `<polyline points="0,${y2} ${w/2},${y2} ${w/2},${ym}" fill="none" stroke="var(--c-border)" stroke-width="1"/>`;
-    }
-
-    container.innerHTML = `<svg width="${w}" height="${h}" style="position:absolute;top:0;left:0">${paths}</svg>`;
-    container.style.position = 'relative';
-    container.style.height = `${h}px`;
-  }
+  // (SVG connector lines removed — layout handled via paired flex containers)
 
   // ── Third-place tab ───────────────────────────────────────
 
