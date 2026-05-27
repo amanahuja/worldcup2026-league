@@ -352,8 +352,8 @@ const App = (() => {
   }
 
   function renderResultsKnockout() {
-    // Check if knockout has started
-    if (Date.now() < new Date('2026-06-28T00:00:00Z').getTime()) {
+    // Check if knockout has started (change back to 2026-06-28 before go-live)
+    if (Date.now() < new Date('2026-05-01T00:00:00Z').getTime()) {
       const container = document.getElementById('results-ko-view');
       if (container) container.innerHTML = '<div class="text-muted" style="padding:20px;text-align:center">Knockout round starts June 28th!</div>';
       return;
@@ -655,6 +655,37 @@ const App = (() => {
     renderKoBracketView(round);
   }
 
+  // Pre-tournament R32 seedings derived from default group predictions.
+  // Used when server bracket slots are null (before June 28 group stage results).
+  // Revert knockout gate date to 2026-06-28 before go-live.
+  const PRE_TOURNAMENT_R32 = {
+    // Group winners
+    '1A':'Mexico',      '1B':'Switzerland', '1C':'Brazil',    '1D':'USA',
+    '1E':'Germany',     '1F':'Netherlands', '1G':'Belgium',   '1H':'Spain',
+    '1I':'France',      '1J':'Argentina',   '1K':'Colombia',  '1L':'England',
+    // Runners-up
+    '2A':'South Korea', '2B':'Canada',      '2C':'Morocco',   '2D':'Australia',
+    '2E':'Ecuador',     '2F':'Japan',       '2G':'Iran',      '2H':'Uruguay',
+    '2I':'Senegal',     '2J':'Algeria',     '2K':'Portugal',  '2L':'Croatia',
+    // Best 8 third-place teams (constraint-solved assignment to slots)
+    '3ABCDF':'Turkey',        '3CDFGH':'Egypt',
+    '3CEFHI':'Saudi Arabia',  '3EHIJK':'DR Congo',
+    '3BEFIJ':'Austria',       '3AEHIJ':'Czech Republic',
+    '3EFGIJ':'Ivory Coast',   '3DEIJL':'Norway',
+  };
+
+  // Slot labels (home/away seeding) per R32 match ID
+  const R32_SLOTS = {
+    R32_74: { home:'1E',  away:'3ABCDF' }, R32_77: { home:'1I',  away:'3CDFGH' },
+    R32_73: { home:'2A',  away:'2B'     }, R32_75: { home:'1F',  away:'2C'     },
+    R32_76: { home:'1C',  away:'2F'     }, R32_78: { home:'2E',  away:'2I'     },
+    R32_79: { home:'1A',  away:'3CEFHI' }, R32_80: { home:'1L',  away:'3EHIJK' },
+    R32_83: { home:'2K',  away:'2L'     }, R32_84: { home:'1H',  away:'2J'     },
+    R32_81: { home:'1D',  away:'3BEFIJ' }, R32_82: { home:'1G',  away:'3AEHIJ' },
+    R32_86: { home:'1J',  away:'2H'     }, R32_88: { home:'2D',  away:'2G'     },
+    R32_85: { home:'1B',  away:'3EFGIJ' }, R32_87: { home:'1K',  away:'3DEIJL' },
+  };
+
   /**
    * Derive predicted bracket from user's current knockout picks.
    * Mirrors the server-side bracket logic but client-side, using picks not results.
@@ -664,11 +695,15 @@ const App = (() => {
     const bracket = _scores?.bracket || {};
     const predicted = {};
 
-    // R32: teams come from server bracket (group stage results → seedings)
-    // Use server bracket home/away as the base; picks tell us who advances
+    // R32: use server bracket teams if available (post-group-stage),
+    // otherwise fall back to pre-tournament seedings
     for (const id of KO_ROUNDS.R32) {
-      const bm = bracket[id] || {};
-      predicted[id] = { home: bm.home || null, away: bm.away || null };
+      const bm    = bracket[id] || {};
+      const slots = R32_SLOTS[id] || {};
+      predicted[id] = {
+        home: bm.home || (slots.home ? PRE_TOURNAMENT_R32[slots.home] : null) || null,
+        away: bm.away || (slots.away ? PRE_TOURNAMENT_R32[slots.away] : null) || null,
+      };
     }
 
     // For each subsequent round, derive home/away from the previous round's picks
