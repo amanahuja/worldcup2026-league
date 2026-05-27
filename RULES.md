@@ -1,8 +1,6 @@
 # World Cup 2026 Fantasy Prediction League — Rules
-
 **Last Updated:** May 27 2026
 
----
 ##  How to Play
 
 Buy-in is $20. 
@@ -13,8 +11,7 @@ Buy-in is $20.
 4. Optional: join the groupme and heckle during the games! 
 4. Winners will get their prizes after the Tournament is over.
 
-
-## The Prizes! 
+## Prizes! 
 
 We will award prizes to the 1st, 2nd and 3rd place winners! 
 
@@ -80,9 +77,7 @@ Points are awarded for correctly predicting the outcome of each match:
 **Maximum possible score: 91 points**
 (72 × 1 + 16 × 2 + 8 × 3 + 4 × 4 + 2 × 5 + 1 × 3 + 1 × 10)
 
----
-
-## A Few Other Things
+### A Few Other Things
 
 - There's no logout button. Your session expires automatically after 7 days — just log in again if needed.
 - There's no password reset. If you lose your passphrase, contact Aman.
