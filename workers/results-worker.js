@@ -315,7 +315,7 @@ export async function handleScheduled(env) {
   const yaml = serializeResultsYaml(nowUtc, normalized, existingEntries);
 
   try {
-    await githubPut('data/results.yaml', yaml, existingSha, env);
+    await githubPut('data/results.yaml', yaml, existingSha, env, `wc2026[cron]: update results.yaml at ${nowUtc}`);
     await env.WC2026_USERS.put(KV_LAST_CHANGED_KEY, lastChangedStr);
     console.log('results.yaml updated at', nowUtc);
   } catch (e) {

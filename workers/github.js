@@ -38,12 +38,19 @@ export async function githubGet(path, env) {
   return { content: b64Decode(json.content), sha: json.sha };
 }
 
-export async function githubPut(path, content, sha, env) {
+const APP_AUTHOR = {
+  name:  'WC2026 Fantasy App',
+  email: 'noreply@worldcup.amanahuja.me',
+};
+
+export async function githubPut(path, content, sha, env, message) {
   const url = `https://api.github.com/repos/${env.GITHUB_REPO}/contents/${path}`;
   const body = {
-    message: `Update ${path}`,
+    message: message || `wc2026[app]: update ${path}`,
     content: b64Encode(content),
     branch: env.GITHUB_BRANCH,
+    author:    APP_AUTHOR,
+    committer: APP_AUTHOR,
     ...(sha ? { sha } : {}),
   };
   const res = await fetch(url, {

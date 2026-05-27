@@ -199,7 +199,8 @@ export async function handlePostGroupPredictions(request, env, session) {
   current.predictions[match_id] = { predicted_winner };
 
   const newContent = serializeGroupPredictions(session.username, current.predictions);
-  await githubPut(path, newContent, existing?.sha || null, env);
+  const msg = `wc2026[app]: ${session.username} picks ${match_id} → ${predicted_winner}`;
+  await githubPut(path, newContent, existing?.sha || null, env, msg);
 
   return new Response(JSON.stringify({ ok: true }), {
     status: 200,
@@ -246,7 +247,10 @@ export async function handlePostKnockoutPredictions(request, env, session) {
     current.predictions,
     current.tiebreaker_goals,
   );
-  await githubPut(path, newContent, existing?.sha || null, env);
+  const msg = match_id
+    ? `wc2026[app]: ${session.username} picks ${match_id} → ${predicted_winner}`
+    : `wc2026[app]: ${session.username} tiebreaker → ${current.tiebreaker_goals}`;
+  await githubPut(path, newContent, existing?.sha || null, env, msg);
 
   return new Response(JSON.stringify({ ok: true }), {
     status: 200,
