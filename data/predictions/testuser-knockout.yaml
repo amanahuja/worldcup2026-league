@@ -23,3 +23,5 @@ predictions:
     predicted_winner: away
   R16_95:
     predicted_winner: away
+  QF_97:
+    predicted_winner: away
