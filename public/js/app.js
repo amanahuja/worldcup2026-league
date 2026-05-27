@@ -176,10 +176,10 @@ const App = (() => {
       showLoginModal();
     }
 
-    // Load scores always; load predictions only if logged in (for overlay)
+    // Load scores always; load predictions only if logged in (for overlay), no redirect on 401
     await Promise.all([
       loadScores(),
-      _session.username ? loadPredictions() : Promise.resolve(),
+      _session.username ? loadPredictions(false) : Promise.resolve(),
     ]);
 
     renderLeaderboard();
@@ -393,19 +393,19 @@ const App = (() => {
     const sub = document.getElementById('topbar-username');
     if (sub) sub.textContent = _session.username;
 
-    await Promise.all([loadPredictions(), loadScores()]);
+    await Promise.all([loadPredictions(true), loadScores()]);
     renderGroupsTab();
     renderKnockoutTab();
     renderThirdTab();
     setTab('groups');
   }
 
-  async function loadPredictions() {
+  async function loadPredictions(redirectOn401 = false) {
     try {
       const res = await api('/api/predictions');
       if (res.status === 401) {
         sessionStorage.removeItem('wc2026_user');
-        window.location.href = '/?login=1';
+        if (redirectOn401) window.location.href = '/?login=1';
         return;
       }
       _predictions = await res.json();
