@@ -30,14 +30,9 @@ const App = (() => {
   }
 
   function getSessionUsername() {
-    // Decode the base64 payload from the session cookie (first segment before '.')
-    const token = getCookie('wc2026_session');
-    if (!token) return null;
-    try {
-      const payload = JSON.parse(atob(token.split('.')[0]));
-      if (payload.exp && Date.now() / 1000 > payload.exp) return null;
-      return payload.username;
-    } catch { return null; }
+    // Cookie is HttpOnly so JS can't read it — use sessionStorage instead.
+    // sessionStorage is populated on successful login and cleared on 401.
+    return sessionStorage.getItem('wc2026_user') || null;
   }
 
   function initials(name) {
@@ -105,6 +100,7 @@ const App = (() => {
       });
       const data = await res.json();
       if (res.ok) {
+        sessionStorage.setItem('wc2026_user', data.username);
         window.location.href = '/predictions.html';
       } else {
         errEl.textContent = data.error || 'Sign in failed';
@@ -318,7 +314,11 @@ const App = (() => {
   async function loadPredictions() {
     try {
       const res = await api('/api/predictions');
-      if (res.status === 401) { window.location.href = '/?login=1'; return; }
+      if (res.status === 401) {
+        sessionStorage.removeItem('wc2026_user');
+        window.location.href = '/?login=1';
+        return;
+      }
       _predictions = await res.json();
     } catch {
       _predictions = { groups: { predictions: {}, locked: false }, knockout: { predictions: {}, locked: false, tiebreaker_goals: null } };
