@@ -757,7 +757,10 @@ const App = (() => {
     }
 
     if (nextIds.length) {
-      container.innerHTML = pairedHtml + tiebreakerHtml;
+      container.innerHTML = `
+        <div style="display:flex;flex-direction:column;width:100%">${pairedHtml}</div>
+        ${tiebreakerHtml}
+      `;
     } else {
       container.innerHTML = `
         <div style="display:flex;flex-direction:column;gap:12px">${leftCards}</div>

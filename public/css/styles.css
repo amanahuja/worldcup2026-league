@@ -409,11 +409,8 @@ a:hover { text-decoration: underline; }
 }
 
 .bracket-view {
-  display: flex;
-  align-items: flex-start;
-  gap: 0;
-  position: relative;
-  overflow: hidden;
+  display: block;
+  width: 100%;
 }
 .bracket-col {
   display: flex;
