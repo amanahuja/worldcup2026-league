@@ -136,6 +136,10 @@ const App = (() => {
 
     banner.classList.remove('hidden');
 
+    // Show join button only when not logged in
+    const joinBtn = document.getElementById('countdown-join');
+    if (joinBtn && !_session?.username) joinBtn.classList.remove('hidden');
+
     function tick() {
       const now = Date.now();
       const diff = LOCK_DATE_GROUPS.getTime() - now;
@@ -236,7 +240,7 @@ const App = (() => {
         if (name)   name.textContent   = entry.username;
         if (score)  score.textContent  = `${entry.score} pts`;
         const slot = document.getElementById(`pod-${pos}`);
-        if (slot && me && entry.username === me) slot.style.outline = '2px solid var(--c-blue)';
+        // No podium highlight — only the leaderboard table row is highlighted
       }
     }
 
