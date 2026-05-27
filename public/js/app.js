@@ -275,7 +275,6 @@ const App = (() => {
     const teams      = standingsObj?.teams || standingsObj || [];
     const hasResults = standingsObj?.hasResults || false;
     const fixtures   = (_scores?.fixtures || {})[letter] || [];
-    const matchResults = _scores?.matches || {};
 
     const standingsRows = teams.map((s, i) => `
       <tr class="${i < 2 && hasResults ? 'qualified-actual' : ''}">
