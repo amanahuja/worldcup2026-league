@@ -123,9 +123,41 @@ const App = (() => {
 
   // ── Results page ─────────────────────────────────────────
 
+  // Prediction window closes at first kickoff: Jun 11 2026 19:00 UTC
+  const LOCK_DATE_GROUPS = new Date('2026-06-11T19:00:00Z');
+
+  function initCountdown() {
+    const banner = document.getElementById('countdown-banner');
+    const textEl = document.getElementById('countdown-text');
+    if (!banner || !textEl) return;
+
+    // Hide entirely after Jun 11
+    if (Date.now() >= LOCK_DATE_GROUPS.getTime()) return;
+
+    banner.classList.remove('hidden');
+
+    function tick() {
+      const now = Date.now();
+      const diff = LOCK_DATE_GROUPS.getTime() - now;
+      if (diff <= 0) {
+        banner.classList.add('hidden');
+        return;
+      }
+      const days  = Math.floor(diff / 86400000);
+      const hours = Math.floor((diff % 86400000) / 3600000);
+      const mins  = Math.floor((diff % 3600000)  / 60000);
+      textEl.innerHTML =
+        `<span>${days}d ${hours}h ${mins}m</span> left to enter group stage predictions`;
+    }
+
+    tick();
+    setInterval(tick, 30000); // update every 30s
+  }
+
   async function initResults() {
     _session = { username: getSessionUsername() };
     updateCtaBtn();
+    initCountdown();
 
     // Check if redirected here with ?login=1
     if (new URLSearchParams(location.search).get('login') === '1') {
@@ -145,9 +177,9 @@ const App = (() => {
     const btn = document.getElementById('cta-btn');
     if (!btn) return;
     if (_session?.username) {
-      btn.textContent = 'Edit predictions';
+      btn.textContent = 'Edit Predictions';
     } else {
-      btn.textContent = 'Make predictions';
+      btn.textContent = 'Enter Predictions';
     }
   }
 
@@ -228,7 +260,7 @@ const App = (() => {
 
     const standingsRows = teams.map((s, i) => `
       <tr class="${i < 2 && hasResults ? 'qualified-actual' : ''}">
-        <td><span style="font-size:0.7rem;font-weight:600;display:block;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${s.team}">${s.team}</span></td>
+        <td><span style="font-size:0.7rem;font-weight:600;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${s.team}">${s.team}</span></td>
         <td>${s.played}</td>
         <td>${s.won}</td>
         <td>${s.drawn}</td>
@@ -286,10 +318,9 @@ const App = (() => {
   }
 
   function renderResultsKnockout() {
-    // Read-only bracket view — reuse bracket render from predictions page, picks disabled
     const container = document.getElementById('results-ko-view');
     if (!container) return;
-    container.innerHTML = '<div class="text-muted" style="padding:20px;text-align:center">Knockout bracket loads June 28</div>';
+    container.innerHTML = '<div class="text-muted" style="padding:20px;text-align:center">Knockout round starts June 28th!</div>';
   }
 
   // ── Predictions page ─────────────────────────────────────
@@ -369,7 +400,7 @@ const App = (() => {
     const standingsRows = teams.map((s, i) => `
       <tr class="${i < 2 && hasResults ? 'qualified-actual' : ''}">
         <td>
-          <span style="font-size:0.7rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;max-width:72px" title="${s.team}">${s.team}</span>
+          <span style="font-size:0.7rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block" title="${s.team}">${s.team}</span>
         </td>
         <td>${s.played}</td>
         <td>${s.won}</td>
@@ -735,9 +766,9 @@ const App = (() => {
         const rightCard = rightId ? `
           <div class="ko-card ko-card--dim" style="align-self:center">
             <div class="ko-card__matchup">
-              <span class="ko-card__team ko-card__placeholder" title="${rHome}">${rHome}</span>
+              <span class="ko-card__team ko-card__placeholder" title="${rHome}">${abbr(rHome)}</span>
               <span class="ko-card__score">—</span>
-              <span class="ko-card__team ko-card__team--away ko-card__placeholder" title="${rAway}">${rAway}</span>
+              <span class="ko-card__team ko-card__team--away ko-card__placeholder" title="${rAway}">${abbr(rAway)}</span>
             </div>
           </div>
         ` : '';
