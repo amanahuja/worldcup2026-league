@@ -1,5 +1,5 @@
 username: testuser
-tiebreaker_goals: null
+tiebreaker_goals: 4
 predictions:
   R32_82:
     predicted_winner: away
