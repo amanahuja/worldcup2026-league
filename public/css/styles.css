@@ -135,6 +135,14 @@ a:hover { text-decoration: underline; }
   cursor: default;
   opacity: 0.7;
 }
+.pick-btn.ko-card__score--correct {
+  color: var(--c-green);
+  font-weight: 700;
+}
+.pick-btn.ko-card__score--wrong {
+  color: var(--c-red);
+  font-weight: 700;
+}
 
 /* ── Layout helpers ──────────────────────────────────────── */
 .page-wrap {

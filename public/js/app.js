@@ -754,85 +754,100 @@ const App = (() => {
     return predicted;
   }
 
-  function renderKoBracketView(round, containerId = 'ko-bracket-view', readOnly = false) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    const locked   = readOnly || _predictions?.knockout?.locked;
-    const picks    = _predictions?.knockout?.predictions || {};
-    const matchIds = KO_ROUNDS[round] || [];
-    const nextRound = NEXT_ROUND[round];
-    const nextIds  = nextRound ? KO_ROUNDS[nextRound] : [];
+   function renderKoBracketView(round, containerId = 'ko-bracket-view', readOnly = false) {
+     const container = document.getElementById(containerId);
+     if (!container) return;
+     const locked   = readOnly || _predictions?.knockout?.locked;
+     const picks    = _predictions?.knockout?.predictions || {};
+     const matchIds = KO_ROUNDS[round] || [];
+     const nextRound = NEXT_ROUND[round];
+     const nextIds  = nextRound ? KO_ROUNDS[nextRound] : [];
 
-    if (!matchIds.length) { container.innerHTML = ''; return; }
+     if (!matchIds.length) { container.innerHTML = ''; return; }
 
-    // Derive predicted team names for all bracket slots from user's picks
-    const predicted = derivePredictedBracket(picks);
-    const matchResultsMap = _scores?.match_results || {};
+     // Use server bracket data (actual results or defaults), not predicted bracket
+     const serverBracket = _scores?.bracket || {};
+     const matchResultsMap = _scores?.match_results || {};
 
-    // Returns the CSS class for the score span based on prediction vs result
-    function koScoreClass(id, pickWinner, status) {
-      if (status !== 'completed' || !pickWinner || !_session?.username) return '';
-      const actual = matchResultsMap[id]?.winner;
-      if (!actual) return '';
-      return pickWinner === actual ? 'ko-card__score--correct' : 'ko-card__score--wrong';
-    }
+     // Returns the CSS class for a team abbreviation button based on prediction correctness
+     function teamBtnClass(id, side, status) {
+       if (status !== 'completed' || !_session?.username) return '';
+       const pick = picks[id];
+       if (!pick?.predicted_winner) return '';
+       const actual = matchResultsMap[id]?.winner;
+       if (!actual) return '';
+       const predicted = pick.predicted_winner;
+       // Check if user's pick matches the team that advanced
+       const teamMatch = (side === 'home' && predicted === 'home') || (side === 'away' && predicted === 'away');
+       if (!teamMatch) return '';
+       return actual === predicted ? 'ko-card__score--correct' : 'ko-card__score--wrong';
+     }
 
-    // Helper to build a single ko card (used in both leftCards and leftPair)
-    function buildKoCard(id) {
-      const bm        = predicted[id] || {};
-      const home      = bm.home || 'TBD';
-      const away      = bm.away || 'TBD';
-      const pick      = picks[id];
-      const winner    = pick?.predicted_winner;
-      const isDefault = pick?._default;
-      const serverResult = (_scores?.bracket || {})[id];
-      const status    = serverResult?.status || 'scheduled';
-      const scoreStr  = status === 'completed'
-        ? `${serverResult.home_score ?? 0} – ${serverResult.away_score ?? 0}`
-        : '—';
-      const scoreClass = status === 'live'
-        ? 'ko-card__score--live'
-        : koScoreClass(id, winner, status);
-      const ha = abbr(home), aa = abbr(away);
+     // Returns the CSS class for the score span based on prediction vs result
+     function koScoreClass(id, pickWinner, status) {
+       if (status !== 'completed' || !pickWinner || !_session?.username) return '';
+       const actual = matchResultsMap[id]?.winner;
+       if (!actual) return '';
+       return pickWinner === actual ? 'ko-card__score--correct' : 'ko-card__score--wrong';
+     }
 
-      function btnClass(side) {
-        if (winner === side) return isDefault ? 'pick-btn pick-btn--default' : 'pick-btn pick-btn--selected';
-        return 'pick-btn';
-      }
+     // Helper to build a single ko card (used in both leftCards and leftPair)
+     function buildKoCard(id) {
+       const bm        = serverBracket[id] || {};
+       const home      = bm.home || 'TBD';
+       const away      = bm.away || 'TBD';
+       const pick      = picks[id];
+       const winner    = pick?.predicted_winner;
+       const isDefault = pick?._default;
+       const status    = bm.status || 'scheduled';
+       const scoreStr  = status === 'completed'
+         ? `${bm.home_score ?? 0} – ${bm.away_score ?? 0}`
+         : '—';
+       const scoreClass = status === 'live'
+         ? 'ko-card__score--live'
+         : koScoreClass(id, winner, status);
+       const ha = abbr(home), aa = abbr(away);
+       const homeTeamClass = teamBtnClass(id, 'home', status);
+       const awayTeamClass = teamBtnClass(id, 'away', status);
 
-      return `
-        <div class="ko-card" id="ko-${id}">
-          <div class="ko-card__matchup">
-            <span class="ko-card__team" title="${home}">${home}</span>
-            <span class="ko-card__score ${scoreClass}">${scoreStr}</span>
-            <span class="ko-card__team ko-card__team--away" title="${away}">${away}</span>
-          </div>
-          <div class="ko-card__buttons">
-            <button class="pick-btn ${btnClass('home')}" data-side="home" ${locked ? 'disabled' : ''}
-              onclick="App.pick('${id}', 'home', 'knockout')">${ha}</button>
-            <button class="pick-btn ${btnClass('away')}" data-side="away" ${locked ? 'disabled' : ''}
-              onclick="App.pick('${id}', 'away', 'knockout')">${aa}</button>
-          </div>
-        </div>
-      `;
-    }
+       function btnClass(side) {
+         if (winner === side) return isDefault ? 'pick-btn pick-btn--default' : 'pick-btn pick-btn--selected';
+         return 'pick-btn';
+       }
 
-    // Build left column (current round)
-    const leftCards = matchIds.map(id => buildKoCard(id)).join('');
+       return `
+         <div class="ko-card" id="ko-${id}">
+           <div class="ko-card__matchup">
+             <span class="ko-card__team" title="${home}">${home}</span>
+             <span class="ko-card__score ${scoreClass}">${scoreStr}</span>
+             <span class="ko-card__team ko-card__team--away" title="${away}">${away}</span>
+           </div>
+           <div class="ko-card__buttons">
+             <button class="pick-btn ${btnClass('home')} ${homeTeamClass}" data-side="home" ${locked ? 'disabled' : ''}
+               onclick="App.pick('${id}', 'home', 'knockout')">${ha}</button>
+             <button class="pick-btn ${btnClass('away')} ${awayTeamClass}" data-side="away" ${locked ? 'disabled' : ''}
+               onclick="App.pick('${id}', 'away', 'knockout')">${aa}</button>
+           </div>
+         </div>
+       `;
+     }
 
-    // Build right column — each next-round card paired with two left-column cards.
-    // Wrap in a flex container per pair so each right card vertically centres
-    // between its two feeders without needing JS measurements.
-    let pairedHtml = '';
-    if (nextIds.length) {
-      // Group left cards into pairs, each pair beside one right card
-      for (let i = 0; i < matchIds.length; i += 2) {
-        const leftId1 = matchIds[i];
-        const leftId2 = matchIds[i + 1];
-        const rightId = nextIds[i / 2];
-        const rbm = predicted[rightId] || {};
-        const rHome = rbm.home || 'TBD';
-        const rAway = rbm.away || 'TBD';
+     // Build left column (current round)
+     const leftCards = matchIds.map(id => buildKoCard(id)).join('');
+
+     // Build right column — each next-round card paired with two left-column cards.
+     // Wrap in a flex container per pair so each right card vertically centres
+     // between its two feeders without needing JS measurements.
+     let pairedHtml = '';
+     if (nextIds.length) {
+       // Group left cards into pairs, each pair beside one right card
+       for (let i = 0; i < matchIds.length; i += 2) {
+         const leftId1 = matchIds[i];
+         const leftId2 = matchIds[i + 1];
+         const rightId = nextIds[i / 2];
+         const rbm = serverBracket[rightId] || {};
+         const rHome = rbm.home || 'TBD';
+         const rAway = rbm.away || 'TBD';
 
         // Left pair cards — reuse shared builder
         const leftPair = [leftId1, leftId2].filter(Boolean).map(id => buildKoCard(id)).join('');
