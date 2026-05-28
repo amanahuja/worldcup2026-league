@@ -791,46 +791,70 @@ const App = (() => {
        return pickWinner === actual ? 'ko-card__score--correct' : 'ko-card__score--wrong';
      }
 
-     // Helper to build a single ko card (used in both leftCards and leftPair)
-     function buildKoCard(id) {
-       const bm        = serverBracket[id] || {};
-       const home      = bm.home || 'TBD';
-       const away      = bm.away || 'TBD';
-       const pick      = picks[id];
-       const winner    = pick?.predicted_winner;
-       const isDefault = pick?._default;
-       const status    = bm.status || 'scheduled';
-       const scoreStr  = status === 'completed'
-         ? `${bm.home_score ?? 0} – ${bm.away_score ?? 0}`
-         : '—';
-       const scoreClass = status === 'live'
-         ? 'ko-card__score--live'
-         : koScoreClass(id, winner, status);
-       const ha = abbr(home), aa = abbr(away);
-       const homeTeamClass = teamBtnClass(id, 'home', status);
-       const awayTeamClass = teamBtnClass(id, 'away', status);
+      // Helper to build a single ko card (used in both leftCards and leftPair)
+      function buildKoCard(id) {
+        const bm        = serverBracket[id] || {};
+        const home      = bm.home || 'TBD';
+        const away      = bm.away || 'TBD';
+        const pick      = picks[id];
+        const winner    = pick?.predicted_winner;
+        const isDefault = pick?._default;
+        const status    = bm.status || 'scheduled';
+        const scoreStr  = status === 'completed'
+          ? `${bm.home_score ?? 0} – ${bm.away_score ?? 0}`
+          : '—';
+        const scoreClass = status === 'live'
+          ? 'ko-card__score--live'
+          : koScoreClass(id, winner, status);
+        const ha = abbr(home), aa = abbr(away);
+        const homeTeamClass = teamBtnClass(id, 'home', status);
+        const awayTeamClass = teamBtnClass(id, 'away', status);
 
-       function btnClass(side) {
-         if (winner === side) return isDefault ? 'pick-btn pick-btn--default' : 'pick-btn pick-btn--selected';
-         return 'pick-btn';
-       }
+        function btnClass(side) {
+          if (winner === side) return isDefault ? 'pick-btn pick-btn--default' : 'pick-btn pick-btn--selected';
+          return 'pick-btn';
+        }
 
-       return `
-         <div class="ko-card" id="ko-${id}">
-           <div class="ko-card__matchup">
-             <span class="ko-card__team" title="${home}">${home}</span>
-             <span class="ko-card__score ${scoreClass}">${scoreStr}</span>
-             <span class="ko-card__team ko-card__team--away" title="${away}">${away}</span>
-           </div>
-           <div class="ko-card__buttons">
-             <button class="pick-btn ${btnClass('home')} ${homeTeamClass}" data-side="home" ${locked ? 'disabled' : ''}
-               onclick="App.pick('${id}', 'home', 'knockout')">${ha}</button>
-             <button class="pick-btn ${btnClass('away')} ${awayTeamClass}" data-side="away" ${locked ? 'disabled' : ''}
-               onclick="App.pick('${id}', 'away', 'knockout')">${aa}</button>
-           </div>
-         </div>
-       `;
-     }
+        // Helper to generate team display with icon (results page only)
+        function buildTeamDisplay(abbr, teamClass) {
+          if (!readOnly) return null;
+          let icon = '';
+          if (teamClass === 'ko-card__score--correct') icon = ' ✓';
+          else if (teamClass === 'ko-card__score--wrong') icon = ' ✗';
+          return `<span class="ko-team ${teamClass}" title="${abbr}">${abbr}${icon}</span>`;
+        }
+
+        // Render either as plain text (results) or buttons (predictions)
+        let teamDisplay = '';
+        if (readOnly) {
+          teamDisplay = `
+            <div class="ko-card__buttons">
+              ${buildTeamDisplay(ha, homeTeamClass)}
+              ${buildTeamDisplay(aa, awayTeamClass)}
+            </div>
+          `;
+        } else {
+          teamDisplay = `
+            <div class="ko-card__buttons">
+              <button class="pick-btn ${btnClass('home')} ${homeTeamClass}" data-side="home" ${locked ? 'disabled' : ''}
+                onclick="App.pick('${id}', 'home', 'knockout')">${ha}</button>
+              <button class="pick-btn ${btnClass('away')} ${awayTeamClass}" data-side="away" ${locked ? 'disabled' : ''}
+                onclick="App.pick('${id}', 'away', 'knockout')">${aa}</button>
+            </div>
+          `;
+        }
+
+        return `
+          <div class="ko-card" id="ko-${id}">
+            <div class="ko-card__matchup">
+              <span class="ko-card__team" title="${home}">${home}</span>
+              <span class="ko-card__score ${scoreClass}">${scoreStr}</span>
+              <span class="ko-card__team ko-card__team--away" title="${away}">${away}</span>
+            </div>
+            ${teamDisplay}
+          </div>
+        `;
+      }
 
      // Build left column (current round)
      const leftCards = matchIds.map(id => buildKoCard(id)).join('');
