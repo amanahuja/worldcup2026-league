@@ -497,8 +497,40 @@ export async function handleGetScores(request, env, session) {
     groupStandings.set(letter, calcStandings(data, results));
   }
 
-  // Build bracket
-  const bracket = buildBracket(groupStandings, results);
+  // Determine if we have any actual results yet
+  const hasActualResults = [...groupStandings.values()].some(teams => teams.some(t => t.played > 0));
+
+  // For bracket display: use actual standings if available, otherwise use defaults
+  let bracketStandings = groupStandings;
+  if (!hasActualResults) {
+    // Pre-tournament: derive bracket from default predictions
+    const defaultsGroupFile = await githubGet('data/predictions/defaults-groups.yaml', env);
+    const defaultGroupPreds = defaultsGroupFile
+      ? parsePredictionYaml(defaultsGroupFile.content).predictions
+      : new Map();
+    
+    // Calculate standings using defaults
+    bracketStandings = new Map();
+    for (const [letter, data] of groupsData) {
+      // Create a fake results map with synthetic results based on defaults
+      const syntheticResults = new Map();
+      for (const match of data.matches) {
+        const pred = defaultGroupPreds.get(match.id);
+        if (pred) {
+          syntheticResults.set(match.id, {
+            status: 'completed',
+            home_score: pred === 'home' ? 1 : pred === 'away' ? 0 : 0,
+            away_score: pred === 'away' ? 1 : pred === 'home' ? 0 : 0,
+            winner: pred,
+          });
+        }
+      }
+      bracketStandings.set(letter, calcStandings(data, syntheticResults));
+    }
+  }
+
+  // Build bracket using actual or default standings
+  const bracket = buildBracket(bracketStandings, results);
 
   // Load all user prediction files
   // Derive usernames from either -groups.yaml or -knockout.yaml so users who have
