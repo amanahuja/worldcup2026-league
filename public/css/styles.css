@@ -9,7 +9,7 @@
   --c-surface2:    #242424;
   --c-border:      #333;
   --c-text:        #e8e8e8;
-  --c-muted:       #888;
+  --c-muted:       #a0a0a0;
   --c-blue:        #3b82f6;
   --c-blue-dim:    #1e3a5f;
   --c-green:       #22c55e;
@@ -24,7 +24,7 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html { font-size: 15px; }
+html { font-size: 16px; }
 
 body {
   background: var(--c-bg);
@@ -55,7 +55,7 @@ a:hover { text-decoration: underline; }
   letter-spacing: -0.02em;
 }
 .topbar__sub {
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   color: var(--c-muted);
   margin-top: 1px;
 }
@@ -238,7 +238,7 @@ a:hover { text-decoration: underline; }
   color: var(--c-blue);
 }
 .podium__rank {
-  font-size: 0.65rem;
+  font-size: 0.72rem;
   font-weight: 700;
   color: var(--c-muted);
   letter-spacing: 0.05em;
@@ -313,14 +313,14 @@ a:hover { text-decoration: underline; }
 }
 .standings .pts { font-weight: 700; color: var(--c-text); }
 .standings .team-name { max-width: 70px; }
-.standings .team-abbr { color: var(--c-muted); font-size: 0.65rem; margin-left: 3px; }
+.standings .team-abbr { color: var(--c-muted); font-size: 0.72rem; margin-left: 3px; }
 .standings tr.qualified td:first-child { color: var(--c-blue); }
 .standings tr.qualified-actual td:first-child { color: var(--c-green); }
 
 /* Fixtures divider */
 .fixtures-divider {
   padding: 4px 10px;
-  font-size: 0.65rem;
+  font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.07em;
@@ -472,7 +472,7 @@ a:hover { text-decoration: underline; }
   border-color: var(--c-border);
 }
 .ko-card__meta {
-  font-size: 0.65rem;
+  font-size: 0.72rem;
   color: var(--c-muted);
 }
 .ko-card__matchup {
@@ -838,10 +838,10 @@ a:hover { text-decoration: underline; }
 /* Eyebrow */
 .welcome-hero__eyebrow {
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 5px;
   color: var(--c-blue-muted);
-  opacity: 0.6;
+  opacity: 0.8;
   margin-bottom: 48px;
   text-transform: uppercase;
 }
@@ -871,7 +871,7 @@ a:hover { text-decoration: underline; }
   font-style: italic;
   letter-spacing: 6px;
   color: var(--c-blue-muted);
-  opacity: 0.7;
+  opacity: 0.85;
   margin-bottom: 6px;
   text-transform: uppercase;
 }
@@ -919,10 +919,10 @@ a:hover { text-decoration: underline; }
 /* Roll of Honour label */
 .welcome-hero__honour-label {
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 6px;
   color: var(--c-gold);
-  opacity: 0.5;
+  opacity: 0.75;
   margin: 16px 0 12px;
   text-transform: uppercase;
   display: flex;
@@ -971,7 +971,7 @@ a:hover { text-decoration: underline; }
 .welcome-hero__card--cta:hover { opacity: 0.9; }
 
 .welcome-hero__card--cta .welcome-hero__card-year {
-  color: var(--c-red-light);
+  color: rgba(255, 255, 255, 0.75);
   font-size: 10px;
   letter-spacing: 4px;
   opacity: 0.8;
@@ -1016,10 +1016,10 @@ a:hover { text-decoration: underline; }
 }
 
 .welcome-hero__card-year {
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 3px;
   color: var(--c-blue-muted);
-  opacity: 0.7;
+  opacity: 0.85;
   text-transform: uppercase;
   margin-bottom: 8px;
 }
@@ -1047,20 +1047,21 @@ a:hover { text-decoration: underline; }
 }
 
 .welcome-hero__card-subtitle {
-  font-size: 10px;
+  font-size: 11px;
   color: var(--c-blue-muted);
-  opacity: 0.7;
+  opacity: 0.85;
   letter-spacing: 1px;
   text-transform: uppercase;
   margin-bottom: 3px;
 }
 
 .welcome-hero__card-tagline {
-  font-size: 10px;
+  font-size: 11px;
   color: var(--c-blue-muted);
-  opacity: 0.55;
+  opacity: 0.75;
   letter-spacing: 1px;
   text-transform: uppercase;
+  font-style: italic;
 }
 
 /* Mystery cards */
@@ -1076,7 +1077,7 @@ a:hover { text-decoration: underline; }
 
 .welcome-hero__card--mystery .welcome-hero__card-year {
   color: var(--c-blue-muted);
-  opacity: 0.5;
+  opacity: 0.7;
 }
 
 .welcome-hero__card-mystery-name {
@@ -1101,7 +1102,7 @@ a:hover { text-decoration: underline; }
 
 .welcome-hero__card--mystery .welcome-hero__card-tagline {
   color: var(--c-mystery-name);
-  opacity: 0.65;
+  opacity: 0.8;
 }
 
 /* Card rows for grid layout */
@@ -1119,10 +1120,10 @@ a:hover { text-decoration: underline; }
 /* Footer */
 .welcome-hero__footer {
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 3px;
   color: var(--c-blue-muted);
-  opacity: 0.55;
+  opacity: 0.7;
   margin-top: 40px;
   text-transform: uppercase;
   text-align: center;
