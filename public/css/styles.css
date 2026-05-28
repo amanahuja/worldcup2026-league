@@ -730,12 +730,13 @@ a:hover { text-decoration: underline; }
 
 .welcome-page {
   --c-bg-welcome:      #060c14;
-  --c-bg-card-welcome: #0c1628;
+  --c-bg-card-welcome: #0f1e35;
   --c-blue-text:       #dbeafe;
   --c-blue-muted:      #93c5fd;
   --c-red-welcome:     #ef4444;
   --c-red-light:       #fca5a5;
-  --c-mystery-name:    #4a7ab5;
+  --c-mystery-name:    #60a0d0;
+  background: #060c14;
 }
 
 .welcome-hero {
@@ -744,7 +745,7 @@ a:hover { text-decoration: underline; }
   max-width: 680px;
   margin: 0 auto;
   min-height: 100vh;
-  padding: 40px 20px 60px;
+  padding: 48px 24px 80px;
   background: var(--c-bg-welcome);
   overflow: hidden;
 }
@@ -767,20 +768,20 @@ a:hover { text-decoration: underline; }
 }
 
 .welcome-hero__band--wide {
-  top: 30px;
+  top: 20px;
   left: -50px;
   right: -50px;
-  height: 80px;
+  height: 60px;
   background: var(--c-blue-dim);
   opacity: 0.5;
   transform: skewY(-3deg);
 }
 
 .welcome-hero__band--highlight {
-  top: 62px;
+  top: 48px;
   left: -50px;
   right: -50px;
-  height: 5px;
+  height: 4px;
   background: var(--c-blue);
   opacity: 0.6;
   transform: skewY(-3deg);
@@ -841,15 +842,15 @@ a:hover { text-decoration: underline; }
   letter-spacing: 5px;
   color: var(--c-blue-muted);
   opacity: 0.6;
-  margin-bottom: 32px;
+  margin-bottom: 48px;
   text-transform: uppercase;
 }
 
 /* Football circle motif */
 .welcome-hero__circle {
-  width: clamp(160px, 45vw, 220px);
+  width: clamp(180px, 48vw, 240px);
   height: auto;
-  margin: 0 auto 28px;
+  margin: 0 auto 36px;
 }
 
 .welcome-hero__circle-outer { stroke: #1e3a5f; }
@@ -861,7 +862,7 @@ a:hover { text-decoration: underline; }
 
 /* Title block */
 .welcome-hero__title {
-  margin: 8px 0 20px;
+  margin: 8px 0 28px;
 }
 
 .welcome-hero__title-line-1 {
@@ -870,25 +871,25 @@ a:hover { text-decoration: underline; }
   font-style: italic;
   letter-spacing: 6px;
   color: var(--c-blue-muted);
-  opacity: 0.5;
-  margin-bottom: 4px;
+  opacity: 0.7;
+  margin-bottom: 6px;
   text-transform: uppercase;
 }
 
 .welcome-hero__title-line-2 {
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: clamp(38px, 12vw, 54px);
+  font-size: clamp(40px, 13vw, 58px);
   font-weight: bold;
   letter-spacing: -1px;
   color: var(--c-blue-text);
   line-height: 1;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
   text-transform: uppercase;
 }
 
 .welcome-hero__title-line-3 {
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: clamp(16px, 5vw, 24px);
+  font-size: clamp(18px, 5.5vw, 28px);
   font-weight: normal;
   letter-spacing: 10px;
   color: var(--c-blue);
@@ -997,8 +998,8 @@ a:hover { text-decoration: underline; }
 .welcome-hero__card--known {
   background: var(--c-bg-card-welcome);
   border: 0.8px solid var(--c-blue-dim);
-  padding: 10px 12px 12px;
-  min-height: 110px;
+  padding: 12px 14px 14px;
+  min-height: 130px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -1018,9 +1019,9 @@ a:hover { text-decoration: underline; }
   font-size: 9px;
   letter-spacing: 3px;
   color: var(--c-blue-muted);
-  opacity: 0.6;
+  opacity: 0.7;
   text-transform: uppercase;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .welcome-hero__card-name {
@@ -1028,37 +1029,37 @@ a:hover { text-decoration: underline; }
   flex-direction: column;
   flex: 1;
   justify-content: center;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .welcome-hero__card-first {
-  font-size: clamp(14px, 3.5vw, 18px);
+  font-size: clamp(15px, 4vw, 19px);
   font-weight: bold;
-  color: var(--c-blue-text);
-  line-height: 1.1;
+  color: #e8f4ff;
+  line-height: 1.15;
 }
 
 .welcome-hero__card-last {
-  font-size: clamp(12px, 3vw, 15px);
+  font-size: clamp(13px, 3.2vw, 16px);
   font-style: italic;
   color: var(--c-blue-muted);
-  line-height: 1.1;
+  line-height: 1.15;
 }
 
 .welcome-hero__card-subtitle {
-  font-size: 8px;
+  font-size: 10px;
   color: var(--c-blue-muted);
-  opacity: 0.6;
-  letter-spacing: 1.5px;
+  opacity: 0.7;
+  letter-spacing: 1px;
   text-transform: uppercase;
-  margin-bottom: 2px;
+  margin-bottom: 3px;
 }
 
 .welcome-hero__card-tagline {
-  font-size: 8px;
+  font-size: 10px;
   color: var(--c-blue-muted);
-  opacity: 0.5;
-  letter-spacing: 1.5px;
+  opacity: 0.55;
+  letter-spacing: 1px;
   text-transform: uppercase;
 }
 
@@ -1066,8 +1067,8 @@ a:hover { text-decoration: underline; }
 .welcome-hero__card--mystery {
   background: var(--c-bg-welcome);
   border: 0.6px dashed #2a4a6f;
-  padding: 10px 12px 12px;
-  min-height: 110px;
+  padding: 12px 14px 14px;
+  min-height: 130px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -1075,11 +1076,11 @@ a:hover { text-decoration: underline; }
 
 .welcome-hero__card--mystery .welcome-hero__card-year {
   color: var(--c-blue-muted);
-  opacity: 0.4;
+  opacity: 0.5;
 }
 
 .welcome-hero__card-mystery-name {
-  font-size: clamp(11px, 2.8vw, 14px);
+  font-size: clamp(12px, 3vw, 15px);
   font-weight: bold;
   color: var(--c-mystery-name);
   line-height: 1.2;
@@ -1089,18 +1090,18 @@ a:hover { text-decoration: underline; }
 }
 
 .welcome-hero__card-mystery-name--large {
-  font-size: clamp(13px, 3.2vw, 16px);
+  font-size: clamp(14px, 3.5vw, 17px);
 }
 
 .welcome-hero__card--mystery .welcome-hero__card-subtitle {
   color: var(--c-blue-muted);
-  opacity: 0.4;
+  opacity: 0.55;
   font-style: italic;
 }
 
 .welcome-hero__card--mystery .welcome-hero__card-tagline {
   color: var(--c-mystery-name);
-  opacity: 0.5;
+  opacity: 0.65;
 }
 
 /* Card rows for grid layout */
@@ -1118,11 +1119,11 @@ a:hover { text-decoration: underline; }
 /* Footer */
 .welcome-hero__footer {
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: 9px;
+  font-size: 10px;
   letter-spacing: 3px;
   color: var(--c-blue-muted);
-  opacity: 0.4;
-  margin-top: 36px;
+  opacity: 0.55;
+  margin-top: 40px;
   text-transform: uppercase;
   text-align: center;
 }
