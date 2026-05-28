@@ -228,19 +228,27 @@ const App = (() => {
     const lb = _scores.leaderboard || [];
     const me = _session?.username;
 
-    // Podium (top 3)
-    const order = [2, 1, 3]; // left=2nd, centre=1st, right=3rd
-    for (const pos of order) {
-      const entry = lb[pos - 1];
-      const avatar = document.getElementById(`pod-${pos}-avatar`);
-      const name   = document.getElementById(`pod-${pos}-name`);
-      const score  = document.getElementById(`pod-${pos}-score`);
-      if (entry) {
-        if (avatar) avatar.textContent = initials(entry.username);
-        if (name)   name.textContent   = entry.username;
-        if (score)  score.textContent  = `${entry.score} pts`;
-        const slot = document.getElementById(`pod-${pos}`);
-        // No podium highlight — only the leaderboard table row is highlighted
+    // Podium (top 3) — hide until June 20
+    const podiumContainer = document.getElementById('podium');
+    if (podiumContainer) {
+      const showPodium = Date.now() >= new Date('2026-06-20T00:00:00Z').getTime();
+      podiumContainer.classList.toggle('hidden', !showPodium);
+      
+      if (showPodium) {
+        const order = [2, 1, 3]; // left=2nd, centre=1st, right=3rd
+        for (const pos of order) {
+          const entry = lb[pos - 1];
+          const avatar = document.getElementById(`pod-${pos}-avatar`);
+          const name   = document.getElementById(`pod-${pos}-name`);
+          const score  = document.getElementById(`pod-${pos}-score`);
+          if (entry) {
+            if (avatar) avatar.textContent = initials(entry.username);
+            if (name)   name.textContent   = entry.username;
+            if (score)  score.textContent  = `${entry.score} pts`;
+            const slot = document.getElementById(`pod-${pos}`);
+            // No podium highlight — only the leaderboard table row is highlighted
+          }
+        }
       }
     }
 
