@@ -815,30 +815,29 @@ const App = (() => {
           return 'pick-btn';
         }
 
-        // Helper to generate team display with icon (results page only)
-        function buildTeamDisplay(abbr, teamClass) {
-          if (!readOnly) return null;
-          let icon = '';
-          if (teamClass === 'ko-card__score--correct') icon = ' ✓';
-          else if (teamClass === 'ko-card__score--wrong') icon = ' ✗';
-          return `<span class="ko-team ${teamClass}" title="${abbr}">${abbr}${icon}</span>`;
-        }
-
-        // Render either as plain text (results) or buttons (predictions)
+        // Render either as plain text with icons (results) or buttons (predictions)
         let teamDisplay = '';
         if (readOnly) {
+          // Results page: plain text with checkmark/X icons
+          let homeIcon = '', awayIcon = '';
+          if (homeTeamClass === 'ko-card__score--correct') homeIcon = ' ✓';
+          else if (homeTeamClass === 'ko-card__score--wrong') homeIcon = ' ✗';
+          if (awayTeamClass === 'ko-card__score--correct') awayIcon = ' ✓';
+          else if (awayTeamClass === 'ko-card__score--wrong') awayIcon = ' ✗';
+          
           teamDisplay = `
             <div class="ko-card__buttons">
-              ${buildTeamDisplay(ha, homeTeamClass)}
-              ${buildTeamDisplay(aa, awayTeamClass)}
+              <span class="ko-team ${homeTeamClass}" title="${ha}">${ha}${homeIcon}</span>
+              <span class="ko-team ${awayTeamClass}" title="${aa}">${aa}${awayIcon}</span>
             </div>
           `;
         } else {
+          // Predictions page: interactive buttons
           teamDisplay = `
             <div class="ko-card__buttons">
-              <button class="pick-btn ${btnClass('home')} ${homeTeamClass}" data-side="home" ${locked ? 'disabled' : ''}
+              <button class="pick-btn ${btnClass('home')}" data-side="home" ${locked ? 'disabled' : ''}
                 onclick="App.pick('${id}', 'home', 'knockout')">${ha}</button>
-              <button class="pick-btn ${btnClass('away')} ${awayTeamClass}" data-side="away" ${locked ? 'disabled' : ''}
+              <button class="pick-btn ${btnClass('away')}" data-side="away" ${locked ? 'disabled' : ''}
                 onclick="App.pick('${id}', 'away', 'knockout')">${aa}</button>
             </div>
           `;
