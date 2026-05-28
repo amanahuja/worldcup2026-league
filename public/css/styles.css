@@ -733,8 +733,8 @@ a:hover { text-decoration: underline; }
   --c-bg-card-welcome: #0f1e35;
   --c-blue-text:       #dbeafe;
   --c-blue-muted:      #93c5fd;
-  --c-red-welcome:     #ef4444;
-  --c-red-light:       #fca5a5;
+  --c-red-welcome:     #c41e3a;
+  --c-red-light:       #ff6b7a;
   --c-mystery-name:    #60a0d0;
   background: #060c14;
 }
@@ -923,7 +923,7 @@ a:hover { text-decoration: underline; }
   letter-spacing: 6px;
   color: var(--c-gold);
   opacity: 0.5;
-  margin: 0 0 20px;
+  margin: 16px 0 12px;
   text-transform: uppercase;
   display: flex;
   align-items: center;
