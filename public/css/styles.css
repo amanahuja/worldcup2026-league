@@ -726,11 +726,417 @@ a:hover { text-decoration: underline; }
   color: var(--c-gold) !important;
 }
 
+/* ── Welcome Page ────────────────────────────────────────── */
+
+.welcome-page {
+  --c-bg-welcome:      #060c14;
+  --c-bg-card-welcome: #080e1a;
+  --c-blue-text:       #dbeafe;
+  --c-blue-muted:      #93c5fd;
+  --c-red-welcome:     #ef4444;
+  --c-red-light:       #fca5a5;
+}
+
+.welcome-hero {
+  position: relative;
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  background: var(--c-bg-welcome);
+  overflow: hidden;
+}
+
+/* Background grain texture */
+.welcome-hero__bg {
+  position: absolute;
+  inset: 0;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="4" height="4"><rect width="4" height="4" fill="%23060c14"/><circle cx="1" cy="1" r="0.8" fill="%230a1628" opacity="0.3"/><circle cx="3" cy="3" r="0.8" fill="%23040810" opacity="0.3"/></svg>');
+  background-size: 4px 4px;
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+/* Diagonal accent bands */
+.welcome-hero__band {
+  position: absolute;
+  pointer-events: none;
+}
+
+.welcome-hero__band--wide {
+  top: 60px;
+  left: -50px;
+  right: -50px;
+  height: 120px;
+  background: var(--c-blue-dim);
+  opacity: 0.6;
+  transform: skewY(-3deg);
+}
+
+.welcome-hero__band--highlight {
+  top: 100px;
+  left: -50px;
+  right: -50px;
+  height: 6px;
+  background: var(--c-blue);
+  opacity: 0.7;
+  transform: skewY(-3deg);
+}
+
+.welcome-hero__band--gold {
+  bottom: 180px;
+  left: -50px;
+  right: -50px;
+  height: 50px;
+  background: var(--c-gold);
+  opacity: 0.2;
+  transform: skewY(-2deg);
+}
+
+/* Corner registration marks */
+.welcome-hero__corner {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--c-blue-dim);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.welcome-hero__corner::before {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: var(--c-blue-dim);
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.welcome-hero__corner--tl { top: 20px; left: 20px; }
+.welcome-hero__corner--tr { top: 20px; right: 20px; }
+.welcome-hero__corner--bl { bottom: 20px; left: 20px; }
+.welcome-hero__corner--br { bottom: 20px; right: 20px; }
+
+/* Side rules */
+.welcome-hero__rule {
+  position: absolute;
+  background: var(--c-bg-card-welcome);
+  pointer-events: none;
+  width: 0.8px;
+}
+
+.welcome-hero__rule--left {
+  left: 32px;
+  top: 40px;
+  bottom: 40px;
+}
+
+.welcome-hero__rule--right {
+  right: 32px;
+  top: 40px;
+  bottom: 40px;
+}
+
+/* Content container */
+.welcome-hero__content {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+}
+
+/* Eyebrow */
+.welcome-hero__eyebrow {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 10px;
+  letter-spacing: 5px;
+  color: var(--c-blue-dim);
+  margin-bottom: 24px;
+  text-transform: uppercase;
+}
+
+/* Football circle motif */
+.welcome-hero__circle {
+  width: clamp(140px, 35vw, 200px);
+  height: auto;
+  margin: 0 auto 24px;
+  color: var(--c-blue-dim);
+}
+
+.welcome-hero__circle-outer { color: var(--c-blue-dim); }
+.welcome-hero__circle-mid { color: var(--c-blue); }
+.welcome-hero__circle-inner { fill: var(--c-bg-card-welcome); color: var(--c-blue-dim); }
+.welcome-hero__hexagon-upper { color: var(--c-gold); }
+.welcome-hero__hexagon-lower { fill: var(--c-bg-card-welcome); color: var(--c-blue-dim); }
+.welcome-hero__crosshair { color: var(--c-blue-dim); }
+
+/* Title block */
+.welcome-hero__title {
+  margin: 24px 0;
+}
+
+.welcome-hero__title-line-1 {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 13px;
+  font-style: italic;
+  letter-spacing: 6px;
+  color: var(--c-blue-dim);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+
+.welcome-hero__title-line-2 {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(36px, 10vw, 52px);
+  font-weight: bold;
+  letter-spacing: -1px;
+  color: var(--c-blue-text);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+
+.welcome-hero__title-line-3 {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(18px, 5vw, 26px);
+  font-weight: normal;
+  letter-spacing: 10px;
+  color: var(--c-blue);
+  text-transform: uppercase;
+}
+
+/* Dividers */
+.welcome-hero__divider {
+  height: 1px;
+  background: var(--c-blue-dim);
+  margin: 16px auto;
+  width: 60%;
+  position: relative;
+}
+
+.welcome-hero__divider::after {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 0;
+  right: 0;
+  height: 0.35px;
+  background: var(--c-gold);
+}
+
+/* Roll of Honour label */
+.welcome-hero__honour-label {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 10px;
+  letter-spacing: 6px;
+  color: var(--c-gold-dim);
+  margin: 16px 0 24px;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.welcome-hero__honour-label::before,
+.welcome-hero__honour-label::after {
+  content: '';
+  display: inline-block;
+  width: 40px;
+  height: 0.7px;
+  background: var(--c-gold-dim);
+}
+
+/* Champion cards */
+.welcome-hero__cards {
+  margin-top: 24px;
+}
+
+.welcome-hero__card {
+  position: relative;
+  border-radius: 3px;
+  margin-bottom: 12px;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+/* CTA Card */
+.welcome-hero__card--cta {
+  background: var(--c-red-welcome);
+  border: 0.8px solid var(--c-red-light);
+  padding: 20px;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.welcome-hero__card-cta-text {
+  color: white;
+  font-size: clamp(16px, 4vw, 20px);
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.welcome-hero__card-year {
+  color: var(--c-red-light);
+  font-size: 11px;
+  letter-spacing: 4px;
+  opacity: 0.75;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.welcome-hero__card-link {
+  position: absolute;
+  inset: 0;
+  cursor: pointer;
+}
+
+/* Known champion cards */
+.welcome-hero__card--known {
+  background: var(--c-bg-card-welcome);
+  border: 0.8px solid var(--c-blue-dim);
+  padding: 12px;
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.welcome-hero__card-accent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--accent-color, var(--c-blue));
+}
+
+.welcome-hero__card-year {
+  color: var(--c-gold-dim);
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.welcome-hero__card-name {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 2px;
+}
+
+.welcome-hero__card-first {
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--c-blue-text);
+  line-height: 1;
+}
+
+.welcome-hero__card-last {
+  font-size: 15px;
+  font-style: italic;
+  color: var(--c-blue-muted);
+  line-height: 1;
+}
+
+.welcome-hero__card-subtitle {
+  font-size: 8px;
+  color: var(--c-blue-dim);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.welcome-hero__card-tagline {
+  font-size: 8px;
+  color: var(--c-blue-dim);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* Mystery cards */
+.welcome-hero__card--mystery {
+  background: var(--c-bg-welcome);
+  border: 0.6px dashed var(--c-blue-dim);
+  padding: 12px;
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.welcome-hero__card--mystery .welcome-hero__card-year {
+  color: var(--c-blue-dim);
+}
+
+.welcome-hero__card-mystery-name {
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--c-blue-dim);
+  line-height: 1.2;
+}
+
+.welcome-hero__card-mystery-name--large {
+  font-size: 20px;
+}
+
+.welcome-hero__card--mystery .welcome-hero__card-subtitle,
+.welcome-hero__card--mystery .welcome-hero__card-tagline {
+  color: var(--c-blue-dim);
+}
+
+/* Card rows for grid layout */
+.welcome-hero__cards-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.welcome-hero__cards-row--bottom {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.welcome-hero__card--wide {
+  /* Default width for Row C cards */
+}
+
+/* Footer */
+.welcome-hero__footer {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--c-blue-dim);
+  margin-top: 32px;
+  text-transform: uppercase;
+}
+
 /* ── Responsive ──────────────────────────────────────────── */
 @media (max-width: 420px) {
   .groups-grid { grid-template-columns: 1fr; }
   .podium { gap: 4px; }
+  
+  /* Welcome page mobile */
+  .welcome-hero {
+    padding: 30px 16px;
+  }
+  
+  .welcome-hero__cards-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .welcome-hero__cards-row--bottom {
+    grid-template-columns: 1fr;
+  }
+  
+  .welcome-hero__circle {
+    width: clamp(100px, 30vw, 140px);
+  }
 }
+
 @media (max-width: 480px) {
   .site-footer {
     flex-direction: column;

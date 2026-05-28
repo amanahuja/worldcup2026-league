@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>World Cup Bracket League 2026</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="welcome-page">
+  <main class="welcome-hero">
+    <!-- Background grain texture and decorative elements -->
+    <div class="welcome-hero__bg"></div>
+    
+    <!-- Diagonal accent bands -->
+    <div class="welcome-hero__band welcome-hero__band--wide"></div>
+    <div class="welcome-hero__band welcome-hero__band--highlight"></div>
+    <div class="welcome-hero__band welcome-hero__band--gold"></div>
+
+    <!-- Corner registration marks -->
+    <div class="welcome-hero__corner welcome-hero__corner--tl"></div>
+    <div class="welcome-hero__corner welcome-hero__corner--tr"></div>
+    <div class="welcome-hero__corner welcome-hero__corner--bl"></div>
+    <div class="welcome-hero__corner welcome-hero__corner--br"></div>
+
+    <!-- Side rules -->
+    <div class="welcome-hero__rule welcome-hero__rule--left"></div>
+    <div class="welcome-hero__rule welcome-hero__rule--right"></div>
+
+    <!-- Content container -->
+    <div class="welcome-hero__content">
+      <!-- Eyebrow -->
+      <div class="welcome-hero__eyebrow">★ EST. 2006 ★</div>
+
+      <!-- Football circle motif -->
+      <svg class="welcome-hero__circle" viewBox="0 0 228 228" xmlns="http://www.w3.org/2000/svg">
+        <!-- Outer ring -->
+        <circle cx="114" cy="114" r="114" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.7" class="welcome-hero__circle-outer"/>
+        <!-- Middle ring -->
+        <circle cx="114" cy="114" r="102" fill="none" stroke="currentColor" stroke-width="0.4" opacity="0.35" class="welcome-hero__circle-mid"/>
+        <!-- Inner filled circle -->
+        <circle cx="114" cy="114" r="73" fill="currentColor" stroke="currentColor" stroke-width="0.8" class="welcome-hero__circle-inner"/>
+        <!-- Upper hexagon (unfilled) -->
+        <polygon points="114,50 150,68 150,104 114,122 78,104 78,68" fill="none" stroke="currentColor" stroke-width="1" opacity="0.55" class="welcome-hero__hexagon-upper"/>
+        <!-- Lower hexagon (filled) -->
+        <polygon points="114,106 150,124 150,160 114,178 78,160 78,124" fill="currentColor" stroke="currentColor" stroke-width="0.8" class="welcome-hero__hexagon-lower"/>
+        <!-- Crosshair lines -->
+        <line x1="114" y1="40" x2="114" y2="188" stroke="currentColor" stroke-width="0.4" opacity="0.3" class="welcome-hero__crosshair"/>
+        <line x1="40" y1="114" x2="188" y2="114" stroke="currentColor" stroke-width="0.4" opacity="0.3" class="welcome-hero__crosshair"/>
+      </svg>
+
+      <!-- Title block -->
+      <div class="welcome-hero__title">
+        <div class="welcome-hero__title-line-1">WORLD CUP</div>
+        <div class="welcome-hero__title-line-2">BRACKET</div>
+        <div class="welcome-hero__title-line-3">LEAGUE</div>
+      </div>
+
+      <!-- Dividers -->
+      <div class="welcome-hero__divider"></div>
+
+      <!-- Roll of Honour label -->
+      <div class="welcome-hero__honour-label">ROLL OF HONOUR</div>
+
+      <!-- Champion cards grid -->
+      <div class="welcome-hero__cards">
+        <!-- 2026 CTA Card (full width) -->
+        <div class="welcome-hero__card welcome-hero__card--cta">
+          <div class="welcome-hero__card-inner">
+            <div class="welcome-hero__card-year">2026 · USA / CANADA / MEXICO</div>
+            <div class="welcome-hero__card-cta-text">Enter the Bracket →</div>
+            <a href="/results" class="welcome-hero__card-link"></a>
+          </div>
+        </div>
+
+        <!-- Row B: 2022, 2018, 2014 -->
+        <div class="welcome-hero__cards-row">
+          <!-- 2022 Qatar - Farzin Lalezari -->
+          <div class="welcome-hero__card welcome-hero__card--known" style="--accent-color: var(--c-gold)">
+            <div class="welcome-hero__card-accent"></div>
+            <div class="welcome-hero__card-year">2022 · QATAR</div>
+            <div class="welcome-hero__card-name">
+              <div class="welcome-hero__card-first">Farzin</div>
+              <div class="welcome-hero__card-last">Lalezari</div>
+            </div>
+            <div class="welcome-hero__card-subtitle">Defending champion</div>
+            <div class="welcome-hero__card-tagline">Watch your back</div>
+          </div>
+
+          <!-- 2018 Russia - Mystery -->
+          <div class="welcome-hero__card welcome-hero__card--mystery">
+            <div class="welcome-hero__card-year">2018 · RUSSIA</div>
+            <div class="welcome-hero__card-name welcome-hero__card-mystery-name">Who was it again?</div>
+            <div class="welcome-hero__card-subtitle">Unclear records</div>
+            <div class="welcome-hero__card-tagline">Speak now</div>
+          </div>
+
+          <!-- 2014 Brasil - Alex Barlow -->
+          <div class="welcome-hero__card welcome-hero__card--known" style="--accent-color: var(--c-blue)">
+            <div class="welcome-hero__card-accent"></div>
+            <div class="welcome-hero__card-year">2014 · BRASIL</div>
+            <div class="welcome-hero__card-name">
+              <div class="welcome-hero__card-first">Alex</div>
+              <div class="welcome-hero__card-last">Barlow</div>
+            </div>
+            <div class="welcome-hero__card-subtitle">Brasil glory</div>
+            <div class="welcome-hero__card-tagline">Twelve years ago</div>
+          </div>
+        </div>
+
+        <!-- Row C: 2010, 2006 -->
+        <div class="welcome-hero__cards-row welcome-hero__cards-row--bottom">
+          <!-- 2010 South Africa - Tim Caldwell -->
+          <div class="welcome-hero__card welcome-hero__card--known welcome-hero__card--wide" style="--accent-color: var(--c-blue)">
+            <div class="welcome-hero__card-accent"></div>
+            <div class="welcome-hero__card-year">2010 · SOUTH AFRICA</div>
+            <div class="welcome-hero__card-name">
+              <div class="welcome-hero__card-first">Tim</div>
+              <div class="welcome-hero__card-last">Caldwell</div>
+            </div>
+            <div class="welcome-hero__card-subtitle">Vuvuzela era survivor</div>
+            <div class="welcome-hero__card-tagline">Spain's year too</div>
+          </div>
+
+          <!-- 2006 Germany - Mystery -->
+          <div class="welcome-hero__card welcome-hero__card--mystery welcome-hero__card--wide">
+            <div class="welcome-hero__card-year">2006 · GERMANY</div>
+            <div class="welcome-hero__card-name welcome-hero__card-mystery-name welcome-hero__card-mystery-name--large">I can't remember...</div>
+            <div class="welcome-hero__card-subtitle">A legend, presumably</div>
+            <div class="welcome-hero__card-tagline">Speak now or forever</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="welcome-hero__footer">
+        FRIENDS ONLY · $20 ENTRY
+      </div>
+    </div>
+  </main>
+</body>
+</html>
