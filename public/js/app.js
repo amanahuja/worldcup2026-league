@@ -359,8 +359,8 @@ const App = (() => {
   }
 
   function renderResultsKnockout() {
-    // Check if knockout has started (change back to 2026-06-28 before go-live)
-    if (Date.now() < new Date('2026-05-01T00:00:00Z').getTime()) {
+    // Check if knockout has started
+    if (Date.now() < new Date('2026-06-28T00:00:00Z').getTime()) {
       const container = document.getElementById('results-ko-view');
       if (container) container.innerHTML = '<div class="text-muted" style="padding:20px;text-align:center">Knockout round starts June 28th!</div>';
       return;

@@ -55,4 +55,4 @@ Having a clear spec in my head helped — being one of the target users made tha
 
 **Process:** I used Claude.ai (browser) to work through the specs, do research, find data sources, and iterate on the design. Then I used [OpenCode](https://opencode.ai) as a coding agent to implement. The Cloudflare setup I did manually. Most of the vibe coding happened while doing house errands — except for UX iterations (requires actually looking at a screen) and some troubleshooting (same).
 
-I always attempt to use local and less-powerful models, both to reduce costs and to reduce environmental impact. For this project I used Kimi k2.6 as a main model, and Claude Sonnet 4.6 for the more complex tasks. 
+I always attempt to use local and less-powerful models, both to reduce costs and to reduce environmental impact. For this project I used Kimi k2.6 as a main model, and Claude Haiku 4.5 for the more complex tasks. 
