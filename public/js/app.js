@@ -927,8 +927,8 @@ const App = (() => {
     if (!_predictions) return;
     const locked = _scores?.locks?.third_place || false;
     const picks  = _predictions.knockout?.predictions || {};
-    const bracket = _scores?.bracket || {};
-    const bm = bracket['THIRD'] || {};
+    const predicted = derivePredictedBracket(picks);
+    const bm = predicted['THIRD'] || {};
     const winner = picks['THIRD']?.predicted_winner;
     const isDefault = picks['THIRD']?._default;
 

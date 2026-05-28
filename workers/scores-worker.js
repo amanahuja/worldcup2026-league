@@ -167,7 +167,20 @@ function parseGroupsYaml(text) {
 // Group standings calculation
 // ---------------------------------------------------------------------------
 
-function calcStandings(groupData, results) {
+/**
+ * Calculate group standings from actual results, falling back to predictions
+ * for any match that has not yet been played.
+ *
+ * For unplayed matches, predicted_winner ('home'/'away'/'draw') is used as a
+ * synthetic 1-0 win or 0-0 draw so the existing points/GD sort works correctly.
+ * This ensures the bracket always shows the teams a user predicted to advance,
+ * even before the tournament starts.
+ *
+ * @param {object} groupData   - { teams, matches }
+ * @param {Map}    results     - actual match results from results.yaml
+ * @param {Map}    predictions - default+user merged group predictions (matchId → 'home'|'away'|'draw')
+ */
+function calcStandings(groupData, results, predictions = new Map()) {
   const stats = {};
   for (const team of groupData.teams) {
     stats[team] = { team, played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, pts: 0 };
@@ -175,15 +188,25 @@ function calcStandings(groupData, results) {
 
   for (const match of groupData.matches) {
     const result = results.get(match.id);
-    if (!result || result.status !== 'completed') continue;
-
-    const winner = result.winner || deriveWinner(result);
-    const hs = result.home_score ?? 0;
-    const as_ = result.away_score ?? 0;
-
     const home = stats[match.home];
     const away = stats[match.away];
     if (!home || !away) continue;
+
+    let winner, hs, as_;
+
+    if (result && result.status === 'completed') {
+      // Use actual result
+      winner = result.winner || deriveWinner(result);
+      hs  = result.home_score ?? 0;
+      as_ = result.away_score ?? 0;
+    } else {
+      // Fall back to prediction; use synthetic 1-0 / 0-0 score for GD ordering
+      const pred = predictions.get(match.id);
+      if (!pred) continue; // no prediction either — skip
+      winner = pred;
+      hs  = pred === 'home' ? 1 : pred === 'away' ? 0 : 0;
+      as_ = pred === 'away' ? 1 : pred === 'home' ? 0 : 0;
+    }
 
     home.played++;  away.played++;
     home.gf += hs;  home.ga += as_;
@@ -484,10 +507,16 @@ export async function handleGetScores(request, env, session) {
     ? parseResultsYaml(resultsFile.content)
     : { last_updated: null, matches: new Map() };
 
-  // Calculate group standings
+  // Load default group predictions to use as fallback for unplayed matches
+  const defaultsGroupFile = await githubGet('data/predictions/defaults-groups.yaml', env);
+  const defaultGroupPreds = defaultsGroupFile
+    ? parsePredictionYaml(defaultsGroupFile.content).predictions
+    : new Map();
+
+  // Calculate group standings, falling back to default predictions for unplayed matches
   const groupStandings = new Map();
   for (const [letter, data] of groupsData) {
-    groupStandings.set(letter, calcStandings(data, results));
+    groupStandings.set(letter, calcStandings(data, results, defaultGroupPreds));
   }
 
   // Build bracket
