@@ -730,11 +730,12 @@ a:hover { text-decoration: underline; }
 
 .welcome-page {
   --c-bg-welcome:      #060c14;
-  --c-bg-card-welcome: #080e1a;
+  --c-bg-card-welcome: #0c1628;
   --c-blue-text:       #dbeafe;
   --c-blue-muted:      #93c5fd;
   --c-red-welcome:     #ef4444;
   --c-red-light:       #fca5a5;
+  --c-mystery-name:    #4a7ab5;
 }
 
 .welcome-hero {
@@ -742,7 +743,8 @@ a:hover { text-decoration: underline; }
   width: 100%;
   max-width: 680px;
   margin: 0 auto;
-  padding: 40px 20px;
+  min-height: 100vh;
+  padding: 40px 20px 60px;
   background: var(--c-bg-welcome);
   overflow: hidden;
 }
@@ -757,40 +759,31 @@ a:hover { text-decoration: underline; }
   pointer-events: none;
 }
 
-/* Diagonal accent bands */
+/* Diagonal accent bands — sit behind content, above eyebrow area only */
 .welcome-hero__band {
   position: absolute;
   pointer-events: none;
+  z-index: 1;
 }
 
 .welcome-hero__band--wide {
-  top: 60px;
+  top: 30px;
   left: -50px;
   right: -50px;
-  height: 120px;
+  height: 80px;
   background: var(--c-blue-dim);
-  opacity: 0.6;
+  opacity: 0.5;
   transform: skewY(-3deg);
 }
 
 .welcome-hero__band--highlight {
-  top: 100px;
+  top: 62px;
   left: -50px;
   right: -50px;
-  height: 6px;
+  height: 5px;
   background: var(--c-blue);
-  opacity: 0.7;
+  opacity: 0.6;
   transform: skewY(-3deg);
-}
-
-.welcome-hero__band--gold {
-  bottom: 180px;
-  left: -50px;
-  right: -50px;
-  height: 50px;
-  background: var(--c-gold);
-  opacity: 0.2;
-  transform: skewY(-2deg);
 }
 
 /* Corner registration marks */
@@ -801,6 +794,7 @@ a:hover { text-decoration: underline; }
   border: 1px solid var(--c-blue-dim);
   border-radius: 50%;
   pointer-events: none;
+  z-index: 2;
 }
 
 .welcome-hero__corner::before {
@@ -823,24 +817,17 @@ a:hover { text-decoration: underline; }
 /* Side rules */
 .welcome-hero__rule {
   position: absolute;
-  background: var(--c-bg-card-welcome);
+  background: var(--c-blue-dim);
+  opacity: 0.3;
   pointer-events: none;
   width: 0.8px;
+  z-index: 2;
 }
 
-.welcome-hero__rule--left {
-  left: 32px;
-  top: 40px;
-  bottom: 40px;
-}
+.welcome-hero__rule--left  { left: 32px;  top: 40px; bottom: 40px; }
+.welcome-hero__rule--right { right: 32px; top: 40px; bottom: 40px; }
 
-.welcome-hero__rule--right {
-  right: 32px;
-  top: 40px;
-  bottom: 40px;
-}
-
-/* Content container */
+/* Content container — above all decorative layers */
 .welcome-hero__content {
   position: relative;
   z-index: 10;
@@ -852,29 +839,29 @@ a:hover { text-decoration: underline; }
   font-family: Georgia, 'Times New Roman', serif;
   font-size: 10px;
   letter-spacing: 5px;
-  color: var(--c-blue-dim);
-  margin-bottom: 24px;
+  color: var(--c-blue-muted);
+  opacity: 0.6;
+  margin-bottom: 32px;
   text-transform: uppercase;
 }
 
 /* Football circle motif */
 .welcome-hero__circle {
-  width: clamp(140px, 35vw, 200px);
+  width: clamp(160px, 45vw, 220px);
   height: auto;
-  margin: 0 auto 24px;
-  color: var(--c-blue-dim);
+  margin: 0 auto 28px;
 }
 
-.welcome-hero__circle-outer { color: var(--c-blue-dim); }
-.welcome-hero__circle-mid { color: var(--c-blue); }
-.welcome-hero__circle-inner { fill: var(--c-bg-card-welcome); color: var(--c-blue-dim); }
-.welcome-hero__hexagon-upper { color: var(--c-gold); }
-.welcome-hero__hexagon-lower { fill: var(--c-bg-card-welcome); color: var(--c-blue-dim); }
-.welcome-hero__crosshair { color: var(--c-blue-dim); }
+.welcome-hero__circle-outer { stroke: #1e3a5f; }
+.welcome-hero__circle-mid   { stroke: #3b82f6; }
+.welcome-hero__circle-inner { fill: #0c1628; stroke: #1e3a5f; }
+.welcome-hero__hexagon-upper { stroke: #f59e0b; }
+.welcome-hero__hexagon-lower { fill: #0c1628; stroke: #1e3a5f; }
+.welcome-hero__crosshair    { stroke: #1e3a5f; }
 
 /* Title block */
 .welcome-hero__title {
-  margin: 24px 0;
+  margin: 8px 0 20px;
 }
 
 .welcome-hero__title-line-1 {
@@ -882,35 +869,37 @@ a:hover { text-decoration: underline; }
   font-size: 13px;
   font-style: italic;
   letter-spacing: 6px;
-  color: var(--c-blue-dim);
+  color: var(--c-blue-muted);
+  opacity: 0.5;
   margin-bottom: 4px;
   text-transform: uppercase;
 }
 
 .welcome-hero__title-line-2 {
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: clamp(36px, 10vw, 52px);
+  font-size: clamp(38px, 12vw, 54px);
   font-weight: bold;
   letter-spacing: -1px;
   color: var(--c-blue-text);
-  margin-bottom: 4px;
+  line-height: 1;
+  margin-bottom: 6px;
   text-transform: uppercase;
 }
 
 .welcome-hero__title-line-3 {
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: clamp(18px, 5vw, 26px);
+  font-size: clamp(16px, 5vw, 24px);
   font-weight: normal;
   letter-spacing: 10px;
   color: var(--c-blue);
   text-transform: uppercase;
 }
 
-/* Dividers */
+/* Divider */
 .welcome-hero__divider {
   height: 1px;
   background: var(--c-blue-dim);
-  margin: 16px auto;
+  margin: 20px auto;
   width: 60%;
   position: relative;
 }
@@ -918,11 +907,12 @@ a:hover { text-decoration: underline; }
 .welcome-hero__divider::after {
   content: '';
   position: absolute;
-  top: 1px;
+  top: 2px;
   left: 0;
   right: 0;
-  height: 0.35px;
+  height: 0.5px;
   background: var(--c-gold);
+  opacity: 0.4;
 }
 
 /* Roll of Honour label */
@@ -930,8 +920,9 @@ a:hover { text-decoration: underline; }
   font-family: Georgia, 'Times New Roman', serif;
   font-size: 10px;
   letter-spacing: 6px;
-  color: var(--c-gold-dim);
-  margin: 16px 0 24px;
+  color: var(--c-gold);
+  opacity: 0.5;
+  margin: 0 0 20px;
   text-transform: uppercase;
   display: flex;
   align-items: center;
@@ -945,47 +936,55 @@ a:hover { text-decoration: underline; }
   display: inline-block;
   width: 40px;
   height: 0.7px;
-  background: var(--c-gold-dim);
+  background: var(--c-gold);
+  opacity: 0.5;
 }
 
 /* Champion cards */
 .welcome-hero__cards {
-  margin-top: 24px;
+  margin-top: 8px;
 }
 
 .welcome-hero__card {
   position: relative;
   border-radius: 3px;
-  margin-bottom: 12px;
   font-family: Georgia, 'Times New Roman', serif;
+  text-align: left;
 }
 
 /* CTA Card */
 .welcome-hero__card--cta {
   background: var(--c-red-welcome);
   border: 0.8px solid var(--c-red-light);
-  padding: 20px;
-  min-height: 80px;
+  padding: 22px 20px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   position: relative;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.welcome-hero__card--cta:hover { opacity: 0.9; }
+
+.welcome-hero__card--cta .welcome-hero__card-year {
+  color: var(--c-red-light);
+  font-size: 10px;
+  letter-spacing: 4px;
+  opacity: 0.8;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  text-align: center;
 }
 
 .welcome-hero__card-cta-text {
   color: white;
-  font-size: clamp(16px, 4vw, 20px);
+  font-size: clamp(17px, 4.5vw, 22px);
   font-weight: bold;
   letter-spacing: 1px;
-}
-
-.welcome-hero__card-year {
-  color: var(--c-red-light);
-  font-size: 11px;
-  letter-spacing: 4px;
-  opacity: 0.75;
-  margin-bottom: 8px;
-  text-transform: uppercase;
+  text-align: center;
 }
 
 .welcome-hero__card-link {
@@ -998,8 +997,8 @@ a:hover { text-decoration: underline; }
 .welcome-hero__card--known {
   background: var(--c-bg-card-welcome);
   border: 0.8px solid var(--c-blue-dim);
-  padding: 12px;
-  min-height: 100px;
+  padding: 10px 12px 12px;
+  min-height: 110px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -1012,12 +1011,14 @@ a:hover { text-decoration: underline; }
   right: 0;
   height: 3px;
   background: var(--accent-color, var(--c-blue));
+  border-radius: 3px 3px 0 0;
 }
 
 .welcome-hero__card-year {
-  color: var(--c-gold-dim);
   font-size: 9px;
   letter-spacing: 3px;
+  color: var(--c-blue-muted);
+  opacity: 0.6;
   text-transform: uppercase;
   margin-bottom: 6px;
 }
@@ -1025,83 +1026,93 @@ a:hover { text-decoration: underline; }
 .welcome-hero__card-name {
   display: flex;
   flex-direction: column;
-  margin-bottom: 2px;
+  flex: 1;
+  justify-content: center;
+  margin-bottom: 6px;
 }
 
 .welcome-hero__card-first {
-  font-size: 18px;
+  font-size: clamp(14px, 3.5vw, 18px);
   font-weight: bold;
   color: var(--c-blue-text);
-  line-height: 1;
+  line-height: 1.1;
 }
 
 .welcome-hero__card-last {
-  font-size: 15px;
+  font-size: clamp(12px, 3vw, 15px);
   font-style: italic;
   color: var(--c-blue-muted);
-  line-height: 1;
+  line-height: 1.1;
 }
 
 .welcome-hero__card-subtitle {
   font-size: 8px;
-  color: var(--c-blue-dim);
-  letter-spacing: 2px;
+  color: var(--c-blue-muted);
+  opacity: 0.6;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
 .welcome-hero__card-tagline {
   font-size: 8px;
-  color: var(--c-blue-dim);
-  letter-spacing: 2px;
+  color: var(--c-blue-muted);
+  opacity: 0.5;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
 }
 
 /* Mystery cards */
 .welcome-hero__card--mystery {
   background: var(--c-bg-welcome);
-  border: 0.6px dashed var(--c-blue-dim);
-  padding: 12px;
-  min-height: 100px;
+  border: 0.6px dashed #2a4a6f;
+  padding: 10px 12px 12px;
+  min-height: 110px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
 .welcome-hero__card--mystery .welcome-hero__card-year {
-  color: var(--c-blue-dim);
+  color: var(--c-blue-muted);
+  opacity: 0.4;
 }
 
 .welcome-hero__card-mystery-name {
-  font-size: 14px;
+  font-size: clamp(11px, 2.8vw, 14px);
   font-weight: bold;
-  color: var(--c-blue-dim);
+  color: var(--c-mystery-name);
   line-height: 1.2;
+  flex: 1;
+  display: flex;
+  align-items: center;
 }
 
 .welcome-hero__card-mystery-name--large {
-  font-size: 20px;
+  font-size: clamp(13px, 3.2vw, 16px);
 }
 
-.welcome-hero__card--mystery .welcome-hero__card-subtitle,
+.welcome-hero__card--mystery .welcome-hero__card-subtitle {
+  color: var(--c-blue-muted);
+  opacity: 0.4;
+  font-style: italic;
+}
+
 .welcome-hero__card--mystery .welcome-hero__card-tagline {
-  color: var(--c-blue-dim);
+  color: var(--c-mystery-name);
+  opacity: 0.5;
 }
 
 /* Card rows for grid layout */
 .welcome-hero__cards-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  margin-bottom: 12px;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
 .welcome-hero__cards-row--bottom {
   grid-template-columns: repeat(2, 1fr);
-}
-
-.welcome-hero__card--wide {
-  /* Default width for Row C cards */
 }
 
 /* Footer */
@@ -1109,9 +1120,11 @@ a:hover { text-decoration: underline; }
   font-family: Georgia, 'Times New Roman', serif;
   font-size: 9px;
   letter-spacing: 3px;
-  color: var(--c-blue-dim);
-  margin-top: 32px;
+  color: var(--c-blue-muted);
+  opacity: 0.4;
+  margin-top: 36px;
   text-transform: uppercase;
+  text-align: center;
 }
 
 /* ── Responsive ──────────────────────────────────────────── */
