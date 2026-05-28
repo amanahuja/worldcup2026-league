@@ -2,3 +2,5 @@ username: aman
 predictions:
   G_A1:
     predicted_winner: home
+  G_A2:
+    predicted_winner: away
