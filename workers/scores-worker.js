@@ -523,10 +523,13 @@ export async function handleGetScores(request, env, session) {
   const bracket = buildBracket(groupStandings, results);
 
   // Load all user prediction files
+  // Derive usernames from either -groups.yaml or -knockout.yaml so users who have
+  // only saved one type of prediction still appear on the leaderboard.
   const userFiles = predFiles.filter(f => !f.startsWith('defaults-'));
-  const groupsUsernames = [...new Set(
-    userFiles.filter(f => f.endsWith('-groups.yaml')).map(f => f.replace('-groups.yaml', ''))
-  )];
+  const groupsUsernames = [...new Set([
+    ...userFiles.filter(f => f.endsWith('-groups.yaml')).map(f => f.replace('-groups.yaml', '')),
+    ...userFiles.filter(f => f.endsWith('-knockout.yaml')).map(f => f.replace('-knockout.yaml', '')),
+  ])];
 
   const leaderboard = [];
 

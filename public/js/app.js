@@ -845,7 +845,7 @@ const App = (() => {
         const leftPair = [leftId1, leftId2].filter(Boolean).map(id => buildKoCard(id)).join('');
 
         const rightCard = rightId ? `
-          <div class="ko-card ko-card--dim" style="align-self:center">
+          <div class="ko-card ko-card--dim" style="width:100%">
             <div class="ko-card__matchup">
               <span class="ko-card__team ko-card__placeholder" title="${rHome}">${abbr(rHome)}</span>
               <span class="ko-card__score">—</span>
@@ -856,11 +856,11 @@ const App = (() => {
 
         pairedHtml += `
           <div style="display:flex;gap:8px;align-items:stretch;margin-bottom:12px">
-            <div style="flex:0 0 60%;display:flex;flex-direction:column;gap:8px">${leftPair}</div>
-            <div style="flex:0 0 4%;display:flex;align-items:center;justify-content:center">
+            <div style="flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:8px">${leftPair}</div>
+            <div style="flex:0 0 12px;display:flex;align-items:center;justify-content:center">
               <div style="width:1px;height:60%;background:var(--c-border)"></div>
             </div>
-            <div style="flex:0 0 34%;display:flex;align-items:center">${rightCard}</div>
+            <div style="flex:0 0 38%;min-width:120px;display:flex;align-items:center">${rightCard}</div>
           </div>
         `;
       }
