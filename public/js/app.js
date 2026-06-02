@@ -412,7 +412,7 @@ const App = (() => {
       const res = await api('/api/predictions');
       if (res.status === 401) {
         sessionStorage.removeItem('wc2026_user');
-        if (redirectOn401) window.location.href = '/?login=1';
+        if (redirectOn401) window.location.href = '/results?login=1';
         return;
       }
       _predictions = await res.json();
