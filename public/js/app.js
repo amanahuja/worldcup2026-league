@@ -100,7 +100,7 @@ const App = (() => {
       });
       const data = await res.json();
       if (res.ok) {
-        sessionStorage.setItem('wc2026_user', data.username);
+        sessionStorage.setItem('wc2026_user', username);
         window.location.href = '/predictions.html';
       } else {
         errEl.textContent = data.error || 'Sign in failed';
