@@ -19,7 +19,7 @@
  *   GITHUB_BRANCH  — "main"
  */
 
-import { handleLogin, getSession } from './auth-worker.js';
+import { handleLogin, handleLogout, getSession } from './auth-worker.js';
 import {
   handleGetPredictions,
   handlePostGroupPredictions,
@@ -64,6 +64,11 @@ export default {
       // POST /api/login
       if (pathname === '/api/login' && method === 'POST') {
         return cors(await handleLogin(request, env));
+      }
+
+      // POST /api/logout
+      if (pathname === '/api/logout' && method === 'POST') {
+        return cors(handleLogout(request));
       }
 
       // GET /api/scores — public, no auth required

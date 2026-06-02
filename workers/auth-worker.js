@@ -116,6 +116,26 @@ export async function handleLogin(request, env) {
 }
 
 // ---------------------------------------------------------------------------
+// Logout handler — expires the session cookie
+// ---------------------------------------------------------------------------
+
+export function handleLogout(request) {
+  const isLocalhost = new URL(request.url).hostname === 'localhost';
+  const cookie = [
+    `${COOKIE_NAME}=`,
+    'HttpOnly',
+    ...(isLocalhost ? [] : ['Secure']),
+    'SameSite=Lax',
+    'Max-Age=0',
+    'Path=/',
+  ].join('; ');
+  return new Response(JSON.stringify({ ok: true }), {
+    status: 200,
+    headers: { 'Content-Type': 'application/json', 'Set-Cookie': cookie },
+  });
+}
+
+// ---------------------------------------------------------------------------
 // Session extraction helper (used by other workers)
 // ---------------------------------------------------------------------------
 

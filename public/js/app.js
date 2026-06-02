@@ -113,6 +113,12 @@ const App = (() => {
     }
   }
 
+  async function logout() {
+    await api('/api/logout', { method: 'POST' });
+    sessionStorage.removeItem('wc2026_user');
+    window.location.href = '/';
+  }
+
   function ctaClick() {
     if (_session) {
       window.location.href = '/predictions.html';
@@ -203,7 +209,10 @@ const App = (() => {
       btn.textContent = 'Edit Predictions';
       // Show username in topbar sub-line (results page only)
       const sub = document.getElementById('topbar-username');
-      if (sub) sub.textContent = `signed in as ${_session.username}`;
+      if (sub) {
+        sub.innerHTML = `Signed in as: <strong>${_session.username}</strong> <a href="#" id="logout-link" style="text-decoration:underline">[logout]</a>`;
+        document.getElementById('logout-link')?.addEventListener('click', e => { e.preventDefault(); logout(); });
+      }
     } else {
       btn.textContent = 'Enter Predictions';
     }
@@ -398,7 +407,10 @@ const App = (() => {
     }
 
     const sub = document.getElementById('topbar-username');
-    if (sub) sub.textContent = `signed in as ${_session.username}`;
+    if (sub) {
+      sub.innerHTML = `Signed in as: <strong>${_session.username}</strong> <a href="#" id="logout-link" style="text-decoration:underline">[logout]</a>`;
+      document.getElementById('logout-link')?.addEventListener('click', e => { e.preventDefault(); logout(); });
+    }
 
     await Promise.all([loadPredictions(true), loadScores()]);
     renderGroupsTab();
