@@ -548,6 +548,29 @@ const App = (() => {
 
   // ── Pick handler ─────────────────────────────────────────
 
+  // Debounce state — one pending-picks queue and timer per endpoint
+  const _pendingPicks = { groups: {}, knockout: {} };
+  const _saveTimers   = { groups: null, knockout: null };
+  const SAVE_DEBOUNCE_MS = 3000;
+
+  async function flushPicks(timerKey) {
+    const pending = _pendingPicks[timerKey];
+    _pendingPicks[timerKey] = {};
+    const endpoint = timerKey === 'groups' ? '/api/predictions/groups' : '/api/predictions/knockout';
+    // Send each queued pick sequentially so the backend merges them all
+    for (const [matchId, predicted_winner] of Object.entries(pending)) {
+      try {
+        await api(endpoint, {
+          method: 'POST',
+          body: JSON.stringify({ match_id: matchId, predicted_winner }),
+        });
+      } catch {
+        // Silently fail — pick is still shown optimistically
+      }
+    }
+    showSaved();
+  }
+
   async function pick(matchId, value, window) {
     if (!_predictions) return;
     const section = window === 'groups' ? _predictions.groups : _predictions.knockout;
@@ -557,7 +580,7 @@ const App = (() => {
     if (!section.predictions) section.predictions = {};
     section.predictions[matchId] = { predicted_winner: value, _default: false };
 
-    // Re-render the relevant card
+    // Re-render the relevant card immediately
     if (window === 'groups') {
       updateFixtureRow(matchId, value, false, section.locked);
     } else {
@@ -566,19 +589,11 @@ const App = (() => {
       renderKoBracketView(_currentKoRound);
     }
 
-    // Save to API
-    const endpoint = window === 'groups' ? '/api/predictions/groups' : '/api/predictions/knockout';
-    try {
-      const res = await api(endpoint, {
-        method: 'POST',
-        body: JSON.stringify({ match_id: matchId, predicted_winner: value }),
-      });
-      if (res.ok) {
-        showSaved();
-      }
-    } catch {
-      // Silently fail — pick is still shown optimistically
-    }
+    // Queue pick and reset debounce timer
+    const timerKey = window === 'groups' ? 'groups' : 'knockout';
+    _pendingPicks[timerKey][matchId] = value;
+    clearTimeout(_saveTimers[timerKey]);
+    _saveTimers[timerKey] = setTimeout(() => flushPicks(timerKey), SAVE_DEBOUNCE_MS);
   }
 
   function updateFixtureRow(matchId, winner, isDefault, locked) {
