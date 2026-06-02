@@ -393,7 +393,7 @@ const App = (() => {
   async function initPredictions() {
     _session = { username: getSessionUsername() };
     if (!_session.username) {
-      window.location.href = '/?login=1';
+      window.location.href = '/results?login=1';
       return;
     }
 
