@@ -54,6 +54,11 @@ a:hover { text-decoration: underline; }
   font-weight: 700;
   letter-spacing: -0.02em;
 }
+.topbar__dates {
+  font-size: 0.75rem;
+  color: var(--c-muted);
+  margin-top: 1px;
+}
 .topbar__sub {
   font-size: 0.75rem;
   color: var(--c-blue);
