@@ -56,8 +56,9 @@ a:hover { text-decoration: underline; }
 }
 .topbar__sub {
   font-size: 0.75rem;
-  color: var(--c-muted);
-  margin-top: 1px;
+  color: var(--c-blue);
+  margin-top: 2px;
+  font-weight: 500;
 }
 
 /* ── Buttons ─────────────────────────────────────────────── */

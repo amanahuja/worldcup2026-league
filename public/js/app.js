@@ -203,7 +203,7 @@ const App = (() => {
       btn.textContent = 'Edit Predictions';
       // Show username in topbar sub-line (results page only)
       const sub = document.getElementById('topbar-username');
-      if (sub) sub.textContent = _session.username;
+      if (sub) sub.textContent = `signed in as ${_session.username}`;
     } else {
       btn.textContent = 'Enter Predictions';
     }
@@ -398,7 +398,7 @@ const App = (() => {
     }
 
     const sub = document.getElementById('topbar-username');
-    if (sub) sub.textContent = _session.username;
+    if (sub) sub.textContent = `signed in as ${_session.username}`;
 
     await Promise.all([loadPredictions(true), loadScores()]);
     renderGroupsTab();
