@@ -222,9 +222,12 @@ function renderBracket(data) {
     place(botTeam1Row, teamCol, teamD(botHome, botHW ? true : botAW ? false : null));
     place(botTeam2Row, teamCol, teamD(botAway, botAW ? true : botHW ? false : null));
 
-    // Connectors span the full pair
-    if (clCol !== null) place(topTeam1Row, clCol, connD('left',  connRowspan - topTeam1Row + topStart));
-    if (crCol !== null) place(topTeam1Row, crCol, connD('right', connRowspan - topTeam1Row + topStart));
+    // conn-right: closing bracket, spans from team2 of top match to team1 of bottom match
+    const connRightRowspan = botTeam1Row - topTeam2Row + 1;
+    // conn-left: vertical spine, spans from team1 to team2 of bottom match
+    const connLeftRowspan  = botTeam2Row - botTeam1Row + 1;
+    if (crCol !== null) place(topTeam2Row, crCol, connD('right', connRightRowspan));
+    if (clCol !== null) place(botTeam1Row, clCol, connD('left',  connLeftRowspan));
   }
 
   // ── R32: 16 matches = 8 pairs, 6 rows/match ──────────────
