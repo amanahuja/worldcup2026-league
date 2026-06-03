@@ -458,16 +458,60 @@ const App = (() => {
       document.getElementById(`tab-${t}`)?.classList.toggle('hidden', t !== tab);
       document.querySelector(`[data-tab="${t}"]`)?.classList.toggle('tab--active', t === tab);
     });
+    // Re-render the newly active tab so it reflects any picks made while on another tab.
+    if (tab === 'groups')   renderGroupsTab();
+    if (tab === 'knockout') renderKoBracketView(_currentKoRound);
+    if (tab === 'third')    renderThirdTab();
   }
 
   // ── Group Stage tab ───────────────────────────────────────
 
+  /**
+   * Compute predicted group standings from user's picks.
+   * Mirrors calcStandings() in scores-worker.js but uses picks instead of actual results.
+   * Wins simulated as 1-0, draws as 0-0 (same synthetic-score convention as the server).
+   * Sort: pts → GD → GF → wins → alphabetical.
+   */
+  function deriveGroupStandings(fixtures, picks) {
+    const stats = {};
+    for (const m of fixtures) {
+      if (!stats[m.home]) stats[m.home] = { team: m.home, played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, pts: 0 };
+      if (!stats[m.away]) stats[m.away] = { team: m.away, played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, pts: 0 };
+    }
+    for (const m of fixtures) {
+      const pick = picks[m.id]?.predicted_winner;
+      if (!pick) continue;
+      const home = stats[m.home];
+      const away = stats[m.away];
+      if (!home || !away) continue;
+      home.played++; away.played++;
+      if (pick === 'home') {
+        home.won++; home.pts += 3; home.gf++;
+        away.lost++; away.ga++;
+      } else if (pick === 'away') {
+        away.won++; away.pts += 3; away.gf++;
+        home.lost++; home.ga++;
+      } else { // draw
+        home.drawn++; home.pts++;
+        away.drawn++; away.pts++;
+      }
+    }
+    return Object.values(stats).sort((a, b) => {
+      if (b.pts !== a.pts) return b.pts - a.pts;
+      const gdA = a.gf - a.ga, gdB = b.gf - b.ga;
+      if (gdB !== gdA) return gdB - gdA;
+      if (b.gf !== a.gf) return b.gf - a.gf;
+      if (b.won !== a.won) return b.won - a.won;
+      return a.team.localeCompare(b.team);
+    });
+  }
+
   function renderGroupsTab() {
     if (!_scores || !_predictions) return;
-    const standingsMap = _scores.standings || {};
-    const groups = Object.keys(standingsMap).sort();
-    const locked = _predictions.groups?.locked;
-    const picks  = _predictions.groups?.predictions || {};
+    const fixtures = _scores.fixtures || {};
+    const groups   = Object.keys(fixtures).sort();
+    const locked   = _predictions.groups?.locked;
+    const picks    = _predictions.groups?.predictions || {};
 
     const banner = document.getElementById('groups-banner');
     if (banner) {
@@ -483,7 +527,15 @@ const App = (() => {
 
     const grid = document.getElementById('groups-grid');
     if (!grid) return;
-    grid.innerHTML = groups.map(g => renderGroupCard(g, standingsMap[g], picks, locked)).join('');
+    // Compute standings from user's picks (not actual results — those are on the results page).
+    // All 6 group matches have picks (user + defaults merged), so every team shows played=3
+    // and the top 2 are highlighted as "predicted to advance".
+    grid.innerHTML = groups.map(g => {
+      const groupFixtures  = fixtures[g] || [];
+      const predictedTeams = deriveGroupStandings(groupFixtures, picks);
+      const standingsObj   = { teams: predictedTeams, hasResults: predictedTeams.some(t => t.played > 0) };
+      return renderGroupCard(g, standingsObj, picks, locked);
+    }).join('');
   }
 
   function renderGroupCard(letter, standingsObj, picks, locked) {
@@ -590,7 +642,9 @@ const App = (() => {
 
     // Re-render the relevant card
     if (window === 'groups') {
-      updateFixtureRow(matchId, value, false, section.locked);
+      // Re-render the whole groups tab so standings update immediately alongside buttons.
+      // _predictions.groups.predictions[matchId] was already updated above.
+      renderGroupsTab();
     } else {
       updateKoCard(matchId, value, false);
       // Re-render the current bracket view to propagate the pick to next round
@@ -726,26 +780,78 @@ const App = (() => {
   };
 
   /**
-   * Derive predicted bracket from user's current knockout picks.
-   * Mirrors the server-side bracket logic but client-side, using picks not results.
+   * Derive predicted bracket from user's current picks.
+   * R32 team slots are resolved from the user's predicted group standings (not hardcoded
+   * pre-tournament seedings). Mirrors buildBracket() in scores-worker.js but client-side.
    * Returns Map<matchId → { home, away }> with team names where known.
    */
   function derivePredictedBracket(picks) {
-    const bracket = _scores?.bracket || {};
-    const predicted = {};
+    const bracket      = _scores?.bracket || {};
+    const groupFixtures = _scores?.fixtures || {};
+    const groupPicks   = _predictions?.groups?.predictions || {};
+    const predicted    = {};
 
-    // R32: use server bracket teams if available (post-group-stage),
-    // otherwise fall back to pre-tournament seedings
+    // ── Step 1: compute predicted group standings from user's group picks ──────
+    const predictedStandings = {};
+    for (const [letter, fixtureArr] of Object.entries(groupFixtures)) {
+      predictedStandings[letter] = deriveGroupStandings(fixtureArr, groupPicks);
+    }
+
+    // ── Step 2: rank all 12 third-place teams for best-thirds slot assignment ──
+    // Mirrors selectBestThirds() in scores-worker.js.
+    const thirdsPool = [];
+    for (const [group, teams] of Object.entries(predictedStandings)) {
+      if (teams.length >= 3) thirdsPool.push({ ...teams[2], group });
+    }
+    thirdsPool.sort((a, b) => {
+      if (b.pts !== a.pts) return b.pts - a.pts;
+      const gdA = a.gf - a.ga, gdB = b.gf - b.ga;
+      if (gdB !== gdA) return gdB - gdA;
+      if (b.gf !== a.gf) return b.gf - a.gf;
+      return a.team.localeCompare(b.team);
+    });
+    const bestThirds = thirdsPool.slice(0, 8).map(t => t.team);
+
+    // Assign best thirds to the 8 third-place R32 slots in numeric match-ID order.
+    // This mirrors the server's R32_BRACKET iteration order (see DC-2 in tasks.md).
+    const THIRD_SLOT_IDS = ['R32_74','R32_77','R32_79','R32_80','R32_81','R32_82','R32_85','R32_87'];
+    const thirdSlotTeams = {};
+    THIRD_SLOT_IDS.forEach((id, i) => {
+      const slot = R32_SLOTS[id]?.away; // all 8 third-place slots are the "away" side
+      if (slot) thirdSlotTeams[slot] = bestThirds[i] || null;
+    });
+
+    // Resolve a slot label ('1I', '2A', '3ABCDF') to a team name
+    function resolveSlot(slot) {
+      if (slot.startsWith('1')) return predictedStandings[slot.slice(1)]?.[0]?.team || null;
+      if (slot.startsWith('2')) return predictedStandings[slot.slice(1)]?.[1]?.team || null;
+      if (slot.startsWith('3')) return thirdSlotTeams[slot] || null;
+      return null;
+    }
+
+    // ── Step 3: populate R32 team names ───────────────────────────────────────
+    // Post-group-stage: actual group results have settled R32 teams → use server bracket.
+    // Pre-group-stage: resolve from user's predicted group standings.
+    const hasActualGroupResults = Object.values(_scores?.standings || {})
+      .some(s => (s.teams || s).some(t => t.played > 0));
+
     for (const id of KO_ROUNDS.R32) {
       const bm    = bracket[id] || {};
       const slots = R32_SLOTS[id] || {};
-      predicted[id] = {
-        home: bm.home || (slots.home ? PRE_TOURNAMENT_R32[slots.home] : null) || null,
-        away: bm.away || (slots.away ? PRE_TOURNAMENT_R32[slots.away] : null) || null,
-      };
+      let home, away;
+      if (hasActualGroupResults) {
+        // Group stage complete: server bracket has actual teams for R32 slots
+        home = bm.home || null;
+        away = bm.away || null;
+      } else {
+        // Pre-tournament: derive from user's predicted group standings
+        home = slots.home ? resolveSlot(slots.home) : null;
+        away = slots.away ? resolveSlot(slots.away) : null;
+      }
+      predicted[id] = { home, away };
     }
 
-    // For each subsequent round, derive home/away from the previous round's picks
+    // ── Step 4: propagate R16 → QF → SF → Final from user's KO picks ─────────
     const FEEDERS = {
       R16_89:  ['R32_74','R32_77'], R16_90:  ['R32_73','R32_75'],
       R16_91:  ['R32_76','R32_78'], R16_92:  ['R32_79','R32_80'],
@@ -758,7 +864,7 @@ const App = (() => {
     };
 
     function winnerOf(matchId) {
-      // Use actual result if completed, otherwise user's pick
+      // Use actual result if completed, otherwise user's KO pick
       const serverResult = bracket[matchId];
       if (serverResult?.status === 'completed' && serverResult.winner) {
         const pm = predicted[matchId] || {};
@@ -780,7 +886,7 @@ const App = (() => {
       }
     }
 
-    // THIRD: losers of SF
+    // THIRD: losers of the two semi-finals
     const sf1Pick = picks['SF_101']?.predicted_winner;
     const sf2Pick = picks['SF_102']?.predicted_winner;
     const sf1 = predicted['SF_101'] || {};
@@ -804,9 +910,14 @@ const App = (() => {
 
      if (!matchIds.length) { container.innerHTML = ''; return; }
 
-     // Use server bracket data (actual results or defaults), not predicted bracket
+     // Server bracket: actual results / status / scores (always authoritative for these)
      const serverBracket = _scores?.bracket || {};
      const matchResultsMap = _scores?.match_results || {};
+
+     // Predictions page only: derive team names from user's picks so the bracket reflects
+     // what the user predicted, not the server's default seedings.
+     // Results page (readOnly=true): predictedBracket stays null → serverBracket used for names.
+     const predictedBracket = readOnly ? null : derivePredictedBracket(picks);
 
      // Returns the CSS class for a team abbreviation button based on prediction correctness
      function teamBtnClass(id, side, status) {
@@ -833,8 +944,12 @@ const App = (() => {
       // Helper to build a single ko card (used in both leftCards and leftPair)
       function buildKoCard(id) {
         const bm        = serverBracket[id] || {};
-        const home      = bm.home || 'TBD';
-        const away      = bm.away || 'TBD';
+        const pb        = predictedBracket?.[id] || {};
+        // Predictions page: use predicted team names (from user's group+KO picks).
+        // Results page (readOnly): use server bracket names (actual results).
+        // Scores and status always come from serverBracket.
+        const home      = readOnly ? (bm.home || 'TBD') : (pb.home || bm.home || 'TBD');
+        const away      = readOnly ? (bm.away || 'TBD') : (pb.away || bm.away || 'TBD');
         const pick      = picks[id];
         const winner    = pick?.predicted_winner;
         const isDefault = pick?._default;
@@ -907,9 +1022,10 @@ const App = (() => {
          const leftId1 = matchIds[i];
          const leftId2 = matchIds[i + 1];
          const rightId = nextIds[i / 2];
-         const rbm = serverBracket[rightId] || {};
-         const rHome = rbm.home || 'TBD';
-         const rAway = rbm.away || 'TBD';
+         const rbm  = serverBracket[rightId] || {};
+         const rpb  = predictedBracket?.[rightId] || {};
+         const rHome = readOnly ? (rbm.home || 'TBD') : (rpb.home || rbm.home || 'TBD');
+         const rAway = readOnly ? (rbm.away || 'TBD') : (rpb.away || rbm.away || 'TBD');
 
         // Left pair cards — reuse shared builder
         const leftPair = [leftId1, leftId2].filter(Boolean).map(id => buildKoCard(id)).join('');
