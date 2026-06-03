@@ -131,6 +131,8 @@ const App = (() => {
 
   // Prediction window closes at first kickoff: Jun 11 2026 19:00 UTC
   const LOCK_DATE_GROUPS = new Date('2026-06-11T19:00:00Z');
+  // Knockout results not available until group stage ends: Jun 28 2026
+  const KO_RESULTS_DATE = new Date('2026-06-28T00:00:00Z');
 
   function initCountdown() {
     const banner = document.getElementById('countdown-banner');
@@ -385,6 +387,14 @@ const App = (() => {
       `).join('');
     }
 
+    const container = document.getElementById('results-ko-view');
+    if (!container) return;
+
+    if (Date.now() < KO_RESULTS_DATE.getTime()) {
+      container.innerHTML = '<p class="text-muted" style="padding:20px;text-align:center">Knockout results will be visible starting June 28, once the group stage is complete.</p>';
+      return;
+    }
+
     // Render bracket into #results-ko-view (read-only)
     renderKoBracketView(_currentKoRound, 'results-ko-view', true);
   }
@@ -394,6 +404,15 @@ const App = (() => {
     document.querySelectorAll('#results-ko-tabs .round-tab').forEach(t => {
       t.classList.toggle('round-tab--active', t.textContent === round);
     });
+
+    const container = document.getElementById('results-ko-view');
+    if (!container) return;
+
+    if (Date.now() < KO_RESULTS_DATE.getTime()) {
+      container.innerHTML = '<p class="text-muted" style="padding:20px;text-align:center">Knockout results will be visible starting June 28, once the group stage is complete.</p>';
+      return;
+    }
+
     renderKoBracketView(round, 'results-ko-view', true);
   }
 
