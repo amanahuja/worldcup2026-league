@@ -23,3 +23,13 @@ adduser user pass:
   mise exec -- wrangler kv key put --binding WC2026_USERS --remote "{{user}}" "{{pass}}"
   echo "{{user}} / {{pass}}" >> {{private_configpath}}/users.txt
 
+# show prediction counts per user
+pcount:
+  @for user in $(cat {{private_configpath}}/users.txt | cut -d'/' -f1 | tr -d ' '); do \
+    gfile="data/predictions/$user-groups.yaml"; \
+    kfile="data/predictions/$user-knockout.yaml"; \
+    groups=$([ -f "$gfile" ] && grep -c "predicted_winner" "$gfile"; true); \
+    knockout=$([ -f "$kfile" ] && grep -c "predicted_winner" "$kfile"; true); \
+    printf "%-30s groups: %-4s knockout: %s\n" "$user" "${groups:-0}" "${knockout:-0}"; \
+  done
+
