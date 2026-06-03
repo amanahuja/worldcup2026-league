@@ -11,12 +11,34 @@ predictions:
   G_D1:
     predicted_winner: away
   G_D3:
-    predicted_winner: draw
+    predicted_winner: away
   G_D5:
-    predicted_winner: home
+    predicted_winner: away
   G_H6:
-    predicted_winner: home
+    predicted_winner: away
   G_I4:
     predicted_winner: home
   G_I5:
     predicted_winner: home
+  G_A4:
+    predicted_winner: home
+  G_B6:
+    predicted_winner: home
+  G_C3:
+    predicted_winner: home
+  G_D2:
+    predicted_winner: home
+  G_D4:
+    predicted_winner: draw
+  G_J5:
+    predicted_winner: home
+  G_K5:
+    predicted_winner: home
+  G_K6:
+    predicted_winner: away
+  G_L2:
+    predicted_winner: home
+  G_L3:
+    predicted_winner: away
+  G_L6:
+    predicted_winner: away
