@@ -723,6 +723,19 @@ const App = (() => {
 
   const NEXT_ROUND = { R32: 'R16', R16: 'QF', QF: 'SF', SF: 'Final', Final: null };
 
+  // Which two matches feed into each knockout match (module-scope so both
+  // derivePredictedBracket and the preview column renderer can use it).
+  const KO_FEEDERS = {
+    R16_89:  ['R32_74','R32_77'], R16_90:  ['R32_73','R32_75'],
+    R16_91:  ['R32_76','R32_78'], R16_92:  ['R32_79','R32_80'],
+    R16_93:  ['R32_83','R32_84'], R16_94:  ['R32_81','R32_82'],
+    R16_95:  ['R32_86','R32_88'], R16_96:  ['R32_85','R32_87'],
+    QF_97:   ['R16_89','R16_90'], QF_98:   ['R16_93','R16_94'],
+    QF_99:   ['R16_91','R16_92'], QF_100:  ['R16_95','R16_96'],
+    SF_101:  ['QF_97','QF_98'],   SF_102:  ['QF_99','QF_100'],
+    FINAL:   ['SF_101','SF_102'], THIRD:   ['SF_101','SF_102'],
+  };
+
   function renderKnockoutTab() {
     if (!_predictions) return;
     const locked = _predictions.knockout?.locked;
@@ -852,17 +865,6 @@ const App = (() => {
     }
 
     // ── Step 4: propagate R16 → QF → SF → Final from user's KO picks ─────────
-    const FEEDERS = {
-      R16_89:  ['R32_74','R32_77'], R16_90:  ['R32_73','R32_75'],
-      R16_91:  ['R32_76','R32_78'], R16_92:  ['R32_79','R32_80'],
-      R16_93:  ['R32_83','R32_84'], R16_94:  ['R32_81','R32_82'],
-      R16_95:  ['R32_86','R32_88'], R16_96:  ['R32_85','R32_87'],
-      QF_97:   ['R16_89','R16_90'], QF_98:   ['R16_93','R16_94'],
-      QF_99:   ['R16_91','R16_92'], QF_100:  ['R16_95','R16_96'],
-      SF_101:  ['QF_97','QF_98'],   SF_102:  ['QF_99','QF_100'],
-      FINAL:   ['SF_101','SF_102'], THIRD:   ['SF_101','SF_102'],
-    };
-
     function winnerOf(matchId) {
       // Use actual result if completed, otherwise user's KO pick
       const serverResult = bracket[matchId];
@@ -878,7 +880,7 @@ const App = (() => {
 
     for (const rounds of [KO_ROUNDS.R16, KO_ROUNDS.QF, KO_ROUNDS.SF, ['FINAL']]) {
       for (const id of rounds) {
-        const [f1, f2] = FEEDERS[id] || [];
+        const [f1, f2] = KO_FEEDERS[id] || [];
         predicted[id] = {
           home: f1 ? winnerOf(f1) : null,
           away: f2 ? winnerOf(f2) : null,
@@ -1019,9 +1021,15 @@ const App = (() => {
      if (nextIds.length) {
        // Group left cards into pairs, each pair beside one right card
        for (let i = 0; i < matchIds.length; i += 2) {
-         const leftId1 = matchIds[i];
-         const leftId2 = matchIds[i + 1];
-         const rightId = nextIds[i / 2];
+        const leftId1 = matchIds[i];
+          const leftId2 = matchIds[i + 1];
+          // Look up the next-round match that receives from exactly this pair,
+          // rather than relying on positional indexing (KO_ROUNDS[nextRound] is
+          // ordered for that round's own pairing, not for this round's preview).
+          const rightId = nextIds.find(nid => {
+            const f = KO_FEEDERS[nid];
+            return f && f[0] === leftId1 && f[1] === leftId2;
+          }) ?? null;
          const rbm  = serverBracket[rightId] || {};
          const rpb  = predictedBracket?.[rightId] || {};
          const rHome = readOnly ? (rbm.home || 'TBD') : (rpb.home || rbm.home || 'TBD');
