@@ -160,30 +160,61 @@ body {
   width: 8px;
 }
 
-/* Center column — Final + champion */
-.bracket-table .center-cell {
-  vertical-align: middle;
-  text-align: center;
-  padding: 8px 12px;
+/* Final column */
+.bracket-table .final-col-cell {
+  vertical-align: top;
+  padding: 16px 12px 16px;
   min-width: 130px;
+  width: 130px;
+}
+
+.final-col__label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #888;
+  margin-bottom: 4px;
+  margin-top: 12px;
+}
+.final-col__label:first-child {
+  margin-top: 0;
+}
+
+.final-col__team {
+  font-size: 11px;
+  color: #aaa;
+  padding: 2px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.final-col__team.winner {
+  font-weight: 700;
+  color: #111;
+}
+
+.final-col__tiebreaker {
+  font-size: 10px;
+  color: #888;
+  margin-top: 6px;
+  margin-bottom: 4px;
+}
+
+.final-col__divider {
+  border-top: 1px solid #ddd;
+  margin: 14px 0 4px;
+}
+
+.final-col__divider--tall {
+  margin-top: 32px;
+  margin-bottom: 20px;
+  border-top: 0;
 }
 
 .champion-callout {
-  font-size: 1.1rem;
-  font-weight: 700;
-  margin-bottom: 6px;
-}
-
-.tiebreaker-label {
-  font-size: 10px;
-  color: #666;
-  margin-top: 8px;
-  line-height: 1.4;
-}
-
-.tiebreaker-value {
   font-size: 1rem;
   font-weight: 700;
-  color: #111;
-  margin-top: 2px;
+  text-align: center;
+  padding: 8px 0;
 }

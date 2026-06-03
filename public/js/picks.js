@@ -1,30 +1,23 @@
 'use strict';
 
 // ---------------------------------------------------------------------------
-// Bracket structure
-// Left half feeds SF_101 (via QF_97 + QF_98)
-// Right half feeds SF_102 (via QF_99 + QF_100)
+// Single-sided bracket, left → right, top → bottom
 //
-// Left:  R32_74,77,73,75 → R16_89,90 → QF_97  \
-//        R32_83,84,81,82 → R16_93,94 → QF_98  /  SF_101
-// Right: R32_76,78,79,80 → R16_91,92 → QF_99  \
-//        R32_86,88,85,87 → R16_95,96 → QF_100 /  SF_102
+// Match ordering (top to bottom, mirrors Wikipedia bracket):
+//   R32: 74,77, 73,75, 76,78, 79,80, 83,84, 81,82, 86,88, 85,87
+//   R16: 89,90, 91,92, 93,94, 95,96
+//   QF:  97,99, 98,100
+//   SF:  101,102
+//   Final + Third
+//
+// Each consecutive pair feeds one match in the next round.
 // ---------------------------------------------------------------------------
 
-const HALF = {
-  left: {
-    r32: ['R32_74','R32_77', 'R32_73','R32_75', 'R32_83','R32_84', 'R32_81','R32_82'],
-    r16: ['R16_89','R16_90','R16_93','R16_94'],
-    qf:  ['QF_97','QF_98'],
-    sf:  'SF_101',
-  },
-  right: {
-    r32: ['R32_76','R32_78', 'R32_79','R32_80', 'R32_86','R32_88', 'R32_85','R32_87'],
-    r16: ['R16_91','R16_92','R16_95','R16_96'],
-    qf:  ['QF_99','QF_100'],
-    sf:  'SF_102',
-  },
-};
+const R32_ORDER = ['R32_74','R32_77','R32_73','R32_75','R32_76','R32_78','R32_79','R32_80',
+                   'R32_83','R32_84','R32_81','R32_82','R32_86','R32_88','R32_85','R32_87'];
+const R16_ORDER = ['R16_89','R16_90','R16_91','R16_92','R16_93','R16_94','R16_95','R16_96'];
+const QF_ORDER  = ['QF_97','QF_99','QF_98','QF_100'];
+const SF_ORDER  = ['SF_101','SF_102'];
 
 // ---------------------------------------------------------------------------
 // Abbreviations
@@ -32,7 +25,7 @@ const HALF = {
 
 const ABBR = {
   'Algeria':'ALG','Argentina':'ARG','Australia':'AUS','Austria':'AUT',
-  'Belgium':'BEL','Bolivia':'BOL','Bosnia & Herzegovina':'BIH','Bosnia and Herzegovina':'BIH',
+  'Belgium':'BEL','Bosnia & Herzegovina':'BIH','Bosnia and Herzegovina':'BIH',
   'Brazil':'BRA','Burkina Faso':'BFA','Cameroon':'CMR','Canada':'CAN',
   'Chile':'CHI','China':'CHN','Colombia':'COL','Costa Rica':'CRC','Croatia':'CRO',
   'Czech Republic':'CZE','Denmark':'DEN','DR Congo':'COD','Ecuador':'ECU',
@@ -78,9 +71,11 @@ async function init() {
     if (!res.ok) { showError('Failed to load picks. Please try again.'); return; }
     const data = await res.json();
     document.getElementById('picks-username').textContent = data.username;
+    document.getElementById('bracket-loading').classList.add('hidden');
     renderBracket(data);
   } catch (e) {
-    showError('Network error. Please try again.');
+    console.error('picks error:', e);
+    showError('Something went wrong: ' + e.message);
   }
 }
 
@@ -92,272 +87,188 @@ function showError(msg) {
 }
 
 // ---------------------------------------------------------------------------
-// Bracket table — row-by-row builder with rowspan tracker
+// Bracket table — rowspan tracker, single-sided left→right
 //
-// Column layout (33 columns, 0-indexed):
+// Column layout (9 columns, 0-indexed):
+//   0: team+score (R32)   1: conn-left   2: conn-right   3: gap
+//   4: team+score (R16)   5: conn-left   6: conn-right   7: gap
+//   8: team+score (QF)    9: conn-left  10: conn-right  11: gap
+//  12: team+score (SF)   13: gap
+//  14: Final column (team+score, third place, champion, tiebreaker)
 //
-//  LEFT SIDE (cols 0–15):
-//   0: R32 team   1: R32 score   2: R32 conn   3: gap
-//   4: R16 team   5: R16 score   6: R16 conn   7: gap
-//   8: QF  team   9: QF  score  10: QF  conn  11: gap
-//  12: SF  team  13: SF  score  14: SF  conn  15: gap
+// "team+score" is actually two sub-columns: team (wide) + score (narrow).
+// For simplicity we use a single td with border-right for the score edge.
 //
-//  CENTER (col 16): Final / champion / tiebreaker
+// Actual columns: 0=R32team 1=R32conn-L 2=R32conn-R 3=gap
+//                 4=R16team 5=R16conn-L 6=R16conn-R 7=gap
+//                 8=QFteam  9=QFconn-L 10=QFconn-R 11=gap
+//                12=SFteam 13=gap
+//                14=Final
+// Total: 15 columns
 //
-//  RIGHT SIDE (cols 17–32, mirror):
-//  17: gap  18: SF  conn  19: SF  score  20: SF  team
-//  21: gap  22: QF  conn  23: QF  score  24: QF  team
-//  25: gap  26: R16 conn  27: R16 score  28: R16 team
-//  29: gap  30: R32 conn  31: R32 score  32: R32 team
+// Row geometry (96 rows total):
+//   R32: 16 matches × 6 rows each.  Team rows at +1 and +4 within each 6-row block.
+//   R16:  8 matches × 12 rows each. Team rows at +2 and +8.
+//   QF:   4 matches × 24 rows each. Team rows at +5 and +17.
+//   SF:   2 matches × 48 rows each. Team rows at +11 and +35.
+//   Final: spans all 96 rows.
 //
-// Total rows: 96  (8 R32 matches × 12 rows each)
-// Row geometry per round on each half:
-//   R32: 8 matches × 12 rows  — team rows at offsets +2 and +8 within each match block
-//   R16: 4 matches × 24 rows  — team rows at offsets +5 and +17
-//   QF:  2 matches × 48 rows  — team rows at offsets +11 and +35
-//   SF:  1 match  × 96 rows  — team rows at rows 23 and 71
+// Connector rowspans: always rows_per_match × 2 (spans the pair).
+// Placed at the top team row of the even match in each pair.
+// All safe from overflow: last pair in every round ends at row 95.
 // ---------------------------------------------------------------------------
 
 const TOTAL_ROWS = 96;
+const NUM_COLS   = 15;
 
-// Column indices
 const COL = {
-  // Left
-  L_R32_TEAM: 0, L_R32_SCORE: 1, L_R32_CONN: 2, L_GAP1: 3,
-  L_R16_TEAM: 4, L_R16_SCORE: 5, L_R16_CONN: 6, L_GAP2: 7,
-  L_QF_TEAM:  8, L_QF_SCORE:  9, L_QF_CONN: 10, L_GAP3: 11,
-  L_SF_TEAM: 12, L_SF_SCORE: 13, L_SF_CONN: 14, L_GAP4: 15,
-  // Center
-  CENTER: 16,
-  // Right (mirror)
-  R_GAP4: 17, R_SF_CONN: 18, R_SF_SCORE: 19, R_SF_TEAM: 20,
-  R_GAP3: 21, R_QF_CONN: 22, R_QF_SCORE: 23, R_QF_TEAM: 24,
-  R_GAP2: 25, R_R16_CONN: 26, R_R16_SCORE: 27, R_R16_TEAM: 28,
-  R_GAP1: 29, R_R32_CONN: 30, R_R32_SCORE: 31, R_R32_TEAM: 32,
+  R32_TEAM: 0, R32_CL: 1, R32_CR: 2, R32_GAP: 3,
+  R16_TEAM: 4, R16_CL: 5, R16_CR: 6, R16_GAP: 7,
+  QF_TEAM:  8, QF_CL:  9, QF_CR: 10, QF_GAP: 11,
+  SF_TEAM: 12, SF_GAP: 13,
+  FINAL:   14,
 };
-const NUM_COLS = 33;
 
 function renderBracket(data) {
-  const b = data.bracket;
+  const b  = data.bracket;
   const tb = data.tiebreaker_goals;
 
-  // ── Build cell grid ──────────────────────────────────────
-  // grid[row][col] = { content, rowspan, cls } | null (occupied by rowspan above)
+  // ── Grid setup ───────────────────────────────────────────
   const grid = Array.from({ length: TOTAL_ROWS }, () => Array(NUM_COLS).fill(null));
 
-  // Helper: place a cell, marking subsequent rows as occupied
   function place(row, col, cell) {
     grid[row][col] = cell;
     for (let r = row + 1; r < row + (cell.rowspan || 1); r++) {
-      grid[r][col] = 'occupied';
+      if (r < TOTAL_ROWS) grid[r][col] = 'occupied';
     }
   }
 
-  // Helper: team cell descriptor
-  function teamCellD(name, isWinner) {
+  function teamD(name, isWinner) {
     const cls = ['team-cell'];
-    if (!name) cls.push('tbd');
+    if (!name)              cls.push('tbd');
     else if (isWinner === true)  cls.push('winner');
     else if (isWinner === false) cls.push('loser');
     return { type: 'team', name: name || null, cls: cls.join(' '), rowspan: 1 };
   }
 
-  // Helper: score cell (thin border continuation of team cell)
-  function scoreCellD(isWinner) {
-    return { type: 'score', cls: isWinner ? 'score-cell winner' : 'score-cell', rowspan: 1 };
-  }
-
-  // Helper: connector cell
   function connD(side, rowspan) {
     return { type: 'conn', cls: side === 'left' ? 'conn-left' : 'conn-right', rowspan };
   }
 
-  // Helper: gap cell
   function gapD(rowspan) {
     return { type: 'gap', cls: 'gap', rowspan };
   }
 
-  // ── Place gap columns (full height) ─────────────────────
-  [COL.L_GAP1, COL.L_GAP2, COL.L_GAP3, COL.L_GAP4,
-   COL.R_GAP1, COL.R_GAP2, COL.R_GAP3, COL.R_GAP4].forEach(col => {
+  // ── Gap columns ──────────────────────────────────────────
+  [COL.R32_GAP, COL.R16_GAP, COL.QF_GAP, COL.SF_GAP].forEach(col => {
     place(0, col, gapD(TOTAL_ROWS));
   });
 
-  // ── Place center cell (full height) ─────────────────────
-  const finalMatch = b['FINAL'] || {};
-  const champion = finalMatch.predicted_team || null;
-  place(0, COL.CENTER, {
-    type: 'center',
+  // ── Final column ─────────────────────────────────────────
+  const finalM  = b['FINAL'] || {};
+  const thirdM  = b['THIRD'] || {};
+  const champion = finalM.predicted_team || null;
+  place(0, COL.FINAL, {
+    type: 'final-col',
+    finalHome:  finalM.home  || null,
+    finalAway:  finalM.away  || null,
+    finalWinner: finalM.predicted_team || null,
+    thirdHome:  thirdM.home  || null,
+    thirdAway:  thirdM.away  || null,
+    thirdWinner: thirdM.predicted_team || null,
     champion,
     tiebreaker: (typeof tb === 'number') ? tb : null,
     rowspan: TOTAL_ROWS,
-    cls: 'center-cell',
+    cls: 'final-col-cell',
   });
 
-  // ── Left half ────────────────────────────────────────────
+  // ── Helper: place one match pair ─────────────────────────
+  // teamCol: column index for team cell
+  // clCol, crCol: connector-left and connector-right columns
+  // pairIdx: 0-based pair index within the round
+  // rowsPerMatch: rows each match occupies
+  // ids: [topMatchId, bottomMatchId]
+  function placePair(teamCol, clCol, crCol, pairIdx, rowsPerMatch, ids) {
+    const connRowspan = rowsPerMatch * 2;
+    const [topId, botId] = ids;
 
-  // R32 left — 8 matches, 12 rows each, paired into 4 groups of 2
-  HALF.left.r32.forEach((id, i) => {
-    const start = i * 12;
-    const m = b[id] || {};
-    const home = m.home || null;
-    const away = m.away || null;
-    const pred = m.predicted_team || null;
-    const homeWin = pred !== null && home !== null && pred === home;
-    const awayWin = pred !== null && away !== null && pred === away;
+    // Top match — team rows at +1 within the match block
+    const topStart = pairIdx * connRowspan;
+    const topTeam1Row = topStart + Math.floor(rowsPerMatch * 0.25);
+    const topTeam2Row = topStart + Math.floor(rowsPerMatch * 0.75);
 
-    place(start + 2, COL.L_R32_TEAM,  teamCellD(home, homeWin ? true : awayWin ? false : null));
-    place(start + 2, COL.L_R32_SCORE, scoreCellD(homeWin));
-    place(start + 8, COL.L_R32_TEAM,  teamCellD(away, awayWin ? true : homeWin ? false : null));
-    place(start + 8, COL.L_R32_SCORE, scoreCellD(awayWin));
+    const topM = b[topId] || {};
+    const topHome = topM.home || null;
+    const topAway = topM.away || null;
+    const topPred = topM.predicted_team || null;
+    const topHW = topPred !== null && topHome !== null && topPred === topHome;
+    const topAW = topPred !== null && topAway !== null && topPred === topAway;
 
-    // Connector: top match of each pair spans 24 rows (covers both matches)
-    if (i % 2 === 0) place(start + 2, COL.L_R32_CONN, connD('left', 24));
-  });
+    place(topTeam1Row, teamCol, teamD(topHome, topHW ? true : topAW ? false : null));
+    place(topTeam2Row, teamCol, teamD(topAway, topAW ? true : topHW ? false : null));
 
-  // R16 left — 4 matches, 24 rows each
-  HALF.left.r16.forEach((id, i) => {
-    const start = i * 24;
-    const m = b[id] || {};
-    const home = m.home || null;
-    const away = m.away || null;
-    const pred = m.predicted_team || null;
-    const homeWin = pred !== null && home !== null && pred === home;
-    const awayWin = pred !== null && away !== null && pred === away;
+    // Bottom match
+    const botStart = topStart + rowsPerMatch;
+    const botTeam1Row = botStart + Math.floor(rowsPerMatch * 0.25);
+    const botTeam2Row = botStart + Math.floor(rowsPerMatch * 0.75);
 
-    place(start + 5,  COL.L_R16_TEAM,  teamCellD(home, homeWin ? true : awayWin ? false : null));
-    place(start + 5,  COL.L_R16_SCORE, scoreCellD(homeWin));
-    place(start + 17, COL.L_R16_TEAM,  teamCellD(away, awayWin ? true : homeWin ? false : null));
-    place(start + 17, COL.L_R16_SCORE, scoreCellD(awayWin));
+    const botM = b[botId] || {};
+    const botHome = botM.home || null;
+    const botAway = botM.away || null;
+    const botPred = botM.predicted_team || null;
+    const botHW = botPred !== null && botHome !== null && botPred === botHome;
+    const botAW = botPred !== null && botAway !== null && botPred === botAway;
 
-    if (i % 2 === 0) place(start + 5, COL.L_R16_CONN, connD('left', 48));
-  });
+    place(botTeam1Row, teamCol, teamD(botHome, botHW ? true : botAW ? false : null));
+    place(botTeam2Row, teamCol, teamD(botAway, botAW ? true : botHW ? false : null));
 
-  // QF left — 2 matches, 48 rows each
-  HALF.left.qf.forEach((id, i) => {
-    const start = i * 48;
-    const m = b[id] || {};
-    const home = m.home || null;
-    const away = m.away || null;
-    const pred = m.predicted_team || null;
-    const homeWin = pred !== null && home !== null && pred === home;
-    const awayWin = pred !== null && away !== null && pred === away;
-
-    place(start + 11, COL.L_QF_TEAM,  teamCellD(home, homeWin ? true : awayWin ? false : null));
-    place(start + 11, COL.L_QF_SCORE, scoreCellD(homeWin));
-    place(start + 35, COL.L_QF_TEAM,  teamCellD(away, awayWin ? true : homeWin ? false : null));
-    place(start + 35, COL.L_QF_SCORE, scoreCellD(awayWin));
-
-    if (i % 2 === 0) place(start + 11, COL.L_QF_CONN, connD('left', TOTAL_ROWS - (start + 11)));
-  });
-
-  // SF left — 1 match, team rows at 23 and 71
-  {
-    const m = b[HALF.left.sf] || {};
-    const home = m.home || null;
-    const away = m.away || null;
-    const pred = m.predicted_team || null;
-    const homeWin = pred !== null && home !== null && pred === home;
-    const awayWin = pred !== null && away !== null && pred === away;
-
-    place(23, COL.L_SF_TEAM,  teamCellD(home, homeWin ? true : awayWin ? false : null));
-    place(23, COL.L_SF_SCORE, scoreCellD(homeWin));
-    place(71, COL.L_SF_TEAM,  teamCellD(away, awayWin ? true : homeWin ? false : null));
-    place(71, COL.L_SF_SCORE, scoreCellD(awayWin));
-    place(23, COL.L_SF_CONN,  connD('left', TOTAL_ROWS - 23));
+    // Connectors span the full pair
+    if (clCol !== null) place(topTeam1Row, clCol, connD('left',  connRowspan - topTeam1Row + topStart));
+    if (crCol !== null) place(topTeam1Row, crCol, connD('right', connRowspan - topTeam1Row + topStart));
   }
 
-  // ── Right half (mirror — connectors on right side of cells) ─
-
-  // SF right
-  {
-    const m = b[HALF.right.sf] || {};
-    const home = m.home || null;
-    const away = m.away || null;
-    const pred = m.predicted_team || null;
-    const homeWin = pred !== null && home !== null && pred === home;
-    const awayWin = pred !== null && away !== null && pred === away;
-
-    place(23, COL.R_SF_CONN,  connD('right', TOTAL_ROWS - 23));
-    place(23, COL.R_SF_SCORE, scoreCellD(homeWin));
-    place(23, COL.R_SF_TEAM,  teamCellD(home, homeWin ? true : awayWin ? false : null));
-    place(71, COL.R_SF_SCORE, scoreCellD(awayWin));
-    place(71, COL.R_SF_TEAM,  teamCellD(away, awayWin ? true : homeWin ? false : null));
+  // ── R32: 16 matches = 8 pairs, 6 rows/match ──────────────
+  for (let p = 0; p < 8; p++) {
+    placePair(COL.R32_TEAM, COL.R32_CL, COL.R32_CR, p, 6,
+      [R32_ORDER[p*2], R32_ORDER[p*2+1]]);
   }
 
-  // QF right — 2 matches, 48 rows each
-  HALF.right.qf.forEach((id, i) => {
-    const start = i * 48;
-    const m = b[id] || {};
-    const home = m.home || null;
-    const away = m.away || null;
-    const pred = m.predicted_team || null;
-    const homeWin = pred !== null && home !== null && pred === home;
-    const awayWin = pred !== null && away !== null && pred === away;
+  // ── R16: 8 matches = 4 pairs, 12 rows/match ──────────────
+  for (let p = 0; p < 4; p++) {
+    placePair(COL.R16_TEAM, COL.R16_CL, COL.R16_CR, p, 12,
+      [R16_ORDER[p*2], R16_ORDER[p*2+1]]);
+  }
 
-    if (i % 2 === 0) place(start + 11, COL.R_QF_CONN, connD('right', TOTAL_ROWS - (start + 11)));
-    place(start + 11, COL.R_QF_SCORE, scoreCellD(homeWin));
-    place(start + 11, COL.R_QF_TEAM,  teamCellD(home, homeWin ? true : awayWin ? false : null));
-    place(start + 35, COL.R_QF_SCORE, scoreCellD(awayWin));
-    place(start + 35, COL.R_QF_TEAM,  teamCellD(away, awayWin ? true : homeWin ? false : null));
-  });
+  // ── QF: 4 matches = 2 pairs, 24 rows/match ───────────────
+  for (let p = 0; p < 2; p++) {
+    placePair(COL.QF_TEAM, COL.QF_CL, COL.QF_CR, p, 24,
+      [QF_ORDER[p*2], QF_ORDER[p*2+1]]);
+  }
 
-  // R16 right — 4 matches, 24 rows each
-  HALF.right.r16.forEach((id, i) => {
-    const start = i * 24;
-    const m = b[id] || {};
-    const home = m.home || null;
-    const away = m.away || null;
-    const pred = m.predicted_team || null;
-    const homeWin = pred !== null && home !== null && pred === home;
-    const awayWin = pred !== null && away !== null && pred === away;
+  // ── SF: 2 matches = 1 pair, 48 rows/match ────────────────
+  // No connectors on SF — it feeds into Final column directly
+  placePair(COL.SF_TEAM, null, null, 0, 48,
+    [SF_ORDER[0], SF_ORDER[1]]);
 
-    if (i % 2 === 0) place(start + 5, COL.R_R16_CONN, connD('right', 48));
-    place(start + 5,  COL.R_R16_SCORE, scoreCellD(homeWin));
-    place(start + 5,  COL.R_R16_TEAM,  teamCellD(home, homeWin ? true : awayWin ? false : null));
-    place(start + 17, COL.R_R16_SCORE, scoreCellD(awayWin));
-    place(start + 17, COL.R_R16_TEAM,  teamCellD(away, awayWin ? true : homeWin ? false : null));
-  });
-
-  // R32 right — 8 matches, 12 rows each
-  HALF.right.r32.forEach((id, i) => {
-    const start = i * 12;
-    const m = b[id] || {};
-    const home = m.home || null;
-    const away = m.away || null;
-    const pred = m.predicted_team || null;
-    const homeWin = pred !== null && home !== null && pred === home;
-    const awayWin = pred !== null && away !== null && pred === away;
-
-    if (i % 2 === 0) place(start + 2, COL.R_R32_CONN, connD('right', 24));
-    place(start + 2, COL.R_R32_SCORE, scoreCellD(homeWin));
-    place(start + 2, COL.R_R32_TEAM,  teamCellD(home, homeWin ? true : awayWin ? false : null));
-    place(start + 8, COL.R_R32_SCORE, scoreCellD(awayWin));
-    place(start + 8, COL.R_R32_TEAM,  teamCellD(away, awayWin ? true : homeWin ? false : null));
-  });
-
-  // ── Build the DOM table row by row ───────────────────────
+  // ── Build DOM table row by row ───────────────────────────
   const table = document.createElement('table');
   table.className = 'bracket-table';
 
-  // Header
+  // Header row
   const thead = table.createTHead();
-  const hrow = thead.insertRow();
+  const hrow  = thead.insertRow();
   function addTh(text, colspan) {
     const td = document.createElement('td');
+    td.colSpan = colspan || 1;
     if (text) { td.className = 'round-header'; td.textContent = text; }
-    td.colSpan = colspan;
     hrow.appendChild(td);
   }
+  // R32: team+conn-L+conn-R = 3 cols, gap = 1
   addTh('Round of 32', 3); addTh('', 1);
   addTh('Round of 16', 3); addTh('', 1);
   addTh('Quarterfinals', 3); addTh('', 1);
-  addTh('Semifinals', 3); addTh('', 1);
+  addTh('Semifinals', 2);
   addTh('Final', 1);
-  addTh('', 1); addTh('Semifinals', 3);
-  addTh('', 1); addTh('Quarterfinals', 3);
-  addTh('', 1); addTh('Round of 16', 3);
-  addTh('', 1); addTh('Round of 32', 3);
 
   // Body
   const tbody = table.createTBody();
@@ -365,45 +276,86 @@ function renderBracket(data) {
     const tr = tbody.insertRow();
     for (let c = 0; c < NUM_COLS; c++) {
       const cell = grid[r][c];
+      if (cell === 'occupied') continue;
+
+      const td = document.createElement('td');
+
       if (cell === null) {
-        // Empty cell (no content, no rowspan needed)
-        tr.appendChild(document.createElement('td'));
-      } else if (cell === 'occupied') {
-        // Covered by a rowspan from above — skip
-        continue;
-      } else {
-        // Real cell
-        const td = document.createElement('td');
-        td.className = cell.cls || '';
-        if (cell.rowspan && cell.rowspan > 1) td.rowSpan = cell.rowspan;
-
-        if (cell.type === 'team') {
-          td.textContent = displayName(cell.name);
-          if (cell.name) td.title = cell.name;
-        } else if (cell.type === 'center') {
-          const ch = document.createElement('div');
-          ch.className = 'champion-callout';
-          ch.textContent = cell.champion ? `🏆 ${cell.champion}` : '🏆 TBD';
-          td.appendChild(ch);
-
-          const lbl = document.createElement('div');
-          lbl.className = 'tiebreaker-label';
-          lbl.textContent = 'Total goals scored in the final game';
-          td.appendChild(lbl);
-
-          const val = document.createElement('div');
-          val.className = 'tiebreaker-value';
-          val.textContent = cell.tiebreaker !== null ? cell.tiebreaker : '—';
-          td.appendChild(val);
-        }
-        // conn, score, gap cells: no text content
-
+        // empty cell
         tr.appendChild(td);
+        continue;
       }
+
+      td.className = cell.cls || '';
+      if (cell.rowspan > 1) td.rowSpan = cell.rowspan;
+
+      if (cell.type === 'team') {
+        td.textContent = displayName(cell.name);
+        if (cell.name) td.title = cell.name;
+
+      } else if (cell.type === 'final-col') {
+        // Final match
+        const finalLabel = document.createElement('div');
+        finalLabel.className = 'final-col__label';
+        finalLabel.textContent = 'Final';
+        td.appendChild(finalLabel);
+
+        const finalHome = document.createElement('div');
+        finalHome.className = 'final-col__team' + (cell.finalWinner === cell.finalHome && cell.finalHome ? ' winner' : '');
+        finalHome.textContent = displayName(cell.finalHome);
+        if (cell.finalHome) finalHome.title = cell.finalHome;
+        td.appendChild(finalHome);
+
+        const finalAway = document.createElement('div');
+        finalAway.className = 'final-col__team' + (cell.finalWinner === cell.finalAway && cell.finalAway ? ' winner' : '');
+        finalAway.textContent = displayName(cell.finalAway);
+        if (cell.finalAway) finalAway.title = cell.finalAway;
+        td.appendChild(finalAway);
+
+        const tbRow = document.createElement('div');
+        tbRow.className = 'final-col__tiebreaker';
+        tbRow.textContent = 'Total goals: ' + (cell.tiebreaker !== null ? cell.tiebreaker : '—');
+        td.appendChild(tbRow);
+
+        // Divider
+        const div1 = document.createElement('div');
+        div1.className = 'final-col__divider';
+        td.appendChild(div1);
+
+        // Third place match
+        const thirdLabel = document.createElement('div');
+        thirdLabel.className = 'final-col__label';
+        thirdLabel.textContent = 'Third place';
+        td.appendChild(thirdLabel);
+
+        const thirdHome = document.createElement('div');
+        thirdHome.className = 'final-col__team' + (cell.thirdWinner === cell.thirdHome && cell.thirdHome ? ' winner' : '');
+        thirdHome.textContent = displayName(cell.thirdHome);
+        if (cell.thirdHome) thirdHome.title = cell.thirdHome;
+        td.appendChild(thirdHome);
+
+        const thirdAway = document.createElement('div');
+        thirdAway.className = 'final-col__team' + (cell.thirdWinner === cell.thirdAway && cell.thirdAway ? ' winner' : '');
+        thirdAway.textContent = displayName(cell.thirdAway);
+        if (cell.thirdAway) thirdAway.title = cell.thirdAway;
+        td.appendChild(thirdAway);
+
+        // Champion callout — generous spacing above
+        const div2 = document.createElement('div');
+        div2.className = 'final-col__divider final-col__divider--tall';
+        td.appendChild(div2);
+
+        const champ = document.createElement('div');
+        champ.className = 'champion-callout';
+        champ.textContent = cell.champion ? `🏆 ${cell.champion}` : '🏆 TBD';
+        td.appendChild(champ);
+      }
+      // conn, gap: no content
+
+      tr.appendChild(td);
     }
   }
 
-  document.getElementById('bracket-loading').classList.add('hidden');
   document.getElementById('bracket-wrap').appendChild(table);
 }
 
