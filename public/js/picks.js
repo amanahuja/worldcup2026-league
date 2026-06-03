@@ -248,7 +248,7 @@ function renderBracket(data) {
     place(start + 35, COL.L_QF_TEAM,  teamCellD(away, awayWin ? true : homeWin ? false : null));
     place(start + 35, COL.L_QF_SCORE, scoreCellD(awayWin));
 
-    if (i % 2 === 0) place(start + 11, COL.L_QF_CONN, connD('left', TOTAL_ROWS));
+    if (i % 2 === 0) place(start + 11, COL.L_QF_CONN, connD('left', TOTAL_ROWS - (start + 11)));
   });
 
   // SF left — 1 match, team rows at 23 and 71
@@ -264,7 +264,7 @@ function renderBracket(data) {
     place(23, COL.L_SF_SCORE, scoreCellD(homeWin));
     place(71, COL.L_SF_TEAM,  teamCellD(away, awayWin ? true : homeWin ? false : null));
     place(71, COL.L_SF_SCORE, scoreCellD(awayWin));
-    place(23, COL.L_SF_CONN,  connD('left', TOTAL_ROWS));
+    place(23, COL.L_SF_CONN,  connD('left', TOTAL_ROWS - 23));
   }
 
   // ── Right half (mirror — connectors on right side of cells) ─
@@ -278,7 +278,7 @@ function renderBracket(data) {
     const homeWin = pred !== null && home !== null && pred === home;
     const awayWin = pred !== null && away !== null && pred === away;
 
-    place(23, COL.R_SF_CONN,  connD('right', TOTAL_ROWS));
+    place(23, COL.R_SF_CONN,  connD('right', TOTAL_ROWS - 23));
     place(23, COL.R_SF_SCORE, scoreCellD(homeWin));
     place(23, COL.R_SF_TEAM,  teamCellD(home, homeWin ? true : awayWin ? false : null));
     place(71, COL.R_SF_SCORE, scoreCellD(awayWin));
@@ -295,7 +295,7 @@ function renderBracket(data) {
     const homeWin = pred !== null && home !== null && pred === home;
     const awayWin = pred !== null && away !== null && pred === away;
 
-    if (i % 2 === 0) place(start + 11, COL.R_QF_CONN, connD('right', TOTAL_ROWS));
+    if (i % 2 === 0) place(start + 11, COL.R_QF_CONN, connD('right', TOTAL_ROWS - (start + 11)));
     place(start + 11, COL.R_QF_SCORE, scoreCellD(homeWin));
     place(start + 11, COL.R_QF_TEAM,  teamCellD(home, homeWin ? true : awayWin ? false : null));
     place(start + 35, COL.R_QF_SCORE, scoreCellD(awayWin));
