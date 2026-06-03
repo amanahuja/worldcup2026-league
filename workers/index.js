@@ -24,6 +24,7 @@ import {
   handleGetPredictions,
   handlePostGroupPredictions,
   handlePostKnockoutPredictions,
+  handleGetPublicPicks,
 } from './predictions-worker.js';
 import { handleScheduled } from './results-worker.js';
 import { handleGetScores } from './scores-worker.js';
@@ -69,6 +70,13 @@ export default {
       // POST /api/logout
       if (pathname === '/api/logout' && method === 'POST') {
         return cors(handleLogout(request));
+      }
+
+      // GET /api/picks/:username — public, no auth required
+      if (pathname.startsWith('/api/picks/') && method === 'GET') {
+        const username = pathname.slice('/api/picks/'.length);
+        if (!username) return json({ error: 'Username required' }, 400);
+        return cors(await handleGetPublicPicks(username, env));
       }
 
       // GET /api/scores — public, no auth required

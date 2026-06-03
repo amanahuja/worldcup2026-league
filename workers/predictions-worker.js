@@ -19,6 +19,7 @@
  */
 
 import { getSession } from './auth-worker.js';
+import { deriveUserBracket, parseGroupsYaml, parseResultsYaml, parsePredictionYaml } from './scores-worker.js';
 
 // ---------------------------------------------------------------------------
 // Lock dates (UTC)
@@ -205,6 +206,57 @@ export async function handlePostGroupPredictions(request, env, session) {
   return new Response(JSON.stringify({ ok: true }), {
     status: 200,
     headers: { 'Content-Type': 'application/json' },
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Public picks handler (no auth — used by share page)
+// ---------------------------------------------------------------------------
+
+export async function handleGetPublicPicks(username, env) {
+  // Validate username exists in KV
+  const stored = await env.WC2026_USERS.get(username.toLowerCase());
+  if (!stored) {
+    return new Response(JSON.stringify({ error: 'User not found' }), {
+      status: 404,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  // Fetch all required files in parallel
+  const [groupsFile, resultsFile, defaultsGroupFile, defaultsKnockoutFile, userGroupFile, userKnockoutFile] =
+    await Promise.all([
+      githubGet('data/groups.yaml', env),
+      githubGet('data/results.yaml', env),
+      githubGet('data/predictions/defaults-groups.yaml', env),
+      githubGet('data/predictions/defaults-knockout.yaml', env),
+      githubGet(`data/predictions/${username.toLowerCase()}-groups.yaml`, env),
+      githubGet(`data/predictions/${username.toLowerCase()}-knockout.yaml`, env),
+    ]);
+
+  const groupsData = groupsFile ? parseGroupsYaml(groupsFile.content) : new Map();
+  const { matches: actualResults } = resultsFile
+    ? parseResultsYaml(resultsFile.content)
+    : { matches: new Map() };
+
+  const defaultsG  = defaultsGroupFile   ? parsePredictionYaml(defaultsGroupFile.content)   : { predictions: new Map() };
+  const defaultsK  = defaultsKnockoutFile ? parsePredictionYaml(defaultsKnockoutFile.content) : { predictions: new Map(), tiebreaker_goals: null };
+  const userG      = userGroupFile        ? parsePredictionYaml(userGroupFile.content)        : { predictions: new Map() };
+  const userK      = userKnockoutFile     ? parsePredictionYaml(userKnockoutFile.content)     : { predictions: new Map(), tiebreaker_goals: null };
+
+  // Merge: user picks override defaults
+  const mergedGroupPreds    = new Map([...defaultsG.predictions, ...userG.predictions]);
+  const mergedKnockoutPreds = new Map([...defaultsK.predictions, ...userK.predictions]);
+
+  const bracket = deriveUserBracket(mergedGroupPreds, mergedKnockoutPreds, groupsData, actualResults);
+
+  return new Response(JSON.stringify({
+    username: username.toLowerCase(),
+    bracket: Object.fromEntries(bracket),
+    tiebreaker_goals: userK.tiebreaker_goals ?? defaultsK.tiebreaker_goals ?? null,
+  }), {
+    status: 200,
+    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
   });
 }
 

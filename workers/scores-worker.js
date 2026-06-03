@@ -49,7 +49,7 @@ import { githubGet, githubPut, listDirectory } from './github.js';
 // Minimal YAML parsers
 // ---------------------------------------------------------------------------
 
-function parseResultsYaml(text) {
+export function parseResultsYaml(text) {
   // Returns: { last_updated, matches: Map<id → {status, home_score, away_score, home_pen, away_pen, winner}> }
   const matches = new Map();
   let current = null;
@@ -82,7 +82,7 @@ function parseResultsYaml(text) {
   return { last_updated: luMatch?.[1] || null, matches };
 }
 
-function parsePredictionYaml(text) {
+export function parsePredictionYaml(text) {
   // Returns: { username, tiebreaker_goals, predictions: Map<matchId → predicted_winner> }
   const predictions = new Map();
   let username = null;
@@ -119,7 +119,7 @@ function parsePredictionYaml(text) {
   return { username, tiebreaker_goals: tiebreakerGoals, predictions };
 }
 
-function parseGroupsYaml(text) {
+export function parseGroupsYaml(text) {
   // Returns: { groups: Map<letter → { teams: [], matches: [{id, home, away, home_abbr, away_abbr, date, kickoff_utc}] }> }
   const groups = new Map();
   let currentGroup = null;
@@ -399,6 +399,139 @@ function buildBracket(groupStandings, results) {
     winner: thirdWinner,
     winningTeam: thirdWinner === 'home' ? sf1Loser : thirdWinner === 'away' ? sf2Loser : null,
     status: thirdResult?.status || 'scheduled',
+  });
+
+  return bracket;
+}
+
+// ---------------------------------------------------------------------------
+// Per-user bracket derivation (for share page)
+// ---------------------------------------------------------------------------
+
+/**
+ * Derive a user's predicted bracket with resolved team names.
+ *
+ * Uses the user's group predictions to determine R32 team names
+ * (falling back to actual results where available), then propagates
+ * the user's knockout picks round by round.
+ *
+ * @param {Map} mergedGroupPreds   - Map<matchId → predicted_winner> (merged defaults + user)
+ * @param {Map} mergedKnockoutPreds - Map<matchId → predicted_winner> (merged defaults + user)
+ * @param {Map} groupsData         - parsed groups.yaml (letter → {teams, matches})
+ * @param {Map} actualResults      - parsed results.yaml (matchId → result)
+ * @returns {Map} matchId → { home, away, predicted_team }
+ */
+export function deriveUserBracket(mergedGroupPreds, mergedKnockoutPreds, groupsData, actualResults) {
+  // Build group standings from user's group predictions (synthetic results),
+  // falling back to actual results where matches have been played.
+  const userGroupStandings = new Map();
+  for (const [letter, data] of groupsData) {
+    const syntheticResults = new Map();
+    for (const match of data.matches) {
+      const actual = actualResults.get(match.id);
+      if (actual?.status === 'completed') {
+        syntheticResults.set(match.id, actual);
+      } else {
+        const pred = mergedGroupPreds.get(match.id);
+        if (pred) {
+          syntheticResults.set(match.id, {
+            status: 'completed',
+            home_score: pred === 'home' ? 1 : pred === 'away' ? 0 : 0,
+            away_score: pred === 'away' ? 1 : pred === 'home' ? 0 : 0,
+            winner: pred,
+          });
+        }
+      }
+    }
+    userGroupStandings.set(letter, calcStandings(data, syntheticResults));
+  }
+
+  // Resolve R32 team names from the user's group standings
+  const bestThirds = selectBestThirds(userGroupStandings);
+  let thirdIdx = 0;
+  const bracket = new Map();
+
+  for (const m of R32_BRACKET) {
+    const [s1, s2] = m.slots;
+    let home, away;
+    if (s1.startsWith('3')) { home = bestThirds[thirdIdx++] || null; }
+    else { home = resolveSlot(s1, userGroupStandings, bestThirds); }
+    if (s2.startsWith('3')) { away = bestThirds[thirdIdx++] || null; }
+    else { away = resolveSlot(s2, userGroupStandings, bestThirds); }
+
+    // Use actual result if match has been played, otherwise user's pick
+    const actual = actualResults.get(m.id);
+    let predictedTeam;
+    if (actual?.status === 'completed') {
+      const w = deriveWinner(actual);
+      predictedTeam = w === 'home' ? home : w === 'away' ? away : null;
+    } else {
+      const pick = mergedKnockoutPreds.get(m.id);
+      predictedTeam = pick === 'home' ? home : pick === 'away' ? away : null;
+    }
+    bracket.set(m.id, { home, away, predicted_team: predictedTeam });
+  }
+
+  // Propagate R16 → QF → SF using user's knockout picks
+  const propagate = (rounds) => {
+    for (const m of rounds) {
+      const [f1, f2] = m.feeders;
+      const home = bracket.get(f1)?.predicted_team || null;
+      const away = bracket.get(f2)?.predicted_team || null;
+
+      const actual = actualResults.get(m.id);
+      let predictedTeam;
+      if (actual?.status === 'completed') {
+        const w = deriveWinner(actual);
+        predictedTeam = w === 'home' ? home : w === 'away' ? away : null;
+      } else {
+        const pick = mergedKnockoutPreds.get(m.id);
+        predictedTeam = pick === 'home' ? home : pick === 'away' ? away : null;
+      }
+      bracket.set(m.id, { home, away, predicted_team: predictedTeam });
+    }
+  };
+
+  propagate(R16_BRACKET);
+  propagate(QF_BRACKET);
+  propagate(SF_BRACKET);
+
+  // Final
+  const sf1 = bracket.get('SF_101');
+  const sf2 = bracket.get('SF_102');
+  const finalActual = actualResults.get('FINAL');
+  let finalPredicted;
+  if (finalActual?.status === 'completed') {
+    const w = deriveWinner(finalActual);
+    finalPredicted = w === 'home' ? sf1?.predicted_team : w === 'away' ? sf2?.predicted_team : null;
+  } else {
+    const pick = mergedKnockoutPreds.get('FINAL');
+    finalPredicted = pick === 'home' ? sf1?.predicted_team : pick === 'away' ? sf2?.predicted_team : null;
+  }
+  bracket.set('FINAL', {
+    home: sf1?.predicted_team || null,
+    away: sf2?.predicted_team || null,
+    predicted_team: finalPredicted,
+  });
+
+  // Third place: losers of both SFs
+  const sf1Pick = mergedKnockoutPreds.get('SF_101');
+  const sf2Pick = mergedKnockoutPreds.get('SF_102');
+  const sf1Loser = sf1 ? (sf1Pick === 'home' ? sf1.away : sf1.home) : null;
+  const sf2Loser = sf2 ? (sf2Pick === 'home' ? sf2.away : sf2.home) : null;
+  const thirdActual = actualResults.get('THIRD');
+  let thirdPredicted;
+  if (thirdActual?.status === 'completed') {
+    const w = deriveWinner(thirdActual);
+    thirdPredicted = w === 'home' ? sf1Loser : w === 'away' ? sf2Loser : null;
+  } else {
+    const pick = mergedKnockoutPreds.get('THIRD');
+    thirdPredicted = pick === 'home' ? sf1Loser : pick === 'away' ? sf2Loser : null;
+  }
+  bracket.set('THIRD', {
+    home: sf1Loser,
+    away: sf2Loser,
+    predicted_team: thirdPredicted,
   });
 
   return bracket;
