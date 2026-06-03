@@ -33,3 +33,5 @@ predictions:
     predicted_winner: home
   R32_84:
     predicted_winner: away
+  THIRD:
+    predicted_winner: away
