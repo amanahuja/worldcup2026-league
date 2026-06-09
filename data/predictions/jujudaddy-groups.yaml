@@ -4,3 +4,5 @@ predictions:
     predicted_winner: home
   G_A1:
     predicted_winner: home
+  G_A3:
+    predicted_winner: away
