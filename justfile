@@ -23,6 +23,13 @@ adduser user pass:
   mise exec -- wrangler kv key put --binding WC2026_USERS --remote "{{user}}" "{{pass}}"
   echo "{{user}} / {{pass}}" >> {{private_configpath}}/users.txt
 
+# delete a user
+# usage: deleteuser foo
+deleteuser user:
+  @grep -q "^{{user}} /" {{private_configpath}}/users.txt || (echo "Error: user '{{user}}' not found in users.txt" && exit 1)
+  mise exec -- wrangler kv key delete --binding WC2026_USERS --remote "{{user}}"
+  sed -i "/^{{user}} \//d" {{private_configpath}}/users.txt
+
 # show prediction counts per user
 pcount:
   @for user in $(cat {{private_configpath}}/users.txt | cut -d'/' -f1 | tr -d ' '); do \
