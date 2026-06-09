@@ -8,3 +8,5 @@ predictions:
     predicted_winner: away
   G_A4:
     predicted_winner: away
+  G_A6:
+    predicted_winner: draw
