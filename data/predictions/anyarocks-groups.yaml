@@ -42,3 +42,5 @@ predictions:
     predicted_winner: home
   G_L1:
     predicted_winner: away
+  G_L2:
+    predicted_winner: home
