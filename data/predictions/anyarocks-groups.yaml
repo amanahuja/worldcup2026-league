@@ -20,3 +20,5 @@ predictions:
     predicted_winner: away
   G_G5:
     predicted_winner: home
+  G_G3:
+    predicted_winner: draw
