@@ -2,3 +2,5 @@ username: youcantwinyamal
 predictions:
   G_A4:
     predicted_winner: home
+  G_A3:
+    predicted_winner: draw
