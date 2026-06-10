@@ -28,3 +28,5 @@ predictions:
     predicted_winner: home
   G_J5:
     predicted_winner: home
+  G_K5:
+    predicted_winner: away
