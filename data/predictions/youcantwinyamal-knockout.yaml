@@ -3,3 +3,5 @@ tiebreaker_goals: null
 predictions:
   R32_78:
     predicted_winner: home
+  R16_93:
+    predicted_winner: away
