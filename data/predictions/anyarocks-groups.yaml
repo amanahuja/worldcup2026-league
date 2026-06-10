@@ -9,7 +9,7 @@ predictions:
   G_D2:
     predicted_winner: away
   G_D3:
-    predicted_winner: draw
+    predicted_winner: home
   G_D5:
     predicted_winner: home
   G_E2:
