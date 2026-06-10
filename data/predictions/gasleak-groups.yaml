@@ -2,3 +2,5 @@ username: gasleak
 predictions:
   G_A2:
     predicted_winner: draw
+  G_D5:
+    predicted_winner: draw
