@@ -5,3 +5,5 @@ predictions:
     predicted_winner: home
   R16_93:
     predicted_winner: away
+  R32_73:
+    predicted_winner: away
