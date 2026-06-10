@@ -24,3 +24,5 @@ predictions:
     predicted_winner: draw
   G_J4:
     predicted_winner: draw
+  G_K5:
+    predicted_winner: away
