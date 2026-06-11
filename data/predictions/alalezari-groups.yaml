@@ -2,3 +2,5 @@ username: alalezari
 predictions:
   G_A2:
     predicted_winner: draw
+  G_A4:
+    predicted_winner: home
