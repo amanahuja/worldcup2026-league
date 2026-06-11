@@ -2,3 +2,5 @@ username: kdawg
 predictions:
   G_A3:
     predicted_winner: draw
+  G_B5:
+    predicted_winner: home
