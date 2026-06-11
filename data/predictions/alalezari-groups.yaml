@@ -26,3 +26,5 @@ predictions:
     predicted_winner: draw
   G_F2:
     predicted_winner: draw
+  G_F5:
+    predicted_winner: draw
