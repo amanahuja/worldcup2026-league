@@ -4,3 +4,5 @@ predictions:
     predicted_winner: draw
   G_B5:
     predicted_winner: draw
+  G_D2:
+    predicted_winner: home
