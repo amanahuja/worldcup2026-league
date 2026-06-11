@@ -30,3 +30,5 @@ predictions:
     predicted_winner: draw
   G_G3:
     predicted_winner: draw
+  G_G5:
+    predicted_winner: draw
