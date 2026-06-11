@@ -12,3 +12,5 @@ predictions:
     predicted_winner: home
   G_C1:
     predicted_winner: draw
+  G_D1:
+    predicted_winner: draw
