@@ -541,20 +541,34 @@ export async function handleGetScores(request, env, session) {
     ...userFiles.filter(f => f.endsWith('-knockout.yaml')).map(f => f.replace('-knockout.yaml', '')),
   ])];
 
-  const leaderboard = [];
+  // Fetch defaults once (not once per user) to stay within the CF subrequest limit.
+  // Total subrequests: 3 (initial) + 1 (defaults-groups, already fetched above if
+  // !hasActualResults) + 1 (defaults-knockout) + 2×N (user files) = 4 + 2N.
+  // Safe up to 23 users on the Free plan (limit 50); 4,998 on Paid (limit 10,000).
+  const [dgFile, dkFile] = await Promise.all([
+    githubGet('data/predictions/defaults-groups.yaml', env),
+    githubGet('data/predictions/defaults-knockout.yaml', env),
+  ]);
+  const defaults_g = dgFile ? parsePredictionYaml(dgFile.content) : { predictions: new Map() };
+  const defaults_k = dkFile ? parsePredictionYaml(dkFile.content) : { predictions: new Map() };
 
-  for (const username of groupsUsernames) {
-    const [gFile, kFile, dgFile, dkFile] = await Promise.all([
+  // Fetch all user files in one parallel batch (2 requests per user).
+  const userFilePairs = await Promise.all(
+    groupsUsernames.flatMap(username => [
       githubGet(`data/predictions/${username}-groups.yaml`, env),
       githubGet(`data/predictions/${username}-knockout.yaml`, env),
-      githubGet('data/predictions/defaults-groups.yaml', env),
-      githubGet('data/predictions/defaults-knockout.yaml', env),
-    ]);
+    ])
+  );
 
-    const defaults_g = dgFile ? parsePredictionYaml(dgFile.content) : { predictions: new Map() };
-    const defaults_k = dkFile ? parsePredictionYaml(dkFile.content) : { predictions: new Map() };
-    const user_g     = gFile  ? parsePredictionYaml(gFile.content)  : { predictions: new Map() };
-    const user_k     = kFile  ? parsePredictionYaml(kFile.content)  : { predictions: new Map(), tiebreaker_goals: null };
+  const leaderboard = [];
+
+  for (let i = 0; i < groupsUsernames.length; i++) {
+    const username = groupsUsernames[i];
+    const gFile = userFilePairs[i * 2];
+    const kFile = userFilePairs[i * 2 + 1];
+
+    const user_g = gFile ? parsePredictionYaml(gFile.content) : { predictions: new Map() };
+    const user_k = kFile ? parsePredictionYaml(kFile.content) : { predictions: new Map(), tiebreaker_goals: null };
 
     // Merge: user picks override defaults
     const merged_g = new Map([...defaults_g.predictions, ...user_g.predictions]);
