@@ -129,8 +129,8 @@ const App = (() => {
 
   // ── Results page ─────────────────────────────────────────
 
-  // Prediction window closes at first kickoff: Jun 11 2026 19:00 UTC
-  const LOCK_DATE_GROUPS = new Date('2026-06-11T19:00:00Z');
+  // Prediction window closes: Jun 12 2026 00:00 UTC (deadline extended)
+  const LOCK_DATE_GROUPS = new Date('2026-06-12T00:00:00Z');
   // Knockout results not available until group stage ends: Jun 28 2026
   const KO_RESULTS_DATE = new Date('2026-06-28T00:00:00Z');
 
@@ -520,7 +520,7 @@ const App = (() => {
         banner.classList.remove('hidden');
         banner.classList.add('lock-banner--locked');
       } else {
-        banner.textContent = 'Group stage predictions lock Jun 11';
+        banner.textContent = 'Deadline extended! Group Stage predictions lock June 12 midnight!';
         banner.classList.remove('hidden');
       }
     }

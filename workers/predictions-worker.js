@@ -25,7 +25,7 @@ import { getSession } from './auth-worker.js';
 // ---------------------------------------------------------------------------
 
 const LOCK_DATES = {
-  groups:   new Date('2026-06-11T19:00:00Z'), // first group stage kickoff
+  groups:   new Date('2026-06-12T00:00:00Z'), // deadline extended to Jun 12 midnight UTC
   knockout: new Date('2026-06-29T00:00:00Z'), // first R32 kickoff (approx)
   // third-place lock is dynamic — checked against results.yaml SF completion
 };
