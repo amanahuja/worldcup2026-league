@@ -24,3 +24,5 @@ predictions:
     predicted_winner: home
   G_I4:
     predicted_winner: draw
+  G_I5:
+    predicted_winner: draw
