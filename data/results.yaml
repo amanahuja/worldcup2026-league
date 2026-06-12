@@ -1,49 +1,6 @@
-last_updated: "2026-06-12T05:00:28.813Z"
+last_updated: "2026-06-12T14:00:28.964Z"
 matches:
-  G_A2:
-    status: completed
-    home_score: 2
-    away_score: 1
-    home_pen: null
-    away_pen: null
-    winner: home
-  G_F2:
-    status: scheduled
-    home_score: null
-    away_score: null
-    home_pen: null
-    away_pen: null
-  G_H2:
-    status: scheduled
-    home_score: null
-    away_score: null
-    home_pen: null
-    away_pen: null
-  G_G2:
-    status: scheduled
-    home_score: null
-    away_score: null
-    home_pen: null
-    away_pen: null
-  G_I1:
-    status: scheduled
-    home_score: null
-    away_score: null
-    home_pen: null
-    away_pen: null
-  G_J2:
-    status: scheduled
-    home_score: null
-    away_score: null
-    home_pen: null
-    away_pen: null
   G_L2:
-    status: scheduled
-    home_score: null
-    away_score: null
-    home_pen: null
-    away_pen: null
-  G_K2:
     status: scheduled
     home_score: null
     away_score: null
@@ -53,6 +10,13 @@ matches:
     status: completed
     home_score: 2
     away_score: 0
+    home_pen: null
+    away_pen: null
+    winner: home
+  G_A2:
+    status: completed
+    home_score: 2
+    away_score: 1
     home_pen: null
     away_pen: null
     winner: home
@@ -110,6 +74,12 @@ matches:
     away_score: null
     home_pen: null
     away_pen: null
+  G_F2:
+    status: scheduled
+    home_score: null
+    away_score: null
+    home_pen: null
+    away_pen: null
   G_H1:
     status: scheduled
     home_score: null
@@ -117,6 +87,24 @@ matches:
     home_pen: null
     away_pen: null
   G_G1:
+    status: scheduled
+    home_score: null
+    away_score: null
+    home_pen: null
+    away_pen: null
+  G_H2:
+    status: scheduled
+    home_score: null
+    away_score: null
+    home_pen: null
+    away_pen: null
+  G_G2:
+    status: scheduled
+    home_score: null
+    away_score: null
+    home_pen: null
+    away_pen: null
+  G_I1:
     status: scheduled
     home_score: null
     away_score: null
@@ -134,6 +122,12 @@ matches:
     away_score: null
     home_pen: null
     away_pen: null
+  G_J2:
+    status: scheduled
+    home_score: null
+    away_score: null
+    home_pen: null
+    away_pen: null
   G_K1:
     status: scheduled
     home_score: null
@@ -141,6 +135,24 @@ matches:
     home_pen: null
     away_pen: null
   G_L1:
+    status: scheduled
+    home_score: null
+    away_score: null
+    home_pen: null
+    away_pen: null
+  G_K2:
+    status: scheduled
+    home_score: null
+    away_score: null
+    home_pen: null
+    away_pen: null
+  G_J3:
+    status: scheduled
+    home_score: null
+    away_score: null
+    home_pen: null
+    away_pen: null
+  G_K4:
     status: scheduled
     home_score: null
     away_score: null
@@ -242,12 +254,6 @@ matches:
     away_score: null
     home_pen: null
     away_pen: null
-  G_J3:
-    status: scheduled
-    home_score: null
-    away_score: null
-    home_pen: null
-    away_pen: null
   G_I3:
     status: scheduled
     home_score: null
@@ -279,18 +285,6 @@ matches:
     home_pen: null
     away_pen: null
   G_L4:
-    status: scheduled
-    home_score: null
-    away_score: null
-    home_pen: null
-    away_pen: null
-  G_K4:
-    status: scheduled
-    home_score: null
-    away_score: null
-    home_pen: null
-    away_pen: null
-  G_H5:
     status: scheduled
     home_score: null
     away_score: null
@@ -375,6 +369,12 @@ matches:
     home_pen: null
     away_pen: null
   G_I6:
+    status: scheduled
+    home_score: null
+    away_score: null
+    home_pen: null
+    away_pen: null
+  G_H5:
     status: scheduled
     home_score: null
     away_score: null
