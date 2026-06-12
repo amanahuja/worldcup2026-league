@@ -10,3 +10,5 @@ predictions:
     predicted_winner: draw
   G_D5:
     predicted_winner: away
+  G_D4:
+    predicted_winner: draw
