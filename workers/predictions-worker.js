@@ -25,7 +25,7 @@ import { getSession } from './auth-worker.js';
 // ---------------------------------------------------------------------------
 
 const LOCK_DATES = {
-  groups:   new Date('2026-06-13T00:00:00Z'), // deadline extended to end of Jun 12 (midnight UTC)
+  groups:   new Date('2026-06-13T07:00:00Z'), // deadline extended to end of Jun 12 midnight PT (UTC-7)
   knockout: new Date('2026-06-29T00:00:00Z'), // first R32 kickoff (approx)
   // third-place lock is dynamic — checked against results.yaml SF completion
 };
