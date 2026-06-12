@@ -129,8 +129,8 @@ const App = (() => {
 
   // ── Results page ─────────────────────────────────────────
 
-  // Prediction window closes: end of Jun 12 2026 midnight PT (= Jun 13 07:00 UTC, deadline extended)
-  const LOCK_DATE_GROUPS = new Date('2026-06-13T07:00:00Z');
+  // Prediction window closes: end of Jun 12 2026 midnight PT (= Jun 14 07:00 UTC, deadline extended)
+  const LOCK_DATE_GROUPS = new Date('2026-06-14T07:00:00Z');
   // Knockout results not available until group stage ends: Jun 28 2026
   const KO_RESULTS_DATE = new Date('2026-06-28T00:00:00Z');
 
