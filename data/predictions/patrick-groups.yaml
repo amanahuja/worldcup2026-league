@@ -2,3 +2,5 @@ username: patrick
 predictions:
   G_B5:
     predicted_winner: draw
+  G_B6:
+    predicted_winner: home
