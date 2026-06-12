@@ -240,19 +240,30 @@ function parseExistingResults(yaml) {
 // ---------------------------------------------------------------------------
 
 export async function handleScheduled(env) {
-  // 1. Check last change date
-  let lastChangedStr;
-  try {
-    const res = await fetch(
-      `${OPENLIGADB_BASE}/getlastchangedate/${LEAGUE}/${SEASON}`,
-      { headers: { 'User-Agent': 'worldcup2026-league-worker' } },
-    );
-    if (!res.ok) throw new Error(`getlastchangedate HTTP ${res.status}`);
-    lastChangedStr = (await res.text()).replace(/"/g, '').trim();
-  } catch (e) {
-    console.error('OpenLigaDB getlastchangedate failed:', e.message);
-    return; // silent failure — retain last good results.yaml
+  // 1. Check last change date across all group order IDs (endpoint requires a groupOrderID).
+  //    Take the most recent timestamp among all IDs for change detection.
+  const timestamps = [];
+  for (const groupOrderId of GROUP_ORDER_IDS) {
+    try {
+      const res = await fetch(
+        `${OPENLIGADB_BASE}/getlastchangedate/${LEAGUE}/${SEASON}/${groupOrderId}`,
+        { headers: { 'User-Agent': 'worldcup2026-league-worker' } },
+      );
+      if (!res.ok) continue;
+      const ts = (await res.text()).replace(/"/g, '').trim();
+      if (ts) timestamps.push(ts);
+    } catch {
+      // skip this group order
+    }
   }
+
+  if (!timestamps.length) {
+    console.error('OpenLigaDB getlastchangedate returned no data — skipping');
+    return;
+  }
+
+  // ISO strings sort lexicographically, so max() gives the most recent timestamp
+  const lastChangedStr = timestamps.sort().at(-1);
 
   const prevChanged = await env.WC2026_USERS.get(KV_LAST_CHANGED_KEY);
   if (prevChanged === lastChangedStr) {
