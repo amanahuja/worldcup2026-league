@@ -30,6 +30,16 @@ deleteuser user:
   mise exec -- wrangler kv key delete --binding WC2026_USERS --remote "{{user}}"
   sed -i "/^{{user}} \//d" {{private_configpath}}/users.txt
 
+# find group stage game(s) by team abbreviation
+# usage: game MEX         (all games for one team)
+#        game MEX RSA     (game between two specific teams)
+findgame team1 team2="":
+  @if [ -z "{{team2}}" ]; then \
+    yq '.groups[].matches[] | select([.home_abbr, .away_abbr] | any(test("^{{team1}}$"; "i")))' data/groups.yaml; \
+  else \
+    yq '.groups[].matches[] | select(([.home_abbr, .away_abbr] | any(test("^{{team1}}$"; "i"))) and ([.home_abbr, .away_abbr] | any(test("^{{team2}}$"; "i"))))' data/groups.yaml; \
+  fi
+
 # show prediction counts per user
 pcount:
   @for user in $(cat {{private_configpath}}/users.txt | cut -d'/' -f1 | tr -d ' '); do \
