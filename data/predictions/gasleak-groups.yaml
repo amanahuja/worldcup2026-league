@@ -36,3 +36,5 @@ predictions:
     predicted_winner: away
   G_F5:
     predicted_winner: away
+  G_B1:
+    predicted_winner: away
