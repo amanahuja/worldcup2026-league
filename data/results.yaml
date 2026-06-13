@@ -1,6 +1,6 @@
-last_updated: "2026-06-13T04:00:28.829Z"
+last_updated: "2026-06-13T06:00:28.845Z"
 matches:
-  G_J1:
+  G_L2:
     status: scheduled
     home_score: null
     away_score: null
@@ -118,6 +118,12 @@ matches:
     away_score: null
     home_pen: null
     away_pen: null
+  G_J1:
+    status: scheduled
+    home_score: null
+    away_score: null
+    home_pen: null
+    away_pen: null
   G_J2:
     status: scheduled
     home_score: null
@@ -136,25 +142,7 @@ matches:
     away_score: null
     home_pen: null
     away_pen: null
-  G_L2:
-    status: scheduled
-    home_score: null
-    away_score: null
-    home_pen: null
-    away_pen: null
   G_K2:
-    status: scheduled
-    home_score: null
-    away_score: null
-    home_pen: null
-    away_pen: null
-  G_H4:
-    status: scheduled
-    home_score: null
-    away_score: null
-    home_pen: null
-    away_pen: null
-  G_K4:
     status: scheduled
     home_score: null
     away_score: null
@@ -184,12 +172,6 @@ matches:
     away_score: null
     home_pen: null
     away_pen: null
-  G_D4:
-    status: scheduled
-    home_score: null
-    away_score: null
-    home_pen: null
-    away_pen: null
   G_D3:
     status: scheduled
     home_score: null
@@ -208,7 +190,7 @@ matches:
     away_score: null
     home_pen: null
     away_pen: null
-  G_F4:
+  G_D4:
     status: scheduled
     home_score: null
     away_score: null
@@ -232,6 +214,12 @@ matches:
     away_score: null
     home_pen: null
     away_pen: null
+  G_F4:
+    status: scheduled
+    home_score: null
+    away_score: null
+    home_pen: null
+    away_pen: null
   G_H3:
     status: scheduled
     home_score: null
@@ -239,6 +227,12 @@ matches:
     home_pen: null
     away_pen: null
   G_G3:
+    status: scheduled
+    home_score: null
+    away_score: null
+    home_pen: null
+    away_pen: null
+  G_H4:
     status: scheduled
     home_score: null
     away_score: null
@@ -287,6 +281,12 @@ matches:
     home_pen: null
     away_pen: null
   G_L4:
+    status: scheduled
+    home_score: null
+    away_score: null
+    home_pen: null
+    away_pen: null
+  G_K4:
     status: scheduled
     home_score: null
     away_score: null
