@@ -42,3 +42,5 @@ predictions:
     predicted_winner: home
   G_C1:
     predicted_winner: draw
+  G_F1:
+    predicted_winner: draw
