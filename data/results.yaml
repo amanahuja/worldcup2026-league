@@ -1,4 +1,4 @@
-last_updated: "2026-06-13T08:00:28.842Z"
+last_updated: "2026-06-13T12:00:28.784Z"
 matches:
   G_A1:
     status: completed
@@ -292,7 +292,13 @@ matches:
     away_score: null
     home_pen: null
     away_pen: null
-  G_H5:
+  G_C5:
+    status: scheduled
+    home_score: null
+    away_score: null
+    home_pen: null
+    away_pen: null
+  G_K6:
     status: scheduled
     home_score: null
     away_score: null
@@ -311,12 +317,6 @@ matches:
     home_pen: null
     away_pen: null
   G_C6:
-    status: scheduled
-    home_score: null
-    away_score: null
-    home_pen: null
-    away_pen: null
-  G_C5:
     status: scheduled
     home_score: null
     away_score: null
@@ -382,6 +382,12 @@ matches:
     away_score: null
     home_pen: null
     away_pen: null
+  G_H5:
+    status: scheduled
+    home_score: null
+    away_score: null
+    home_pen: null
+    away_pen: null
   G_H6:
     status: scheduled
     home_score: null
@@ -413,12 +419,6 @@ matches:
     home_pen: null
     away_pen: null
   G_K5:
-    status: scheduled
-    home_score: null
-    away_score: null
-    home_pen: null
-    away_pen: null
-  G_K6:
     status: scheduled
     home_score: null
     away_score: null
