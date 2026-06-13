@@ -23,3 +23,5 @@ predictions:
     predicted_winner: away
   QF_100:
     predicted_winner: away
+  SF_102:
+    predicted_winner: away
