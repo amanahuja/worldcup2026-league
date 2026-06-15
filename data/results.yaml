@@ -1,4 +1,4 @@
-last_updated: "2026-06-15T13:00:12.092Z"
+last_updated: "2026-06-15T17:00:11.162Z"
 matches:
   G_A1:
     status: completed
@@ -300,12 +300,6 @@ matches:
     away_score: null
     home_pen: null
     away_pen: null
-  G_H5:
-    status: scheduled
-    home_score: null
-    away_score: null
-    home_pen: null
-    away_pen: null
   G_B5:
     status: scheduled
     home_score: null
@@ -385,6 +379,12 @@ matches:
     home_pen: null
     away_pen: null
   G_I6:
+    status: scheduled
+    home_score: null
+    away_score: null
+    home_pen: null
+    away_pen: null
+  G_H5:
     status: scheduled
     home_score: null
     away_score: null
