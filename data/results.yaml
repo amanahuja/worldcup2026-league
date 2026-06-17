@@ -1,5 +1,12 @@
-last_updated: "2026-06-17T21:00:11.065Z"
+last_updated: "2026-06-17T22:00:10.923Z"
 matches:
+  G_I1:
+    status: completed
+    home_score: 3
+    away_score: 1
+    home_pen: null
+    away_pen: null
+    winner: home
   G_A1:
     status: completed
     home_score: 2
@@ -112,13 +119,6 @@ matches:
     home_pen: null
     away_pen: null
     winner: draw
-  G_I1:
-    status: completed
-    home_score: 3
-    away_score: 1
-    home_pen: null
-    away_pen: null
-    winner: home
   G_I2:
     status: completed
     home_score: 1
@@ -160,12 +160,6 @@ matches:
     home_pen: null
     away_pen: null
   G_K2:
-    status: scheduled
-    home_score: null
-    away_score: null
-    home_pen: null
-    away_pen: null
-  G_L4:
     status: scheduled
     home_score: null
     away_score: null
@@ -303,13 +297,25 @@ matches:
     away_score: null
     home_pen: null
     away_pen: null
+  G_L4:
+    status: scheduled
+    home_score: null
+    away_score: null
+    home_pen: null
+    away_pen: null
   G_K4:
     status: scheduled
     home_score: null
     away_score: null
     home_pen: null
     away_pen: null
-  G_L5:
+  G_I5:
+    status: scheduled
+    home_score: null
+    away_score: null
+    home_pen: null
+    away_pen: null
+  G_K6:
     status: scheduled
     home_score: null
     away_score: null
@@ -387,12 +393,6 @@ matches:
     away_score: null
     home_pen: null
     away_pen: null
-  G_I5:
-    status: scheduled
-    home_score: null
-    away_score: null
-    home_pen: null
-    away_pen: null
   G_I6:
     status: scheduled
     home_score: null
@@ -423,6 +423,12 @@ matches:
     away_score: null
     home_pen: null
     away_pen: null
+  G_L5:
+    status: scheduled
+    home_score: null
+    away_score: null
+    home_pen: null
+    away_pen: null
   G_L6:
     status: scheduled
     home_score: null
@@ -430,12 +436,6 @@ matches:
     home_pen: null
     away_pen: null
   G_K5:
-    status: scheduled
-    home_score: null
-    away_score: null
-    home_pen: null
-    away_pen: null
-  G_K6:
     status: scheduled
     home_score: null
     away_score: null
