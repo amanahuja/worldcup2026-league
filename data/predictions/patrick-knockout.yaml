@@ -37,3 +37,5 @@ predictions:
     predicted_winner: away
   QF_100:
     predicted_winner: away
+  R32_75:
+    predicted_winner: away
