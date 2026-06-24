@@ -14,6 +14,12 @@
  */
 
 // ---------------------------------------------------------------------------
+// Tournament dates
+// ---------------------------------------------------------------------------
+// Last group matches kick off 2026-06-28T02:00Z; 04:00Z gives ~2h buffer for final whistle + cron.
+const KO_RESULTS_DATE = new Date('2026-06-28T04:00:00Z');
+
+// ---------------------------------------------------------------------------
 // Scoring table
 // ---------------------------------------------------------------------------
 
@@ -497,10 +503,10 @@ export async function handleGetScores(request, env, session) {
     groupStandings.set(letter, calcStandings(data, results));
   }
 
-  // Determine if we have any actual results yet
-  const hasActualResults = [...groupStandings.values()].some(teams => teams.some(t => t.played > 0));
+  // Use actual standings for bracket display only after group stage is fully complete.
+  const hasActualResults = Date.now() >= KO_RESULTS_DATE.getTime();
 
-  // For bracket display: use actual standings if available, otherwise use defaults
+  // For bracket display: use actual standings post-group-stage, otherwise use defaults
   let bracketStandings = groupStandings;
   if (!hasActualResults) {
     // Pre-tournament: derive bracket from default predictions

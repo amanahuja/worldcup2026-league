@@ -131,8 +131,9 @@ const App = (() => {
 
   // Prediction window closes: end of Jun 12 2026 midnight PT (= Jun 14 07:00 UTC, deadline extended)
   const LOCK_DATE_GROUPS = new Date('2026-06-14T07:00:00Z');
-  // Knockout results not available until group stage ends: Jun 28 2026
-  const KO_RESULTS_DATE = new Date('2026-06-28T00:00:00Z');
+  // Knockout results not available until group stage ends.
+  // Last group matches kick off 2026-06-28T02:00Z; 04:00Z gives ~2h buffer for final whistle + cron.
+  const KO_RESULTS_DATE = new Date('2026-06-28T04:00:00Z');
 
   function initCountdown() {
     const banner = document.getElementById('countdown-banner');
@@ -843,10 +844,9 @@ const App = (() => {
     }
 
     // ── Step 3: populate R32 team names ───────────────────────────────────────
-    // Post-group-stage: actual group results have settled R32 teams → use server bracket.
+    // Post-group-stage (after KO_RESULTS_DATE): actual standings have settled R32 teams → use server bracket.
     // Pre-group-stage: resolve from user's predicted group standings.
-    const hasActualGroupResults = Object.values(_scores?.standings || {})
-      .some(s => (s.teams || s).some(t => t.played > 0));
+    const hasActualGroupResults = Date.now() >= KO_RESULTS_DATE.getTime();
 
     for (const id of KO_ROUNDS.R32) {
       const bm    = bracket[id] || {};
@@ -857,7 +857,7 @@ const App = (() => {
         home = bm.home || null;
         away = bm.away || null;
       } else {
-        // Pre-tournament: derive from user's predicted group standings
+        // Group stage in progress: derive from user's predicted group standings
         home = slots.home ? resolveSlot(slots.home) : null;
         away = slots.away ? resolveSlot(slots.away) : null;
       }
