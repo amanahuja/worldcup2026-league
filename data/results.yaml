@@ -285,7 +285,7 @@ matches:
     away_score: 4
     home_pen: null
     away_pen: null
-    winner: draw
+    winner: away
   G_H3:
     status: completed
     home_score: 4
