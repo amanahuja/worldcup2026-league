@@ -30,6 +30,11 @@ const KV_LAST_CHANGED_KEY = 'RESULTS_LAST_CHANGED';
 // or as a separate entry. Monitor during development.
 const GROUP_ORDER_IDS = [1, 2, 3, 4, 5, 6, 7, 8];
 
+// Group stage ended 2026-06-28T04:00Z (2h buffer after last whistle).
+// After this point, skip re-fetching groupOrderIDs 1–3 to prevent
+// cron runs from overwriting manually-corrected group stage results.
+const GROUP_STAGE_END = new Date('2026-06-28T04:00:00Z');
+
 // ---------------------------------------------------------------------------
 // German → English team name mapping
 // ---------------------------------------------------------------------------
@@ -150,16 +155,17 @@ function normalizeMatch(m, fixtureLookup) {
     }
   }
 
-  // Detect penalty shootout: any goal with isPenalty=true scored after the match is finished
-  // and scores are equal at full time (extra time result).
-  // Penalty shootout goals appear as isPenalty:true in the goals array.
+  // Detect penalty shootout: only relevant for knockout matches where scores
+  // are level at full time. Shootout goals have isPenalty=true AND no matchMinute
+  // (OpenLigaDB records them with null minute). In-game penalties have a minute.
+  // Group stage never has shootouts — guard with groupOrderID check.
   let homePen = null;
   let awayPen = null;
-  if (m.matchIsFinished && m.goals?.length) {
-    const penGoals = m.goals.filter(g => g.isPenalty);
-    if (penGoals.length > 0) {
-      // Last penalty goal gives final shootout score
-      const last = penGoals[penGoals.length - 1];
+  const isKnockout = m.group?.groupOrderID >= 4;
+  if (isKnockout && m.matchIsFinished && homeScore !== null && homeScore === awayScore && m.goals?.length) {
+    const shootoutGoals = m.goals.filter(g => g.isPenalty && g.matchMinute === null);
+    if (shootoutGoals.length > 0) {
+      const last = shootoutGoals[shootoutGoals.length - 1];
       homePen = last.scoreTeam1;
       awayPen = last.scoreTeam2;
     }
@@ -272,8 +278,15 @@ export async function handleScheduled(env) {
   }
 
   // 2. Fetch all matches (group stage + knockout as available)
+  // Skip groupOrderIDs 1–3 after the group stage is complete to prevent
+  // cron runs from overwriting manually-corrected results.
+  const groupStageLocked = Date.now() >= GROUP_STAGE_END.getTime();
+  const activeGroupOrderIds = groupStageLocked
+    ? GROUP_ORDER_IDS.filter(id => id >= 4)
+    : GROUP_ORDER_IDS;
+
   const allMatches = [];
-  for (const groupOrderId of GROUP_ORDER_IDS) {
+  for (const groupOrderId of activeGroupOrderIds) {
     try {
       const res = await fetch(
         `${OPENLIGADB_BASE}/getmatchdata/${LEAGUE}/${SEASON}/${groupOrderId}`,
