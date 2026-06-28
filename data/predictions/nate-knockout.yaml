@@ -23,3 +23,5 @@ predictions:
     predicted_winner: away
   THIRD:
     predicted_winner: home
+  R16_90:
+    predicted_winner: away
