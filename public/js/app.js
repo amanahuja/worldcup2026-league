@@ -747,7 +747,7 @@ const App = (() => {
         banner.classList.remove('hidden');
         banner.classList.add('lock-banner--locked');
       } else {
-        banner.textContent = 'Knockout predictions lock Jun 29';
+        banner.textContent = 'Knockout predictions lock Jun 29 at noon CT';
         banner.classList.remove('hidden');
       }
     }
