@@ -1,5 +1,19 @@
-last_updated: "2026-06-28T05:00:17.511Z"
+last_updated: "2026-06-28T06:00:17.745Z"
 matches:
+  G_E2:
+    status: completed
+    home_score: 1
+    away_score: 0
+    home_pen: null
+    away_pen: null
+    winner: home
+  G_L1:
+    status: completed
+    home_score: 4
+    away_score: 2
+    home_pen: 1
+    away_pen: 0
+    winner: home
   G_A1:
     status: completed
     home_score: 2
@@ -70,13 +84,6 @@ matches:
     home_pen: null
     away_pen: null
     winner: draw
-  G_E2:
-    status: completed
-    home_score: 1
-    away_score: 0
-    home_pen: null
-    away_pen: null
-    winner: home
   G_F2:
     status: completed
     home_score: 5
@@ -147,13 +154,6 @@ matches:
     home_pen: null
     away_pen: null
     winner: draw
-  G_L1:
-    status: completed
-    home_score: 4
-    away_score: 2
-    home_pen: 1
-    away_pen: 0
-    winner: home
   G_L2:
     status: completed
     home_score: 1
@@ -168,13 +168,6 @@ matches:
     home_pen: null
     away_pen: null
     winner: away
-  G_I4:
-    status: completed
-    home_score: 3
-    away_score: 2
-    home_pen: null
-    away_pen: null
-    winner: home
   G_A3:
     status: completed
     home_score: 1
@@ -298,6 +291,13 @@ matches:
     status: completed
     home_score: 3
     away_score: 0
+    home_pen: null
+    away_pen: null
+    winner: home
+  G_I4:
+    status: completed
+    home_score: 3
+    away_score: 2
     home_pen: null
     away_pen: null
     winner: home
