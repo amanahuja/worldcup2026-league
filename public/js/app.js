@@ -811,29 +811,19 @@ const App = (() => {
       predictedStandings[letter] = deriveGroupStandings(fixtureArr, groupPicks);
     }
 
-    // ── Step 2: rank all 12 third-place teams for best-thirds slot assignment ──
-    // Mirrors selectBestThirds() in scores-worker.js.
-    const thirdsPool = [];
-    for (const [group, teams] of Object.entries(predictedStandings)) {
-      if (teams.length >= 3) thirdsPool.push({ ...teams[2], group });
-    }
-    thirdsPool.sort((a, b) => {
-      if (b.pts !== a.pts) return b.pts - a.pts;
-      const gdA = a.gf - a.ga, gdB = b.gf - b.ga;
-      if (gdB !== gdA) return gdB - gdA;
-      if (b.gf !== a.gf) return b.gf - a.gf;
-      return a.team.localeCompare(b.team);
-    });
-    const bestThirds = thirdsPool.slice(0, 8).map(t => t.team);
-
-    // Assign best thirds to the 8 third-place R32 slots in numeric match-ID order.
-    // This mirrors the server's R32_BRACKET iteration order (see DC-2 in tasks.md).
-    const THIRD_SLOT_IDS = ['R32_74','R32_77','R32_79','R32_80','R32_81','R32_82','R32_85','R32_87'];
-    const thirdSlotTeams = {};
-    THIRD_SLOT_IDS.forEach((id, i) => {
-      const slot = R32_SLOTS[id]?.away; // all 8 third-place slots are the "away" side
-      if (slot) thirdSlotTeams[slot] = bestThirds[i] || null;
-    });
+    // ── Step 2: third-place slot assignment (hardcoded per FIFA combination table) ──
+    // Groups B,D,E,F,I,J,K,L had thirds qualify → Annex C row B/D/E/F/I/J/K/L.
+    // Mirrors THIRD_PLACE_SLOTS in scores-worker.js.
+    const thirdSlotTeams = {
+      '3ABCDF': 'Paraguay',
+      '3CDFGH': 'Sweden',
+      '3CEFHI': 'Ecuador',
+      '3EHIJK': 'DR Congo',
+      '3BEFIJ': 'Bosnia & Herzegovina',
+      '3AEHIJ': 'Senegal',
+      '3EFGIJ': 'Algeria',
+      '3DEIJL': 'Ghana',
+    };
 
     // Resolve a slot label ('1I', '2A', '3ABCDF') to a team name
     function resolveSlot(slot) {

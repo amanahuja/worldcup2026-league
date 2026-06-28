@@ -291,35 +291,34 @@ const THIRD_BRACKET  = { id: 'THIRD', feeders: ['SF_101', 'SF_102'], side: 'lose
 // Resolve bracket slots → team names
 // ---------------------------------------------------------------------------
 
-/**
- * Best third-place teams selection:
- * After all groups finish, rank all 12 third-placed teams, take top 8.
- * Returns array of team names sorted best→worst.
- */
-function selectBestThirds(groupStandings) {
-  const thirds = [];
-  for (const [group, standings] of groupStandings) {
-    if (standings.length >= 3) {
-      const t = standings[2];
-      thirds.push({ ...t, group });
-    }
-  }
-  thirds.sort((a, b) => {
-    if (b.pts !== a.pts) return b.pts - a.pts;
-    const gdA = a.gf - a.ga, gdB = b.gf - b.ga;
-    if (gdB !== gdA) return gdB - gdA;
-    if (b.gf !== a.gf) return b.gf - a.gf;
-    return a.team.localeCompare(b.team);
-  });
-  return thirds.slice(0, 8).map(t => t.team);
-}
+// ---------------------------------------------------------------------------
+// WC2026 third-place slot assignments (hardcoded)
+//
+// Groups B, D, E, F, I, J, K, L had their third-place teams qualify.
+// Per FIFA Annex C combination table this maps to:
+//   1A(Mexico) vs 3E(Ecuador), 1B(Switzerland) vs 3J(Algeria),
+//   1D(USA) vs 3B(Bosnia & Herzegovina), 1E(Germany) vs 3D(Paraguay),
+//   1G(Belgium) vs 3I(Senegal), 1I(France) vs 3F(Sweden),
+//   1K(Colombia) vs 3L(Ghana), 1L(England) vs 3K(DR Congo)
+// ---------------------------------------------------------------------------
+const THIRD_PLACE_SLOTS = {
+  '3ABCDF': 'Paraguay',
+  '3CDFGH': 'Sweden',
+  '3CEFHI': 'Ecuador',
+  '3EHIJK': 'DR Congo',
+  '3BEFIJ': 'Bosnia & Herzegovina',
+  '3AEHIJ': 'Senegal',
+  '3EFGIJ': 'Algeria',
+  '3DEIJL': 'Ghana',
+};
 
 /**
  * Resolve a slot label to a team name.
  * Slots like "1A" → winner of group A.
- * Slots like "3ABCDF" → best third from those groups (index 0 in sorted thirds).
+ * Slots like "2B" → runner-up of group B.
+ * Slots like "3ABCDF" → hardcoded per FIFA combination table above.
  */
-function resolveSlot(slot, groupStandings, bestThirds) {
+function resolveSlot(slot, groupStandings) {
   if (slot.startsWith('1')) {
     const g = slot.slice(1);
     return groupStandings.get(g)?.[0]?.team || null;
@@ -329,12 +328,7 @@ function resolveSlot(slot, groupStandings, bestThirds) {
     return groupStandings.get(g)?.[1]?.team || null;
   }
   if (slot.startsWith('3')) {
-    // The groups listed after "3" indicate which groups' third-place teams are eligible
-    // for this slot. FIFA assigns the best third to specific slots based on which groups
-    // they come from. For simplicity we assign them in ranked order to the R32 slots
-    // that reference 3rd-placed teams, after the group stage is complete.
-    // This is resolved in buildBracket below.
-    return null; // placeholder — resolved in buildBracket
+    return THIRD_PLACE_SLOTS[slot] || null;
   }
   return null;
 }
@@ -346,17 +340,11 @@ function resolveSlot(slot, groupStandings, bestThirds) {
 function buildBracket(groupStandings, results) {
   const bracket = new Map();
 
-  // Resolve group winners and runners-up into R32 slots
-  const bestThirds = selectBestThirds(groupStandings);
-  let thirdIdx = 0;
-
+  // Resolve group winners, runners-up, and third-place teams into R32 slots
   for (const m of R32_BRACKET) {
     const [s1, s2] = m.slots;
-    let home, away;
-    if (s1.startsWith('3')) { home = bestThirds[thirdIdx++] || null; }
-    else { home = resolveSlot(s1, groupStandings, bestThirds); }
-    if (s2.startsWith('3')) { away = bestThirds[thirdIdx++] || null; }
-    else { away = resolveSlot(s2, groupStandings, bestThirds); }
+    const home = resolveSlot(s1, groupStandings);
+    const away = resolveSlot(s2, groupStandings);
 
     const result = results.get(m.id);
     const winner = result?.status === 'completed' ? deriveWinner(result) : null;
