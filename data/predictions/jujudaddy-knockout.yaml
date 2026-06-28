@@ -11,3 +11,5 @@ predictions:
     predicted_winner: away
   THIRD:
     predicted_winner: away
+  R32_77:
+    predicted_winner: away
