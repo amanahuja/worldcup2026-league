@@ -33,3 +33,5 @@ predictions:
     predicted_winner: home
   SF_102:
     predicted_winner: away
+  FINAL:
+    predicted_winner: away
