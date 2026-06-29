@@ -30,6 +30,50 @@ const KV_LAST_CHANGED_KEY = 'RESULTS_LAST_CHANGED';
 // or as a separate entry. Monitor during development.
 const GROUP_ORDER_IDS = [1, 2, 3, 4, 5, 6, 7, 8];
 
+// ---------------------------------------------------------------------------
+// OpenLigaDB matchID → bracket ID mapping for knockout rounds.
+//
+// Group stage matches are resolved via buildFixtureLookup() against groups.yaml.
+// Knockout matches have no fixture file — we map OpenLigaDB's numeric matchID
+// to the bracket slot ID used everywhere else (scores-worker, prediction files, client).
+//
+// R32 (groupOrderID 4): verified 2026-06-29 against live API getmatchdata/wm26/2026/4
+// R16 (groupOrderID 5): verified 2026-06-29 against live API getmatchdata/wm26/2026/5
+//   (inferred from feeder teams: home = winner of feeder1 R32, away = winner of feeder2 R32)
+//
+// QF (groupOrderID 6), SF (7), Final/3rd (8): IDs not yet available — add before those rounds.
+// See tasks.md task #48 for instructions.
+// ---------------------------------------------------------------------------
+const OPENLIGADB_BRACKET_ID_MAP = {
+  // R32 — verified 2026-06-29
+  82099: 'R32_73',  // South Africa vs Canada
+  82100: 'R32_76',  // Brazil vs Japan
+  82101: 'R32_74',  // Germany vs Paraguay
+  82102: 'R32_75',  // Netherlands vs Morocco
+  82103: 'R32_78',  // Ivory Coast vs Norway
+  82104: 'R32_77',  // France vs Sweden
+  82105: 'R32_79',  // Mexico vs Ecuador
+  82106: 'R32_80',  // England vs DR Congo
+  82107: 'R32_82',  // Belgium vs Senegal
+  82108: 'R32_81',  // USA vs Bosnia & Herzegovina
+  82109: 'R32_84',  // Spain vs Austria
+  82110: 'R32_83',  // Portugal vs Croatia
+  82111: 'R32_85',  // Switzerland vs Algeria
+  82112: 'R32_88',  // Australia vs Egypt
+  82113: 'R32_86',  // Argentina vs Cape Verde
+  82114: 'R32_87',  // Colombia vs Ghana
+  // R16 — verified 2026-06-29
+  82127: 'R16_90',  // winner R32_73 vs winner R32_75
+  82128: 'R16_89',  // winner R32_74 vs winner R32_77
+  82129: 'R16_91',  // winner R32_76 vs winner R32_78
+  82130: 'R16_92',  // winner R32_79 vs winner R32_80
+  82131: 'R16_93',  // winner R32_83 vs winner R32_84
+  82132: 'R16_94',  // winner R32_81 vs winner R32_82
+  82133: 'R16_95',  // winner R32_86 vs winner R32_88
+  82134: 'R16_96',  // winner R32_85 vs winner R32_87
+  // QF, SF, Final/3rd — add before those rounds (see tasks.md #48)
+};
+
 // Group stage ended 2026-06-28T04:00Z (2h buffer after last whistle).
 // After this point, skip re-fetching groupOrderIDs 1–3 to prevent
 // cron runs from overwriting manually-corrected group stage results.
@@ -140,8 +184,9 @@ function normalizeMatch(m, fixtureLookup) {
   const awayEn = toEnglish(m.team2.teamName);
   const matchId = fixtureLookup.get(`${homeEn}|${awayEn}`);
 
-  // For knockout matches the fixture lookup won't have the ID yet — use a generated ID
-  const id = matchId || `KO_${m.matchID}`;
+  // For knockout matches: use the bracket ID map first, then the fixture lookup,
+  // then fall back to KO_<matchID> (which will mismatch the bracket — see tasks.md #48).
+  const id = OPENLIGADB_BRACKET_ID_MAP[m.matchID] || matchId || `KO_${m.matchID}`;
 
   const status = m.matchIsFinished ? 'completed' : 'scheduled';
 
