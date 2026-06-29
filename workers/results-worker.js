@@ -209,35 +209,44 @@ function serializeResultsYaml(lastUpdated, matches, existingEntries) {
 }
 
 // ---------------------------------------------------------------------------
-// Parse existing results.yaml to extract admin winner overrides
+// Parse existing results.yaml
+// Returns Map<matchId → { status, homeScore, awayScore, homePen, awayPen, winner, winner_override }>
+// winner_override is set when a `winner` field is explicitly present (used to
+// preserve admin corrections). Full entry data is needed so that locked group
+// stage entries can be carried forward into the serialized output unchanged.
 // ---------------------------------------------------------------------------
 
 function parseExistingResults(yaml) {
   const entries = new Map();
   let currentId = null;
-  let winnerOverride = null;
-  let hasExplicitWinner = false;
+  let current = null;
+
+  const finalize = () => {
+    if (currentId && current) {
+      // winner_override mirrors winner — signals that an explicit winner is on file
+      if (current.winner !== null) current.winner_override = current.winner;
+      entries.set(currentId, current);
+    }
+  };
 
   for (const raw of yaml.split('\n')) {
     const line = raw.trim();
     const idMatch = line.match(/^([\w_]+):\s*$/);
     if (idMatch && idMatch[1] !== 'matches') {
-      if (currentId && hasExplicitWinner) {
-        entries.set(currentId, { winner_override: winnerOverride });
-      }
+      finalize();
       currentId = idMatch[1];
-      winnerOverride = null;
-      hasExplicitWinner = false;
+      current = { status: null, homeScore: null, awayScore: null, homePen: null, awayPen: null, winner: null, winner_override: null };
       continue;
     }
-    if (currentId && line.startsWith('winner:')) {
-      winnerOverride = line.replace('winner:', '').trim();
-      hasExplicitWinner = true;
-    }
+    if (!current) continue;
+    if (line.startsWith('status:'))     current.status    = line.replace('status:', '').trim();
+    if (line.startsWith('home_score:')) { const v = line.replace('home_score:', '').trim(); current.homeScore = v === 'null' ? null : Number(v); }
+    if (line.startsWith('away_score:')) { const v = line.replace('away_score:', '').trim(); current.awayScore = v === 'null' ? null : Number(v); }
+    if (line.startsWith('home_pen:'))   { const v = line.replace('home_pen:', '').trim();   current.homePen   = v === 'null' ? null : Number(v); }
+    if (line.startsWith('away_pen:'))   { const v = line.replace('away_pen:', '').trim();   current.awayPen   = v === 'null' ? null : Number(v); }
+    if (line.startsWith('winner:'))     { current.winner = line.replace('winner:', '').trim(); }
   }
-  if (currentId && hasExplicitWinner) {
-    entries.set(currentId, { winner_override: winnerOverride });
-  }
+  finalize();
   return entries;
 }
 
@@ -332,6 +341,25 @@ export async function handleScheduled(env) {
   for (const m of allMatches) {
     const entry = normalizeMatch(m, fixtureLookup);
     normalized.set(entry.id, entry);
+  }
+
+  // 5b. When the group stage is locked we only fetched knockout matches above.
+  // Carry forward all G_* entries from the existing results.yaml so they are
+  // not dropped from the serialized output.
+  if (groupStageLocked) {
+    for (const [id, entry] of existingEntries) {
+      if (id.startsWith('G_') && !normalized.has(id)) {
+        normalized.set(id, {
+          id,
+          status:    entry.status,
+          homeScore: entry.homeScore,
+          awayScore: entry.awayScore,
+          homePen:   entry.homePen,
+          awayPen:   entry.awayPen,
+          winner:    entry.winner,
+        });
+      }
+    }
   }
 
   // 6. Serialise and write to GitHub
