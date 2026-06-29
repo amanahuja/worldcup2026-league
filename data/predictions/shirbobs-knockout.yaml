@@ -50,4 +50,4 @@ predictions:
   FINAL:
     predicted_winner: home
   THIRD:
-    predicted_winner: away
+    predicted_winner: home
