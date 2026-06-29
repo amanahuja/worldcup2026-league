@@ -26,7 +26,7 @@ import { getSession } from './auth-worker.js';
 
 const LOCK_DATES = {
   groups:   new Date('2026-06-14T07:00:00Z'), // deadline extended to end of Jun 12 midnight PT (UTC-7)
-  knockout: new Date('2026-06-29T17:00:00Z'), // Brazil vs Japan kickoff, noon CT (CDT = UTC-5)
+  knockout: new Date('2026-06-29T18:00:00Z'), // extended to 1pm CT (CDT = UTC-5)
   // third-place lock is dynamic — checked against results.yaml SF completion
 };
 
