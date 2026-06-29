@@ -349,7 +349,8 @@ function buildBracket(groupStandings, results) {
     const result = results.get(m.id);
     const winner = result?.status === 'completed' ? deriveWinner(result) : null;
     const winningTeam = winner === 'home' ? home : winner === 'away' ? away : null;
-    bracket.set(m.id, { home, away, winner, winningTeam, status: result?.status || 'scheduled' });
+    bracket.set(m.id, { home, away, winner, winningTeam, status: result?.status || 'scheduled',
+      home_score: result?.home_score ?? null, away_score: result?.away_score ?? null });
   }
 
   // Propagate through R16, QF, SF, Final, 3rd
@@ -361,7 +362,8 @@ function buildBracket(groupStandings, results) {
       const result = results.get(m.id);
       const winner = result?.status === 'completed' ? deriveWinner(result) : null;
       const winningTeam = winner === 'home' ? home : winner === 'away' ? away : null;
-      bracket.set(m.id, { home, away, winner, winningTeam, status: result?.status || 'scheduled' });
+      bracket.set(m.id, { home, away, winner, winningTeam, status: result?.status || 'scheduled',
+        home_score: result?.home_score ?? null, away_score: result?.away_score ?? null });
     }
   };
 
@@ -380,6 +382,8 @@ function buildBracket(groupStandings, results) {
     winner: finalWinner,
     winningTeam: finalWinner === 'home' ? sf1?.winningTeam : finalWinner === 'away' ? sf2?.winningTeam : null,
     status: finalResult?.status || 'scheduled',
+    home_score: finalResult?.home_score ?? null,
+    away_score: finalResult?.away_score ?? null,
   });
 
   // Third-place: losers of both semis
@@ -393,6 +397,8 @@ function buildBracket(groupStandings, results) {
     winner: thirdWinner,
     winningTeam: thirdWinner === 'home' ? sf1Loser : thirdWinner === 'away' ? sf2Loser : null,
     status: thirdResult?.status || 'scheduled',
+    home_score: thirdResult?.home_score ?? null,
+    away_score: thirdResult?.away_score ?? null,
   });
 
   return bracket;
