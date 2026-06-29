@@ -23,3 +23,5 @@ predictions:
     predicted_winner: away
   QF_97:
     predicted_winner: home
+  QF_98:
+    predicted_winner: home
