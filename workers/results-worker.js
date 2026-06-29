@@ -337,7 +337,7 @@ export async function handleScheduled(env) {
   }
 
   // 5. Normalize matches
-  const normalized = new Map();
+  let normalized = new Map();
   for (const m of allMatches) {
     const entry = normalizeMatch(m, fixtureLookup);
     normalized.set(entry.id, entry);
@@ -345,11 +345,13 @@ export async function handleScheduled(env) {
 
   // 5b. When the group stage is locked we only fetched knockout matches above.
   // Carry forward all G_* entries from the existing results.yaml so they are
-  // not dropped from the serialized output.
+  // not dropped from the serialized output. Build a reordered map so that G_*
+  // entries appear first (preserving readability of results.yaml on each cron write).
   if (groupStageLocked) {
+    const reordered = new Map();
     for (const [id, entry] of existingEntries) {
-      if (id.startsWith('G_') && !normalized.has(id)) {
-        normalized.set(id, {
+      if (id.startsWith('G_')) {
+        reordered.set(id, {
           id,
           status:    entry.status,
           homeScore: entry.homeScore,
@@ -360,6 +362,10 @@ export async function handleScheduled(env) {
         });
       }
     }
+    for (const [id, entry] of normalized) {
+      reordered.set(id, entry);
+    }
+    normalized = reordered;
   }
 
   // 6. Serialise and write to GitHub
