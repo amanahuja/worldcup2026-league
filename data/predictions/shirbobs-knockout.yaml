@@ -49,3 +49,5 @@ predictions:
     predicted_winner: home
   FINAL:
     predicted_winner: home
+  THIRD:
+    predicted_winner: away
