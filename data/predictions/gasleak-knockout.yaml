@@ -49,3 +49,5 @@ predictions:
     predicted_winner: home
   R32_86:
     predicted_winner: home
+  QF_99:
+    predicted_winner: away
