@@ -45,3 +45,5 @@ predictions:
     predicted_winner: home
   QF_100:
     predicted_winner: home
+  SF_101:
+    predicted_winner: home
