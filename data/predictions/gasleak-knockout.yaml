@@ -51,3 +51,5 @@ predictions:
     predicted_winner: home
   QF_99:
     predicted_winner: away
+  SF_102:
+    predicted_winner: away
