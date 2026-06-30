@@ -408,9 +408,59 @@ function buildBracket(groupStandings, results) {
 // Scoring
 // ---------------------------------------------------------------------------
 
+// Flat lookup: matchId → feeder match IDs [home-feeder, away-feeder]
+// Built from the bracket constants defined above.
+const KO_FEEDERS = new Map([
+  ...R16_BRACKET.map(m => [m.id, m.feeders]),
+  ...QF_BRACKET.map(m => [m.id, m.feeders]),
+  ...SF_BRACKET.map(m => [m.id, m.feeders]),
+  [FINAL_BRACKET.id, FINAL_BRACKET.feeders],
+  // THIRD is intentionally omitted — no chain validation (users pick with full knowledge).
+]);
+
+/**
+ * Returns true if the user's prediction chain is valid for the given match.
+ *
+ * For R32 matches: always valid (no prior round to check).
+ * For THIRD: always valid (users pick after semis with full team knowledge).
+ * For all other KO matches: the user must have correctly predicted the winner
+ * of the feeder match that corresponds to their predicted side, and that
+ * feeder prediction must itself be valid (recursive).
+ *
+ * @param {string} matchId
+ * @param {string} prediction  - "home" or "away"
+ * @param {Map}    knockoutPredictions - merged predictions map for this user
+ * @param {Map}    bracket     - built bracket from buildBracket()
+ */
+function isPredictionValid(matchId, prediction, knockoutPredictions, bracket) {
+  // R32 and THIRD: no chain to validate
+  if (matchId.startsWith('R32_') || matchId === 'THIRD') return true;
+
+  const feeders = KO_FEEDERS.get(matchId);
+  if (!feeders) return true; // unknown match type, don't penalise
+
+  // feeders[0] supplies the home team; feeders[1] supplies the away team.
+  const feederMatchId = prediction === 'home' ? feeders[0] : feeders[1];
+
+  const feederBracket = bracket.get(feederMatchId);
+  if (!feederBracket || feederBracket.winner === null) return false; // feeder not complete
+
+  const userFeederPick = knockoutPredictions.get(feederMatchId);
+  if (!userFeederPick) return false; // no prediction for feeder
+
+  // The user must have picked the winner of the feeder match
+  if (userFeederPick !== feederBracket.winner) return false;
+
+  // Recurse: validate the feeder pick too
+  return isPredictionValid(feederMatchId, userFeederPick, knockoutPredictions, bracket);
+}
+
 function scoreUser(username, groupsPredictions, knockoutPredictions, results, bracket) {
   let total = 0;
   const breakdown = {};
+  // KO matches where the user picked the right side but the bracket chain was
+  // broken (eliminated team). These get 0 pts and a red ✗ in the UI.
+  const koChainInvalid = [];
 
   // Group stage
   for (const [matchId, prediction] of groupsPredictions) {
@@ -428,15 +478,18 @@ function scoreUser(username, groupsPredictions, knockoutPredictions, results, br
     const result = results.get(matchId);
     if (!result || result.status !== 'completed') continue;
     const actual = deriveWinner(result);
-    const correct = actual !== null && prediction === actual;
     const round = matchRound(matchId);
     if (!round) continue;
+    const sideCorrect = actual !== null && prediction === actual;
+    const chainValid = !sideCorrect || isPredictionValid(matchId, prediction, knockoutPredictions, bracket);
+    const correct = sideCorrect && chainValid;
+    if (sideCorrect && !chainValid) koChainInvalid.push(matchId);
     const pts = correct ? (POINTS[round] || 0) : 0;
     total += pts;
     if (pts > 0) breakdown[matchId] = pts;
   }
 
-  return { total, breakdown };
+  return { total, breakdown, koChainInvalid };
 }
 
 // ---------------------------------------------------------------------------
@@ -574,12 +627,13 @@ export async function handleGetScores(request, env, session) {
     const merged_g = new Map([...defaults_g.predictions, ...user_g.predictions]);
     const merged_k = new Map([...defaults_k.predictions, ...user_k.predictions]);
 
-    const { total } = scoreUser(username, merged_g, merged_k, results, bracket);
+    const { total, breakdown, koChainInvalid } = scoreUser(username, merged_g, merged_k, results, bracket);
 
     leaderboard.push({
       username,
       score: total,
       tiebreaker_goals: user_k.tiebreaker_goals ?? null,
+      ...(username === session?.username && { breakdown, ko_chain_invalid: koChainInvalid }),
     });
   }
 
