@@ -1,4 +1,4 @@
-last_updated: "2026-06-30T18:00:59.595Z"
+last_updated: "2026-06-30T19:00:59.869Z"
 matches:
   G_B2:
     status: completed
@@ -504,6 +504,12 @@ matches:
     home_pen: null
     away_pen: null
     winner: away
+  R32_85:
+    status: scheduled
+    home_score: null
+    away_score: null
+    home_pen: null
+    away_pen: null
   R32_73:
     status: completed
     home_score: 0
@@ -533,11 +539,12 @@ matches:
     away_pen: 4
     winner: draw
   R32_78:
-    status: scheduled
-    home_score: null
-    away_score: null
+    status: completed
+    home_score: 1
+    away_score: 2
     home_pen: null
     away_pen: null
+    winner: away
   R32_77:
     status: scheduled
     home_score: null
@@ -580,12 +587,6 @@ matches:
     away_score: null
     home_pen: null
     away_pen: null
-  R32_85:
-    status: scheduled
-    home_score: null
-    away_score: null
-    home_pen: null
-    away_pen: null
   R32_88:
     status: scheduled
     home_score: null
@@ -610,12 +611,6 @@ matches:
     away_score: null
     home_pen: null
     away_pen: null
-  R16_89:
-    status: scheduled
-    home_score: null
-    away_score: null
-    home_pen: null
-    away_pen: null
   R16_91:
     status: scheduled
     home_score: null
@@ -634,12 +629,6 @@ matches:
     away_score: null
     home_pen: null
     away_pen: null
-  R16_94:
-    status: scheduled
-    home_score: null
-    away_score: null
-    home_pen: null
-    away_pen: null
   R16_95:
     status: scheduled
     home_score: null
@@ -647,6 +636,18 @@ matches:
     home_pen: null
     away_pen: null
   R16_96:
+    status: scheduled
+    home_score: null
+    away_score: null
+    home_pen: null
+    away_pen: null
+  R16_89:
+    status: scheduled
+    home_score: null
+    away_score: null
+    home_pen: null
+    away_pen: null
+  R16_94:
     status: scheduled
     home_score: null
     away_score: null
