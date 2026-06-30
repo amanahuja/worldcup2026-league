@@ -906,12 +906,20 @@ const App = (() => {
      const serverBracket = _scores?.bracket || {};
      const matchResultsMap = _scores?.match_results || {};
 
+     // Per-user scoring data (only present for the logged-in user):
+     //   breakdown        — matchId → pts for matches that scored points (correct + valid chain)
+     //   koChainInvalid   — set of KO matchIds where side was right but chain was broken
+     const myEntry = _scores?.leaderboard?.find(e => e.username === _session?.username);
+     const myBreakdown     = myEntry?.breakdown      || {};
+     const myChainInvalid  = new Set(myEntry?.ko_chain_invalid || []);
+
      // Predictions page only: derive team names from user's picks so the bracket reflects
      // what the user predicted, not the server's default seedings.
      // Results page (readOnly=true): predictedBracket stays null → serverBracket used for names.
      const predictedBracket = readOnly ? null : derivePredictedBracket(picks);
 
-     // Returns the CSS class for a team abbreviation button based on prediction correctness
+     // Returns the CSS class for a team abbreviation button based on prediction correctness.
+     // For KO matches, correctness requires both the right side AND a valid bracket chain.
      function teamBtnClass(id, side, status) {
        if (status !== 'completed' || !_session?.username) return '';
        const pick = picks[id];
@@ -919,17 +927,33 @@ const App = (() => {
        const actual = matchResultsMap[id]?.winner;
        if (!actual) return '';
        const predicted = pick.predicted_winner;
-       // Check if user's pick matches the team that advanced
+       // Only annotate the side the user picked
        const teamMatch = (side === 'home' && predicted === 'home') || (side === 'away' && predicted === 'away');
        if (!teamMatch) return '';
+       // For KO matches: use server-authoritative breakdown/chain data if available.
+       // breakdown has the match → user scored points (correct side + valid chain).
+       // koChainInvalid has the match → right side but eliminated team in chain.
+       if (id.startsWith('R32_') || id.startsWith('R16_') || id.startsWith('QF_') ||
+           id.startsWith('SF_') || id === 'FINAL' || id === 'THIRD') {
+         if (myBreakdown[id]) return 'ko-card__score--correct';
+         if (myChainInvalid.has(id)) return 'ko-card__score--wrong';
+         return actual === predicted ? 'ko-card__score--wrong' : '';
+       }
        return actual === predicted ? 'ko-card__score--correct' : 'ko-card__score--wrong';
      }
 
-     // Returns the CSS class for the score span based on prediction vs result
+     // Returns the CSS class for the score span based on prediction vs result.
      function koScoreClass(id, pickWinner, status) {
        if (status !== 'completed' || !pickWinner || !_session?.username) return '';
        const actual = matchResultsMap[id]?.winner;
        if (!actual) return '';
+       // For KO matches: use server-authoritative data.
+       if (id.startsWith('R32_') || id.startsWith('R16_') || id.startsWith('QF_') ||
+           id.startsWith('SF_') || id === 'FINAL' || id === 'THIRD') {
+         if (myBreakdown[id]) return 'ko-card__score--correct';
+         if (myChainInvalid.has(id)) return 'ko-card__score--wrong';
+         return pickWinner === actual ? 'ko-card__score--wrong' : '';
+       }
        return pickWinner === actual ? 'ko-card__score--correct' : 'ko-card__score--wrong';
      }
 
