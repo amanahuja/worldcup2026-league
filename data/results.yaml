@@ -1,4 +1,4 @@
-last_updated: "2026-07-01T18:00:59.741Z"
+last_updated: "2026-07-01T19:00:59.502Z"
 matches:
   G_B2:
     status: completed
@@ -504,12 +504,13 @@ matches:
     home_pen: null
     away_pen: null
     winner: away
-  R32_82:
-    status: scheduled
-    home_score: null
-    away_score: null
+  R32_80:
+    status: completed
+    home_score: 2
+    away_score: 1
     home_pen: null
     away_pen: null
+    winner: home
   R32_73:
     status: completed
     home_score: 0
@@ -559,13 +560,12 @@ matches:
     home_pen: null
     away_pen: null
     winner: home
-  R32_80:
-    status: completed
-    home_score: 2
-    away_score: 1
+  R32_82:
+    status: scheduled
+    home_score: null
+    away_score: null
     home_pen: null
     away_pen: null
-    winner: home
   R32_81:
     status: scheduled
     home_score: null
@@ -608,13 +608,13 @@ matches:
     away_score: null
     home_pen: null
     away_pen: null
-  R16_90:
+  R16_89:
     status: scheduled
     home_score: null
     away_score: null
     home_pen: null
     away_pen: null
-  R16_89:
+  R16_90:
     status: scheduled
     home_score: null
     away_score: null
