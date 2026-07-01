@@ -1,4 +1,4 @@
-last_updated: "2026-07-01T05:01:00.747Z"
+last_updated: "2026-07-01T08:01:00.798Z"
 matches:
   G_B2:
     status: completed
@@ -504,19 +504,6 @@ matches:
     home_pen: null
     away_pen: null
     winner: away
-  R32_84:
-    status: scheduled
-    home_score: null
-    away_score: null
-    home_pen: null
-    away_pen: null
-  R32_73:
-    status: completed
-    home_score: 0
-    away_score: 1
-    home_pen: null
-    away_pen: null
-    winner: away
   KO_83124:
     status: completed
     home_score: 2
@@ -530,6 +517,44 @@ matches:
     away_score: 1
     home_pen: 4
     away_pen: 5
+    winner: away
+  R32_77:
+    status: completed
+    home_score: 3
+    away_score: 0
+    home_pen: null
+    away_pen: null
+    winner: home
+  R32_80:
+    status: scheduled
+    home_score: null
+    away_score: null
+    home_pen: null
+    away_pen: null
+  R32_84:
+    status: scheduled
+    home_score: null
+    away_score: null
+    home_pen: null
+    away_pen: null
+  R32_85:
+    status: scheduled
+    home_score: null
+    away_score: null
+    home_pen: null
+    away_pen: null
+  R32_86:
+    status: scheduled
+    home_score: null
+    away_score: null
+    home_pen: null
+    away_pen: null
+  R32_73:
+    status: completed
+    home_score: 0
+    away_score: 1
+    home_pen: null
+    away_pen: null
     winner: away
   R32_75:
     status: completed
@@ -545,13 +570,6 @@ matches:
     home_pen: null
     away_pen: null
     winner: away
-  R32_77:
-    status: completed
-    home_score: 3
-    away_score: 0
-    home_pen: null
-    away_pen: null
-    winner: home
   R32_79:
     status: completed
     home_score: 2
@@ -559,12 +577,6 @@ matches:
     home_pen: null
     away_pen: null
     winner: home
-  R32_80:
-    status: scheduled
-    home_score: null
-    away_score: null
-    home_pen: null
-    away_pen: null
   R32_82:
     status: scheduled
     home_score: null
@@ -583,19 +595,7 @@ matches:
     away_score: null
     home_pen: null
     away_pen: null
-  R32_85:
-    status: scheduled
-    home_score: null
-    away_score: null
-    home_pen: null
-    away_pen: null
   R32_88:
-    status: scheduled
-    home_score: null
-    away_score: null
-    home_pen: null
-    away_pen: null
-  R32_86:
     status: scheduled
     home_score: null
     away_score: null
