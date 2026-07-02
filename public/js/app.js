@@ -935,11 +935,11 @@ const App = (() => {
        // koChainInvalid has the match → right side but eliminated team in chain.
        if (id.startsWith('R32_') || id.startsWith('R16_') || id.startsWith('QF_') ||
            id.startsWith('SF_') || id === 'FINAL' || id === 'THIRD') {
-         if (myBreakdown[id]) return 'ko-card__score--correct';
-         if (myChainInvalid.has(id)) return 'ko-card__score--wrong';
-         return actual === predicted ? 'ko-card__score--wrong' : '';
-       }
-       return actual === predicted ? 'ko-card__score--correct' : 'ko-card__score--wrong';
+        if (myBreakdown[id]) return 'ko-card__score--correct';
+          if (myChainInvalid.has(id)) return 'ko-card__score--wrong';
+          return actual === predicted ? 'ko-card__score--correct' : '';
+        }
+        return actual === predicted ? 'ko-card__score--correct' : 'ko-card__score--wrong';
      }
 
      // Returns the CSS class for the score span based on prediction vs result.
@@ -950,9 +950,9 @@ const App = (() => {
        // For KO matches: use server-authoritative data.
        if (id.startsWith('R32_') || id.startsWith('R16_') || id.startsWith('QF_') ||
            id.startsWith('SF_') || id === 'FINAL' || id === 'THIRD') {
-         if (myBreakdown[id]) return 'ko-card__score--correct';
-         if (myChainInvalid.has(id)) return 'ko-card__score--wrong';
-         return pickWinner === actual ? 'ko-card__score--wrong' : '';
+        if (myBreakdown[id]) return 'ko-card__score--correct';
+          if (myChainInvalid.has(id)) return 'ko-card__score--wrong';
+          return pickWinner === actual ? 'ko-card__score--correct' : '';
        }
        return pickWinner === actual ? 'ko-card__score--correct' : 'ko-card__score--wrong';
      }

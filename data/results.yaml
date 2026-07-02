@@ -518,7 +518,7 @@ matches:
     home_pen: null
     away_pen: null
     winner: away
-  KO_83124:
+  R32_76:
     status: completed
     home_score: 2
     away_score: 1
@@ -659,13 +659,13 @@ matches:
     away_score: null
     home_pen: null
     away_pen: null
-  KO_83125:
+  QF_97:
     status: scheduled
     home_score: null
     away_score: null
     home_pen: null
     away_pen: null
-  KO_83126:
+  QF_99:
     status: scheduled
     home_score: null
     away_score: null
