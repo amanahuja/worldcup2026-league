@@ -562,11 +562,11 @@ matches:
     winner: home
   R32_82:
     status: completed
-    home_score: 2
+    home_score: 3
     away_score: 2
     home_pen: null
     away_pen: null
-    winner: draw
+    winner: home
   R32_81:
     status: completed
     home_score: 2
