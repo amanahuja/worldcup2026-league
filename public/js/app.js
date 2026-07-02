@@ -937,7 +937,7 @@ const App = (() => {
            id.startsWith('SF_') || id === 'FINAL' || id === 'THIRD') {
         if (myBreakdown[id]) return 'ko-card__score--correct';
           if (myChainInvalid.has(id)) return 'ko-card__score--wrong';
-          return actual === predicted ? 'ko-card__score--correct' : '';
+          return actual === predicted ? 'ko-card__score--correct' : 'ko-card__score--wrong';
         }
         return actual === predicted ? 'ko-card__score--correct' : 'ko-card__score--wrong';
      }
@@ -952,7 +952,7 @@ const App = (() => {
            id.startsWith('SF_') || id === 'FINAL' || id === 'THIRD') {
         if (myBreakdown[id]) return 'ko-card__score--correct';
           if (myChainInvalid.has(id)) return 'ko-card__score--wrong';
-          return pickWinner === actual ? 'ko-card__score--correct' : '';
+          return pickWinner === actual ? 'ko-card__score--correct' : 'ko-card__score--wrong';
        }
        return pickWinner === actual ? 'ko-card__score--correct' : 'ko-card__score--wrong';
      }
