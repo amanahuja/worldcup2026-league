@@ -31,63 +31,30 @@ const KV_LAST_CHANGED_KEY = 'RESULTS_LAST_CHANGED';
 const GROUP_ORDER_IDS = [1, 2, 3, 4, 5, 6, 7, 8];
 
 // ---------------------------------------------------------------------------
-// OpenLigaDB matchID → bracket ID mapping for knockout rounds.
-//
-// Group stage matches are resolved via buildFixtureLookup() against groups.yaml.
-// Knockout matches have no fixture file — we map OpenLigaDB's numeric matchID
-// to the bracket slot ID used everywhere else (scores-worker, prediction files, client).
-//
-// R32 (groupOrderID 4): verified 2026-06-29 against live API getmatchdata/wm26/2026/4
-// R16 (groupOrderID 5): verified 2026-06-29 against live API getmatchdata/wm26/2026/5
-//   (inferred from feeder teams: home = winner of feeder1 R32, away = winner of feeder2 R32)
-//
-// QF (groupOrderID 6), SF (7), Final/3rd (8): IDs not yet available — add before those rounds.
-// See tasks.md task #48 for instructions.
 // ---------------------------------------------------------------------------
-// Primary lookup: OpenLigaDB numeric matchID → bracket slot ID.
-// OpenLigaDB has been observed to change matchIDs (e.g. R32_76 was 82100, then 83124).
-// When a numeric ID is missing here, normalizeMatch() falls back to KO_TEAM_NAME_MAP.
-// Update this map as soon as new round IDs are published by OpenLigaDB.
-const OPENLIGADB_BRACKET_ID_MAP = {
-  // R32 — verified 2026-06-29 (83124 replaced 82100 for Brazil vs Japan)
-  82099: 'R32_73',  // South Africa vs Canada
-  83124: 'R32_76',  // Brazil vs Japan     (was 82100 — changed by OpenLigaDB)
-  82101: 'R32_74',  // Germany vs Paraguay
-  82102: 'R32_75',  // Netherlands vs Morocco
-  82103: 'R32_78',  // Ivory Coast vs Norway
-  82104: 'R32_77',  // France vs Sweden
-  82105: 'R32_79',  // Mexico vs Ecuador
-  82106: 'R32_80',  // England vs DR Congo
-  82107: 'R32_82',  // Belgium vs Senegal
-  82108: 'R32_81',  // USA vs Bosnia & Herzegovina
-  82109: 'R32_84',  // Spain vs Austria
-  82110: 'R32_83',  // Portugal vs Croatia
-  82111: 'R32_85',  // Switzerland vs Algeria
-  82112: 'R32_88',  // Australia vs Egypt
-  82113: 'R32_86',  // Argentina vs Cape Verde
-  82114: 'R32_87',  // Colombia vs Ghana
-  // R16 — verified 2026-06-29
-  82127: 'R16_90',  // winner R32_73 vs winner R32_75
-  82128: 'R16_89',  // winner R32_74 vs winner R32_77
-  82129: 'R16_91',  // winner R32_76 vs winner R32_78
-  82130: 'R16_92',  // winner R32_79 vs winner R32_80
-  82131: 'R16_93',  // winner R32_83 vs winner R32_84
-  82132: 'R16_94',  // winner R32_81 vs winner R32_82
-  82133: 'R16_95',  // winner R32_86 vs winner R32_88
-  82134: 'R16_96',  // winner R32_85 vs winner R32_87
-  // QF — verified 2026-07-02
-  83125: 'QF_97',   // winner R16_89 vs winner R16_90
-  83126: 'QF_99',   // winner R16_91 vs winner R16_92
-  // QF_98, QF_100, SF, Final/3rd — add before those rounds
-};
-
-// Fallback lookup: English team-name pair → bracket slot ID.
-// Used when a match's numeric matchID is not (yet) in OPENLIGADB_BRACKET_ID_MAP,
-// which happens when OpenLigaDB changes IDs or when new round IDs aren't yet known.
+// Knockout match lookup: English team-name pair → bracket slot ID.
+//
+// Group stage matches are resolved via buildFixtureLookup() against groups.yaml
+// (also team-name based). For knockout matches there is no fixture file, so we
+// maintain this explicit map.
+//
 // Keys are "HomeTeam|AwayTeam" using English names (same as TEAM_NAME_MAP output).
-// R32 entries are fixed at tournament start; R16+ entries are added as teams advance.
+// OpenLigaDB numeric matchIDs are intentionally NOT used — they have been observed
+// to change between API updates (e.g. R32_76 was matchID 82100, then became 83124),
+// making them an unreliable key. Team names are stable.
+//
+// HOW TO UPDATE before each new round:
+//   1. After R16/QF/SF results are in, identify which teams play each next-round match.
+//   2. Add an entry: 'HomeTeam|AwayTeam': 'BRACKET_ID'
+//      Home/away order must match what OpenLigaDB returns — verify with:
+//      curl https://api.openligadb.de/getmatchdata/wm26/2026/{groupOrderID}
+//      and translate German names via TEAM_NAME_MAP (or check .agents/openligadb-match-id-map.md).
+//   3. groupOrderID reference: 4=R32, 5=R16, 6=QF, 7=SF, 8=Final+3rd
+//   4. After the next cron run, check results.yaml for any KO_* entries — these
+//      indicate a team name is missing from this map or from TEAM_NAME_MAP.
+// ---------------------------------------------------------------------------
 const KO_TEAM_NAME_MAP = {
-  // R32
+  // R32 — verified 2026-06-29
   'South Africa|Canada':           'R32_73',
   'Germany|Paraguay':              'R32_74',
   'Netherlands|Morocco':           'R32_75',
@@ -104,7 +71,7 @@ const KO_TEAM_NAME_MAP = {
   'Argentina|Cape Verde':          'R32_86',
   'Colombia|Ghana':                'R32_87',
   'Australia|Egypt':               'R32_88',
-  // R16, QF, SF, Final/3rd — add entries here as teams advance
+  // R16, QF, SF, Final, 3rd — add entries here as teams advance
 };
 
 // Group stage ended 2026-06-28T04:00Z (2h buffer after last whistle).
@@ -217,19 +184,18 @@ function normalizeMatch(m, fixtureLookup) {
   const awayEn = toEnglish(m.team2.teamName);
   const matchId = fixtureLookup.get(`${homeEn}|${awayEn}`);
 
-  // For knockout matches: numeric map first, then team-name-pair fallback, then fixture lookup.
-  // The team-name fallback guards against OpenLigaDB changing numeric matchIDs between rounds.
-  // The last-resort KO_<matchID> will mismatch the bracket — the console.warn makes it visible.
-  const koById   = OPENLIGADB_BRACKET_ID_MAP[m.matchID];
+  // Group stage: resolved by fixture lookup (team names from groups.yaml).
+  // Knockout: resolved by KO_TEAM_NAME_MAP (English team-name pair).
+  // Last resort KO_<matchID> means a team name is missing — add it to KO_TEAM_NAME_MAP.
   const koByName = KO_TEAM_NAME_MAP[`${homeEn}|${awayEn}`];
   let id;
-  if (koById || matchId) {
-    id = koById || matchId;
+  if (matchId) {
+    id = matchId;
   } else if (koByName) {
     id = koByName;
   } else {
     id = `KO_${m.matchID}`;
-    console.warn(`Unknown KO match: matchID=${m.matchID} (${homeEn} vs ${awayEn}) — add to KO_TEAM_NAME_MAP`);
+    console.warn(`Unknown KO match: ${homeEn} vs ${awayEn} (matchID=${m.matchID}) — add to KO_TEAM_NAME_MAP in results-worker.js`);
   }
 
   const status = m.matchIsFinished ? 'completed' : 'scheduled';
