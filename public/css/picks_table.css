@@ -1,0 +1,261 @@
+/* ============================================================
+   WC2026 — picks page styles
+   Fixed 960px layout, light theme, desktop only.
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #f0f0f0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 13px;
+  color: #111;
+  padding: 24px 0 48px;
+}
+
+#page-wrap {
+  width: 960px;
+  margin: 0 auto;
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 24px 24px 32px;
+}
+
+.hidden { display: none; }
+
+/* ── Header ──────────────────────────────────────────────── */
+
+#picks-header {
+  text-align: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #111;
+}
+
+#picks-username {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-transform: lowercase;
+}
+
+#picks-subtitle {
+  font-size: 0.85rem;
+  color: #555;
+  margin-top: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+}
+
+#picks-site {
+  font-size: 0.75rem;
+  color: #999;
+  margin-top: 3px;
+}
+
+/* ── Loading / error ─────────────────────────────────────── */
+
+#bracket-loading {
+  text-align: center;
+  color: #888;
+  padding: 40px 0;
+}
+
+#picks-error {
+  text-align: center;
+  color: #c00;
+  padding: 40px 0;
+}
+
+/* ── Bracket wrapper ─────────────────────────────────────── */
+
+#bracket-wrap {
+  overflow-x: auto;
+}
+
+/* ── Bracket table ───────────────────────────────────────── */
+
+.bracket-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  white-space: nowrap;
+  font-size: 11px;
+  width: 100%;
+}
+
+/* Round header cells */
+.bracket-table .round-header {
+  background: #222;
+  color: #fff;
+  text-align: center;
+  font-weight: 600;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 4px 6px;
+  border: 1px solid #111;
+}
+
+.bracket-table .round-header-empty {
+  background: #222;
+  border: 1px solid #111;
+}
+
+/* ── Team cells ──────────────────────────────────────────── */
+
+.bracket-table .team-cell {
+  border: 1px solid #d0d0d0;
+  padding: 2px 5px;
+  min-width: 96px;
+  max-width: 96px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  height: 17px;
+  background: #fafafa;
+  color: #999;        /* default: muted — not picked, not played */
+}
+
+/* User picked this team (match not yet played) */
+.bracket-table .team-cell.pick {
+  background: #fff;
+  color: #111;
+  font-weight: 700;
+  border-color: #555;
+}
+
+/* Match played, user's pick was correct */
+.bracket-table .team-cell.correct {
+  background: #e8f5e9;
+  color: #1b5e20;
+  font-weight: 700;
+  border-color: #4caf50;
+}
+
+/* Match played, user's pick was wrong */
+.bracket-table .team-cell.wrong {
+  background: #ffebee;
+  color: #b71c1c;
+  font-weight: 600;
+  border-color: #ef9a9a;
+  text-decoration: line-through;
+}
+
+/* Match played, this team won but user didn't pick them */
+.bracket-table .team-cell.actual-winner {
+  background: #fff;
+  color: #333;
+  border-color: #aaa;
+}
+
+/* Match played, this team lost */
+.bracket-table .team-cell.loser {
+  background: #fafafa;
+  color: #bbb;
+}
+
+/* Slot not yet filled (TBD) */
+.bracket-table .team-cell.tbd {
+  color: #ccc;
+  font-style: italic;
+  background: #f7f7f7;
+}
+
+/* ── Connector cells ─────────────────────────────────────── */
+
+.bracket-table .conn-right {
+  border: 1.5px solid #bbb;
+  border-left: none;
+  width: 10px;
+  min-width: 10px;
+  background: transparent;
+}
+
+.bracket-table .conn-left {
+  border-top: 1.5px solid #bbb;
+  border-bottom: 1.5px solid #bbb;
+  border-left: none;
+  border-right: none;
+  width: 10px;
+  min-width: 10px;
+  background: transparent;
+}
+
+/* ── Gap columns ─────────────────────────────────────────── */
+
+.bracket-table .gap {
+  width: 6px;
+  min-width: 6px;
+  background: transparent;
+}
+
+/* ── Final column ────────────────────────────────────────── */
+
+.bracket-table .final-col-cell {
+  vertical-align: top;
+  padding: 12px 10px;
+  min-width: 120px;
+  width: 120px;
+  border-left: 1px solid #e0e0e0;
+}
+
+.final-col__block {
+  margin-bottom: 4px;
+}
+
+.final-col__label {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #999;
+  margin-bottom: 4px;
+  margin-top: 10px;
+}
+.final-col__block:first-child .final-col__label {
+  margin-top: 0;
+}
+
+.final-col__team {
+  font-size: 11px;
+  padding: 2px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #bbb;        /* default: muted */
+}
+
+/* mirror team-cell states in the final column */
+.final-col__team.pick         { color: #111; font-weight: 700; }
+.final-col__team.correct      { color: #1b5e20; font-weight: 700; }
+.final-col__team.wrong        { color: #b71c1c; text-decoration: line-through; }
+.final-col__team.actual-winner{ color: #333; }
+.final-col__team.loser        { color: #ccc; }
+.final-col__team.tbd          { color: #ddd; font-style: italic; }
+
+.final-col__tiebreaker {
+  font-size: 9px;
+  color: #aaa;
+  margin-top: 5px;
+  margin-bottom: 2px;
+}
+
+.final-col__divider {
+  border-top: 1px solid #eee;
+  margin: 12px 0 4px;
+}
+
+.final-col__divider--tall {
+  border-top: none;
+  margin-top: 28px;
+  margin-bottom: 16px;
+}
+
+.champion-callout {
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-align: center;
+  padding: 6px 0;
+  color: #111;
+}

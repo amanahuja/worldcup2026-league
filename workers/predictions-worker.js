@@ -19,6 +19,7 @@
  */
 
 import { getSession } from './auth-worker.js';
+import { parseResultsYaml, parsePredictionYaml, buildBracket, deriveWinner } from './scores-worker.js';
 
 // ---------------------------------------------------------------------------
 // Lock dates (UTC)
@@ -255,5 +256,76 @@ export async function handlePostKnockoutPredictions(request, env, session) {
   return new Response(JSON.stringify({ ok: true }), {
     status: 200,
     headers: { 'Content-Type': 'application/json' },
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Public picks handler — GET /api/picks/:username (no auth required)
+// ---------------------------------------------------------------------------
+
+export async function handleGetPublicPicks(username, env) {
+  // Validate user exists in KV
+  const stored = await env.WC2026_USERS.get(username.toLowerCase());
+  if (!stored) {
+    return new Response(JSON.stringify({ error: 'User not found' }), {
+      status: 404,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  const lc = username.toLowerCase();
+
+  // Fetch everything needed in parallel (3 GitHub subrequests)
+  const [resultsFile, defaultsKoFile, userKoFile] = await Promise.all([
+    githubGet('data/results.yaml', env),
+    githubGet('data/predictions/defaults-knockout.yaml', env),
+    githubGet(`data/predictions/${lc}-knockout.yaml`, env),
+  ]);
+
+  // Parse results and build the real bracket (actual team names + winners)
+  const { matches: results } = resultsFile
+    ? parseResultsYaml(resultsFile.content)
+    : { matches: new Map() };
+
+  // buildBracket resolves R32 slots → team names from groupStandings, then
+  // propagates actual winners round by round. Since all R32 matches are played,
+  // the real teams are in results.yaml and will propagate correctly.
+  // We pass an empty groupStandings Map — slot resolution returns null for
+  // unresolved pre-tournament slots, but actual results override that anyway.
+  const bracket = buildBracket(new Map(), results);
+
+  // Parse knockout predictions (user overrides defaults)
+  const defaultsK = defaultsKoFile
+    ? parsePredictionYaml(defaultsKoFile.content)
+    : { predictions: new Map(), tiebreaker_goals: null };
+  const userK = userKoFile
+    ? parsePredictionYaml(userKoFile.content)
+    : { predictions: new Map(), tiebreaker_goals: null };
+
+  // Merge: user picks override defaults
+  const mergedPicks = new Map([...defaultsK.predictions, ...userK.predictions]);
+
+  // Build response: translate home/away picks to team names
+  const responseBracket = {};
+  for (const [matchId, entry] of bracket) {
+    const pick = mergedPicks.get(matchId); // 'home' | 'away' | undefined
+    const predictedTeam = pick === 'home' ? entry.home
+                        : pick === 'away' ? entry.away
+                        : null;
+    responseBracket[matchId] = {
+      home:           entry.home        || null,
+      away:           entry.away        || null,
+      actual_winner:  entry.winningTeam || null,
+      predicted_team: predictedTeam,
+    };
+  }
+
+  return new Response(JSON.stringify({
+    username:         lc,
+    bracket:          responseBracket,
+    tiebreaker_goals: userK.tiebreaker_goals ?? defaultsK.tiebreaker_goals ?? null,
+  }), {
+    status: 200,
+    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
   });
 }

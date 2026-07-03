@@ -55,7 +55,7 @@ import { githubGet, githubPut, listDirectory } from './github.js';
 // Minimal YAML parsers
 // ---------------------------------------------------------------------------
 
-function parseResultsYaml(text) {
+export function parseResultsYaml(text) {
   // Returns: { last_updated, matches: Map<id → {status, home_score, away_score, home_pen, away_pen, winner}> }
   const matches = new Map();
   let current = null;
@@ -88,7 +88,7 @@ function parseResultsYaml(text) {
   return { last_updated: luMatch?.[1] || null, matches };
 }
 
-function parsePredictionYaml(text) {
+export function parsePredictionYaml(text) {
   // Returns: { username, tiebreaker_goals, predictions: Map<matchId → predicted_winner> }
   const predictions = new Map();
   let username = null;
@@ -221,7 +221,7 @@ function calcStandings(groupData, results) {
   });
 }
 
-function deriveWinner(result) {
+export function deriveWinner(result) {
   if (result.winner) return result.winner;
   if (result.home_score === null) return null;
   if (result.home_score > result.away_score) return 'home';
@@ -337,7 +337,7 @@ function resolveSlot(slot, groupStandings) {
  * Build the full bracket: resolve all team slots and derive round-by-round winners.
  * Returns a Map<matchId → { home, away, winner, status }>
  */
-function buildBracket(groupStandings, results) {
+export function buildBracket(groupStandings, results) {
   const bracket = new Map();
 
   // Resolve group winners, runners-up, and third-place teams into R32 slots

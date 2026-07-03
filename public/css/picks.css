@@ -1,0 +1,323 @@
+/* ============================================================
+   WC2026 — picks page
+   Fixed 960px, light theme, desktop only.
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #f0f0f0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 13px;
+  color: #111;
+  padding: 24px 0 48px;
+}
+
+#page-wrap {
+  width: 960px;
+  margin: 0 auto;
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 24px 24px 32px;
+}
+
+.hidden { display: none; }
+
+/* ── Header ──────────────────────────────────────────────── */
+
+#picks-header {
+  text-align: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #111;
+}
+
+#picks-username {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-transform: lowercase;
+}
+
+#picks-subtitle {
+  font-size: 0.8rem;
+  color: #555;
+  margin-top: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
+
+#picks-site {
+  font-size: 0.72rem;
+  color: #999;
+  margin-top: 3px;
+}
+
+/* ── Loading / error ─────────────────────────────────────── */
+
+#bracket-loading {
+  text-align: center;
+  color: #888;
+  padding: 40px 0;
+}
+
+#picks-error {
+  text-align: center;
+  color: #c00;
+  padding: 40px 0;
+}
+
+/* ── Round headers row ───────────────────────────────────── */
+
+#round-headers {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  margin-bottom: 4px;
+}
+
+.round-header {
+  flex: 0 0 auto;
+  width: 120px;
+  text-align: center;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #fff;
+  background: #333;
+  padding: 4px 2px;
+  border: 1px solid #222;
+}
+
+.round-header-gap {
+  flex: 0 0 20px;
+  background: transparent;
+}
+
+/* ── Bracket wrap — flex row ─────────────────────────────── */
+
+#bracket-wrap {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  overflow-x: auto;
+}
+
+/* ── Round columns ───────────────────────────────────────── */
+
+.round {
+  flex: 0 0 120px;
+  width: 120px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Match slots ─────────────────────────────────────────── */
+
+/*
+ * Each match has a fixed height (set inline by JS).
+ * Internally it's a flex column, centering the two team rows.
+ * Padding adds visual breathing room between adjacent matches.
+ * The two team rows sit symmetrically at ~25% and ~75% of the match height,
+ * which is where the connector ticks land.
+ *
+ * Layout math (BASE_H = 52px):
+ *   padding-top + padding-bottom = 10px  → 5px each
+ *   gap between teams = 3px
+ *   team row height = 18px
+ *   total content = 5 + 18 + 3 + 18 + 5 = 49px  (3px slack, centered)
+ *   team1 center = 5 + 9 = 14px  →  14/52 = 26.9% ≈ 25% ✓
+ *   team2 center = 5 + 18 + 3 + 9 = 35px  →  35/52 = 67.3% ≈ 75% ✓ (close enough)
+ */
+
+.match {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+  padding: 5px 0;
+  /* height set inline by JS */
+}
+
+/* ── Team rows ───────────────────────────────────────────── */
+
+.team {
+  height: 18px;
+  line-height: 18px;
+  padding: 0 6px;
+  font-size: 11px;
+  border: 1px solid #d0d0d0;
+  background: #fff;
+  color: #111;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border-radius: 2px;
+}
+
+/* User's pick — stronger border + bold */
+.team.picked {
+  border: 2px solid #333;
+  font-weight: 700;
+}
+
+/* Match played, this team won — green text */
+.team.won {
+  color: #1a6b1a;
+}
+
+/* Match played, this team lost — red text */
+.team.lost {
+  color: #b71c1c;
+}
+
+/* TBD slot */
+.team.tbd {
+  color: #bbb;
+  font-style: italic;
+  border-color: #e8e8e8;
+}
+
+/* ── Connector columns ───────────────────────────────────── */
+
+.conn-col {
+  flex: 0 0 20px;
+  width: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+/*
+ * Each .connector spans the height of ONE next-round match (= 2 feeder matches).
+ * It draws the classic bracket shape: ─┤ from two feeders into one output.
+ *
+ * We use a pseudo-element for the vertical bar so we can constrain it
+ * to run only between the two horizontal ticks (25%–75%), not the full height.
+ *
+ * ::before = top horizontal tick  (at 25% from top)
+ * ::after  = bottom horizontal tick (at 75% from top)
+ * The pseudo-element on the div itself = vertical bar between 25% and 75%
+ *
+ * We achieve the constrained vertical bar with a box-shadow trick:
+ * border-right only on ::before/::after's shared pseudo — actually simplest
+ * approach: use a child element. But since we only have ::before and ::after,
+ * we use a gradient background for the vertical bar.
+ */
+
+.connector {
+  flex: 0 0 auto;
+  position: relative;
+  /* vertical bar: runs from 25% to 75% of height, right-aligned */
+  background: linear-gradient(
+    to bottom,
+    transparent 25%,
+    #ccc 25%,
+    #ccc 75%,
+    transparent 75%
+  );
+  background-size: 2px 100%;
+  background-repeat: no-repeat;
+  background-position: right center;
+  /* height set inline by JS */
+}
+
+/* Top horizontal tick — full width, at 25% */
+.connector::before {
+  content: '';
+  position: absolute;
+  top: 25%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #ccc;
+  transform: translateY(-50%);
+}
+
+/* Bottom horizontal tick — full width, at 75% */
+.connector::after {
+  content: '';
+  position: absolute;
+  top: 75%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #ccc;
+  transform: translateY(-50%);
+}
+
+/* ── Final panel ─────────────────────────────────────────── */
+
+.final-panel {
+  flex: 0 0 120px;
+  width: 120px;
+  border-left: 1px solid #e0e0e0;
+}
+
+.final-panel__inner {
+  padding: 12px 10px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.final-block {
+  margin-bottom: 2px;
+}
+
+.final-block__label {
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #aaa;
+  margin-bottom: 4px;
+  margin-top: 12px;
+}
+.final-block:first-child .final-block__label {
+  margin-top: 0;
+}
+
+/* Final team rows — inherit .team states via the shared makeTeamDiv.
+   Override the bordered box style: final panel uses plain text rows. */
+.final-team {
+  display: block;
+  height: auto;
+  line-height: 1.5;
+  font-size: 11px;
+  padding: 1px 0;
+  border: none !important;
+  background: transparent !important;
+  border-radius: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* color + weight come from .won / .lost / .picked classes */
+}
+
+.final-tiebreaker {
+  font-size: 9px;
+  color: #aaa;
+  margin-top: 5px;
+}
+
+.final-divider {
+  border-top: 1px solid #eee;
+  margin: 12px 0 2px;
+}
+
+.final-divider--tall {
+  border-top: none;
+  flex: 1;
+  margin: 0;
+}
+
+.champion-callout {
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-align: center;
+  padding: 6px 0;
+  color: #111;
+}
