@@ -19,7 +19,7 @@
  */
 
 import { getSession } from './auth-worker.js';
-import { parseResultsYaml, parsePredictionYaml, buildBracket, deriveWinner } from './scores-worker.js';
+import { parseResultsYaml, parsePredictionYaml, deriveWinner } from './scores-worker.js';
 
 // ---------------------------------------------------------------------------
 // Lock dates (UTC)
@@ -263,6 +263,49 @@ export async function handlePostKnockoutPredictions(request, env, session) {
 // Public picks handler — GET /api/picks/:username (no auth required)
 // ---------------------------------------------------------------------------
 
+// Hardcoded R32 team matchups — verified from KO_TEAM_NAME_MAP in results-worker.js
+// (2026-06-29). These are stable; team names don't change after the draw.
+const R32_TEAMS = {
+  R32_73: { home: 'South Africa',        away: 'Canada'               },
+  R32_74: { home: 'Germany',             away: 'Paraguay'             },
+  R32_75: { home: 'Netherlands',         away: 'Morocco'              },
+  R32_76: { home: 'Brazil',              away: 'Japan'                },
+  R32_77: { home: 'France',              away: 'Sweden'               },
+  R32_78: { home: 'Ivory Coast',         away: 'Norway'               },
+  R32_79: { home: 'Mexico',              away: 'Ecuador'              },
+  R32_80: { home: 'England',             away: 'DR Congo'             },
+  R32_81: { home: 'USA',                 away: 'Bosnia & Herzegovina' },
+  R32_82: { home: 'Belgium',             away: 'Senegal'              },
+  R32_83: { home: 'Portugal',            away: 'Croatia'              },
+  R32_84: { home: 'Spain',               away: 'Austria'              },
+  R32_85: { home: 'Switzerland',         away: 'Algeria'              },
+  R32_86: { home: 'Argentina',           away: 'Cape Verde'           },
+  R32_87: { home: 'Colombia',            away: 'Ghana'                },
+  R32_88: { home: 'Australia',           away: 'Egypt'                },
+};
+
+// R16/QF/SF feeders — mirrors scores-worker.js bracket constants
+const R16_FEEDERS = {
+  R16_89: ['R32_74', 'R32_77'],
+  R16_90: ['R32_73', 'R32_75'],
+  R16_91: ['R32_76', 'R32_78'],
+  R16_92: ['R32_79', 'R32_80'],
+  R16_93: ['R32_83', 'R32_84'],
+  R16_94: ['R32_81', 'R32_82'],
+  R16_95: ['R32_86', 'R32_88'],
+  R16_96: ['R32_85', 'R32_87'],
+};
+const QF_FEEDERS = {
+  QF_97:  ['R16_89', 'R16_90'],
+  QF_98:  ['R16_93', 'R16_94'],
+  QF_99:  ['R16_91', 'R16_92'],
+  QF_100: ['R16_95', 'R16_96'],
+};
+const SF_FEEDERS = {
+  SF_101: ['QF_97', 'QF_98'],
+  SF_102: ['QF_99', 'QF_100'],
+};
+
 export async function handleGetPublicPicks(username, env) {
   // Validate user exists in KV
   const stored = await env.WC2026_USERS.get(username.toLowerCase());
@@ -282,17 +325,9 @@ export async function handleGetPublicPicks(username, env) {
     githubGet(`data/predictions/${lc}-knockout.yaml`, env),
   ]);
 
-  // Parse results and build the real bracket (actual team names + winners)
   const { matches: results } = resultsFile
     ? parseResultsYaml(resultsFile.content)
     : { matches: new Map() };
-
-  // buildBracket resolves R32 slots → team names from groupStandings, then
-  // propagates actual winners round by round. Since all R32 matches are played,
-  // the real teams are in results.yaml and will propagate correctly.
-  // We pass an empty groupStandings Map — slot resolution returns null for
-  // unresolved pre-tournament slots, but actual results override that anyway.
-  const bracket = buildBracket(new Map(), results);
 
   // Parse knockout predictions (user overrides defaults)
   const defaultsK = defaultsKoFile
@@ -302,27 +337,76 @@ export async function handleGetPublicPicks(username, env) {
     ? parsePredictionYaml(userKoFile.content)
     : { predictions: new Map(), tiebreaker_goals: null };
 
-  // Merge: user picks override defaults
   const mergedPicks = new Map([...defaultsK.predictions, ...userK.predictions]);
 
-  // Build response: translate home/away picks to team names
-  const responseBracket = {};
-  for (const [matchId, entry] of bracket) {
-    const pick = mergedPicks.get(matchId); // 'home' | 'away' | undefined
-    const predictedTeam = pick === 'home' ? entry.home
-                        : pick === 'away' ? entry.away
-                        : null;
-    responseBracket[matchId] = {
-      home:           entry.home        || null,
-      away:           entry.away        || null,
-      actual_winner:  entry.winningTeam || null,
-      predicted_team: predictedTeam,
-    };
+  // Build bracket: seed R32 from hardcoded team names, propagate winners round by round.
+  const bracket = {};
+
+  // R32 — team names from R32_TEAMS, actual winner from results
+  for (const [id, teams] of Object.entries(R32_TEAMS)) {
+    const result = results.get(id);
+    const actualSide = result?.status === 'completed' ? deriveWinner(result) : null;
+    const actualWinner = actualSide === 'home' ? teams.home
+                       : actualSide === 'away' ? teams.away
+                       : null;
+    bracket[id] = { home: teams.home, away: teams.away, actual_winner: actualWinner };
+  }
+
+  // R16, QF, SF — home/away come from the winning team of each feeder match
+  function propagate(feedersMap) {
+    for (const [id, [f1, f2]] of Object.entries(feedersMap)) {
+      const home = bracket[f1]?.actual_winner || null;
+      const away = bracket[f2]?.actual_winner || null;
+      const result = results.get(id);
+      const actualSide = result?.status === 'completed' ? deriveWinner(result) : null;
+      const actualWinner = actualSide === 'home' ? home
+                         : actualSide === 'away' ? away
+                         : null;
+      bracket[id] = { home, away, actual_winner: actualWinner };
+    }
+  }
+
+  propagate(R16_FEEDERS);
+  propagate(QF_FEEDERS);
+  propagate(SF_FEEDERS);
+
+  // Final
+  const sf1 = bracket['SF_101'];
+  const sf2 = bracket['SF_102'];
+  const finalResult = results.get('FINAL');
+  const finalSide = finalResult?.status === 'completed' ? deriveWinner(finalResult) : null;
+  bracket['FINAL'] = {
+    home: sf1?.actual_winner || null,
+    away: sf2?.actual_winner || null,
+    actual_winner: finalSide === 'home' ? sf1?.actual_winner
+                 : finalSide === 'away' ? sf2?.actual_winner
+                 : null,
+  };
+
+  // Third place — losers of each SF
+  const sf1Loser = sf1 ? (results.get('SF_101')?.winner === 'home' ? sf1.away : sf1.home) : null;
+  const sf2Loser = sf2 ? (results.get('SF_102')?.winner === 'home' ? sf2.away : sf2.home) : null;
+  const thirdResult = results.get('THIRD');
+  const thirdSide = thirdResult?.status === 'completed' ? deriveWinner(thirdResult) : null;
+  bracket['THIRD'] = {
+    home: sf1Loser,
+    away: sf2Loser,
+    actual_winner: thirdSide === 'home' ? sf1Loser
+                 : thirdSide === 'away' ? sf2Loser
+                 : null,
+  };
+
+  // Overlay user picks: translate 'home'/'away' to team name
+  for (const [id, entry] of Object.entries(bracket)) {
+    const pick = mergedPicks.get(id);
+    entry.predicted_team = pick === 'home' ? entry.home
+                         : pick === 'away' ? entry.away
+                         : null;
   }
 
   return new Response(JSON.stringify({
     username:         lc,
-    bracket:          responseBracket,
+    bracket,
     tiebreaker_goals: userK.tiebreaker_goals ?? defaultsK.tiebreaker_goals ?? null,
   }), {
     status: 200,
