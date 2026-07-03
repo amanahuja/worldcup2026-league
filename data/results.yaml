@@ -602,7 +602,6 @@ matches:
     home_pen: 3
     away_pen: 5
     winner: away
-    winner: draw
   R32_86:
     status: scheduled
     home_score: null
