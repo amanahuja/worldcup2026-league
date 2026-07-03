@@ -82,13 +82,13 @@ body {
   width: 120px;
   text-align: center;
   font-size: 9px;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.07em;
-  color: #fff;
-  background: #333;
+  color: #aaa;
+  background: transparent;
   padding: 4px 2px;
-  border: 1px solid #222;
+  border: none;
 }
 
 .round-header-gap {
@@ -149,8 +149,8 @@ body {
   line-height: 18px;
   padding: 0 6px;
   font-size: 11px;
-  border: 1px solid #d0d0d0;
-  background: #fff;
+  border: 1px solid #e0e0e0;
+  background: transparent;
   color: #111;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -158,27 +158,42 @@ body {
   border-radius: 2px;
 }
 
-/* User's pick — stronger border + bold */
+/* User's pick, unplayed — gray tonal fill (pressed button) */
 .team.picked {
-  border: 2px solid #333;
+  background: #E2E2E2;
+  color: #1C1B1F;
   font-weight: 700;
+  border: none;
 }
 
-/* Match played, this team won — green text */
+/* Correct prediction — picked + won */
+.team.picked.won {
+  background: #386A20;
+  color: #fff;
+  border: none;
+}
+
+/* Wrong prediction — picked + lost */
+.team.picked.lost {
+  background: #B3261E;
+  color: #fff;
+  border: none;
+}
+
+/* Won but not picked — neutral, recedes */
 .team.won {
-  color: #1a6b1a;
+  color: #111;
 }
 
-/* Match played, this team lost — red text */
+/* Lost but not picked — neutral, recedes */
 .team.lost {
-  color: #b71c1c;
+  color: #111;
 }
 
 /* TBD slot */
 .team.tbd {
-  color: #bbb;
+  color: #aaa;
   font-style: italic;
-  border-color: #e8e8e8;
 }
 
 /* ── Connector columns ───────────────────────────────────── */
@@ -281,7 +296,7 @@ body {
 }
 
 /* Final team rows — inherit .team states via the shared makeTeamDiv.
-   Override the bordered box style: final panel uses plain text rows. */
+   Override the box style: final panel uses plain text rows, no fill. */
 .final-team {
   display: block;
   height: auto;
@@ -294,8 +309,16 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  /* color + weight come from .won / .lost / .picked classes */
+  color: #111;
+  /* color + weight come from .won / .lost / .picked classes below */
 }
+
+.final-team.picked       { background: transparent !important; color: #1C1B1F; font-weight: 700; }
+.final-team.picked.won   { background: transparent !important; color: #386A20; }
+.final-team.picked.lost  { background: transparent !important; color: #B3261E; }
+.final-team.won          { color: #111; }
+.final-team.lost         { color: #111; }
+.final-team.tbd          { color: #aaa; font-style: italic; }
 
 .final-tiebreaker {
   font-size: 9px;
