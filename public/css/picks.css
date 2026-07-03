@@ -272,10 +272,43 @@ body {
 }
 
 .final-panel__inner {
-  padding: 12px 10px;
-  display: flex;
-  flex-direction: column;
+  position: relative;
   height: 100%;
+}
+
+/* Trophy + Final block + tiebreaker — grouped, centered vertically */
+.final-panel__inner .champion-callout {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-100%) translateY(-36px);
+  text-align: left;
+  padding: 0;
+}
+
+.final-panel__inner .final-block--final {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.final-panel__inner .final-tiebreaker {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  top: 50%;
+  transform: translateY(50%) translateY(28px);
+}
+
+/* 3rd place — anchored to the bottom */
+.final-panel__inner .final-block--third {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 16px;
 }
 
 .final-block {
@@ -289,58 +322,32 @@ body {
   letter-spacing: 0.08em;
   color: #aaa;
   margin-bottom: 4px;
-  margin-top: 12px;
-}
-.final-block:first-child .final-block__label {
   margin-top: 0;
 }
 
-/* Final team rows — inherit .team states via the shared makeTeamDiv.
-   Override the box style: final panel uses plain text rows, no fill. */
+/* Final team rows — same fills as bracket, no border */
 .final-team {
   display: block;
   height: auto;
   line-height: 1.5;
   font-size: 11px;
-  padding: 1px 0;
-  border: none !important;
-  background: transparent !important;
-  border-radius: 0;
+  padding: 1px 4px;
+  border: none;
+  border-radius: 2px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   color: #111;
-  /* color + weight come from .won / .lost / .picked classes below */
+  /* background + color come from .picked / .won / .lost classes */
 }
-
-.final-team.picked       { background: transparent !important; color: #1C1B1F; font-weight: 700; }
-.final-team.picked.won   { background: transparent !important; color: #386A20; }
-.final-team.picked.lost  { background: transparent !important; color: #B3261E; }
-.final-team.won          { color: #111; }
-.final-team.lost         { color: #111; }
-.final-team.tbd          { color: #aaa; font-style: italic; }
 
 .final-tiebreaker {
   font-size: 9px;
   color: #aaa;
-  margin-top: 5px;
-}
-
-.final-divider {
-  border-top: 1px solid #eee;
-  margin: 12px 0 2px;
-}
-
-.final-divider--tall {
-  border-top: none;
-  flex: 1;
-  margin: 0;
 }
 
 .champion-callout {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 700;
-  text-align: center;
-  padding: 6px 0;
   color: #111;
 }

@@ -299,33 +299,32 @@ function renderBracket(data) {
 function makeFinalPanel(b, tb) {
   const inner = el('div', 'final-panel__inner');
 
-  function matchBlock(label, matchId) {
+  function matchBlock(label, matchId, extraClass) {
     const match = b[matchId] || { home: null, away: null, predicted_team: null, actual_winner: null };
-    const block = el('div', 'final-block');
+    const block = el('div', 'final-block' + (extraClass ? ' ' + extraClass : ''));
     block.appendChild(el('div', 'final-block__label', label));
     block.appendChild(makeTeamDiv(match, 'home', 'final-team'));
     block.appendChild(makeTeamDiv(match, 'away', 'final-team'));
     return block;
   }
 
-  inner.appendChild(matchBlock('Final', 'FINAL'));
-
-  const tbDiv = el('div', 'final-tiebreaker',
-    'Total goals: ' + (typeof tb === 'number' ? tb : '—'));
-  inner.appendChild(tbDiv);
-
-  inner.appendChild(el('div', 'final-divider'));
-
-  inner.appendChild(matchBlock('3rd place', 'THIRD'));
-
-  inner.appendChild(el('div', 'final-divider final-divider--tall'));
-
-  // Champion callout
+  // Trophy callout — above the final block
   const finalM   = b['FINAL'] || {};
   const champion = finalM.actual_winner || finalM.predicted_team || null;
   const champ    = el('div', 'champion-callout',
     champion ? `\u{1F3C6} ${displayName(champion)}` : '\u{1F3C6} TBD');
   inner.appendChild(champ);
+
+  // Final match block — centered vertically via CSS
+  inner.appendChild(matchBlock('Final', 'FINAL', 'final-block--final'));
+
+  // Tiebreaker — below the final block
+  const tbDiv = el('div', 'final-tiebreaker',
+    'Goals scored in the final: ' + (typeof tb === 'number' ? tb : '—'));
+  inner.appendChild(tbDiv);
+
+  // 3rd place — at the bottom
+  inner.appendChild(matchBlock('3rd place', 'THIRD', 'final-block--third'));
 
   return inner;
 }
