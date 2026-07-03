@@ -352,11 +352,21 @@ export async function handleGetPublicPicks(username, env) {
     bracket[id] = { home: teams.home, away: teams.away, actual_winner: actualWinner };
   }
 
+  // Resolve the team the user predicted would advance out of a slot.
+  // Always uses the user's pick (merged with defaults) — never actual results.
+  // actual_winner is stored separately on each match entry for the overlay only.
+  function resolveTeam(slotId) {
+    const e = bracket[slotId];
+    if (!e) return null;
+    const pick = mergedPicks.get(slotId);
+    return pick === 'home' ? e.home : pick === 'away' ? e.away : null;
+  }
+
   // R16, QF, SF — home/away come from the winning team of each feeder match
   function propagate(feedersMap) {
     for (const [id, [f1, f2]] of Object.entries(feedersMap)) {
-      const home = bracket[f1]?.actual_winner || null;
-      const away = bracket[f2]?.actual_winner || null;
+      const home = resolveTeam(f1);
+      const away = resolveTeam(f2);
       const result = results.get(id);
       const actualSide = result?.status === 'completed' ? deriveWinner(result) : null;
       const actualWinner = actualSide === 'home' ? home
@@ -371,21 +381,29 @@ export async function handleGetPublicPicks(username, env) {
   propagate(SF_FEEDERS);
 
   // Final
-  const sf1 = bracket['SF_101'];
-  const sf2 = bracket['SF_102'];
+  const finalHome = resolveTeam('SF_101');
+  const finalAway = resolveTeam('SF_102');
   const finalResult = results.get('FINAL');
   const finalSide = finalResult?.status === 'completed' ? deriveWinner(finalResult) : null;
   bracket['FINAL'] = {
-    home: sf1?.actual_winner || null,
-    away: sf2?.actual_winner || null,
-    actual_winner: finalSide === 'home' ? sf1?.actual_winner
-                 : finalSide === 'away' ? sf2?.actual_winner
+    home: finalHome,
+    away: finalAway,
+    actual_winner: finalSide === 'home' ? finalHome
+                 : finalSide === 'away' ? finalAway
                  : null,
   };
 
-  // Third place — losers of each SF
-  const sf1Loser = sf1 ? (results.get('SF_101')?.winner === 'home' ? sf1.away : sf1.home) : null;
-  const sf2Loser = sf2 ? (results.get('SF_102')?.winner === 'home' ? sf2.away : sf2.home) : null;
+  // Third place — losers of each SF, derived from user's picks (not actual results)
+  const sf1 = bracket['SF_101'];
+  const sf2 = bracket['SF_102'];
+  const sf1Pick = mergedPicks.get('SF_101');
+  const sf2Pick = mergedPicks.get('SF_102');
+  const sf1Loser = sf1Pick === 'home' ? sf1?.away
+                 : sf1Pick === 'away' ? sf1?.home
+                 : null;
+  const sf2Loser = sf2Pick === 'home' ? sf2?.away
+                 : sf2Pick === 'away' ? sf2?.home
+                 : null;
   const thirdResult = results.get('THIRD');
   const thirdSide = thirdResult?.status === 'completed' ? deriveWinner(thirdResult) : null;
   bracket['THIRD'] = {
