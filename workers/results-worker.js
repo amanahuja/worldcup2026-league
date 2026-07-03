@@ -211,18 +211,17 @@ function normalizeMatch(m, fixtureLookup) {
   }
 
   // Detect penalty shootout: only relevant for knockout matches where scores
-  // are level at full time. Shootout goals have isPenalty=true AND no matchMinute
-  // (OpenLigaDB records them with null minute). In-game penalties have a minute.
+  // are level at full time. OpenLigaDB provides a dedicated resultTypeID=5
+  // ("nach Elfmeterschießen") entry in matchResults with the shootout score.
   // Group stage never has shootouts — guard with groupOrderID check.
   let homePen = null;
   let awayPen = null;
   const isKnockout = m.group?.groupOrderID >= 4;
-  if (isKnockout && m.matchIsFinished && homeScore !== null && homeScore === awayScore && m.goals?.length) {
-    const shootoutGoals = m.goals.filter(g => g.isPenalty && g.matchMinute === null);
-    if (shootoutGoals.length > 0) {
-      const last = shootoutGoals[shootoutGoals.length - 1];
-      homePen = last.scoreTeam1;
-      awayPen = last.scoreTeam2;
+  if (isKnockout && m.matchIsFinished && homeScore !== null && homeScore === awayScore && m.matchResults?.length) {
+    const shootout = m.matchResults.find(r => r.resultTypeID === 5);
+    if (shootout) {
+      homePen = shootout.pointsTeam1;
+      awayPen = shootout.pointsTeam2;
     }
   }
 
