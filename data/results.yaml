@@ -1,4 +1,4 @@
-last_updated: "2026-07-04T00:00:30.063Z"
+last_updated: "2026-07-04T01:00:29.962Z"
 matches:
   G_B2:
     status: completed
@@ -603,11 +603,12 @@ matches:
     away_pen: 5
     winner: away
   R32_86:
-    status: scheduled
-    home_score: null
-    away_score: null
+    status: completed
+    home_score: 1
+    away_score: 1
     home_pen: null
     away_pen: null
+    winner: draw
   R32_87:
     status: scheduled
     home_score: null
