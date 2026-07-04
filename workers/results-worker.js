@@ -71,7 +71,16 @@ const KO_TEAM_NAME_MAP = {
   'Argentina|Cape Verde':          'R32_86',
   'Colombia|Ghana':                'R32_87',
   'Australia|Egypt':               'R32_88',
-  // R16, QF, SF, Final, 3rd — add entries here as teams advance
+  // R16 — verified 2026-07-03
+  'Canada|Morocco':                'R16_90',
+  'Paraguay|France':               'R16_89',
+  'Brazil|Norway':                 'R16_91',
+  'Mexico|England':                'R16_92',
+  'Portugal|Spain':                'R16_93',
+  'USA|Belgium':                   'R16_94',
+  'Argentina|Egypt':               'R16_95',
+  'Switzerland|Colombia':          'R16_96',
+  // QF, SF, Final, 3rd — add entries here as teams advance
 };
 
 // Group stage ended 2026-06-28T04:00Z (2h buffer after last whistle).
