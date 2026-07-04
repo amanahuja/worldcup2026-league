@@ -1,4 +1,4 @@
-last_updated: "2026-07-04T17:00:30.044Z"
+last_updated: "2026-07-04T18:00:30.054Z"
 matches:
   G_B2:
     status: completed
@@ -504,6 +504,34 @@ matches:
     home_pen: null
     away_pen: null
     winner: away
+  R32_78:
+    status: completed
+    home_score: 1
+    away_score: 2
+    home_pen: null
+    away_pen: null
+    winner: away
+  R32_81:
+    status: completed
+    home_score: 2
+    away_score: 0
+    home_pen: null
+    away_pen: null
+    winner: home
+  R32_85:
+    status: completed
+    home_score: 2
+    away_score: 0
+    home_pen: null
+    away_pen: null
+    winner: home
+  R32_87:
+    status: completed
+    home_score: 1
+    away_score: 0
+    home_pen: null
+    away_pen: null
+    winner: home
   R32_73:
     status: completed
     home_score: 0
@@ -529,13 +557,6 @@ matches:
     status: completed
     home_score: 3
     away_score: 4
-    home_pen: null
-    away_pen: null
-    winner: away
-  R32_78:
-    status: completed
-    home_score: 1
-    away_score: 2
     home_pen: null
     away_pen: null
     winner: away
@@ -567,13 +588,6 @@ matches:
     home_pen: null
     away_pen: null
     winner: home
-  R32_81:
-    status: completed
-    home_score: 2
-    away_score: 0
-    home_pen: null
-    away_pen: null
-    winner: home
   R32_84:
     status: completed
     home_score: 3
@@ -585,13 +599,6 @@ matches:
     status: completed
     home_score: 2
     away_score: 1
-    home_pen: null
-    away_pen: null
-    winner: home
-  R32_85:
-    status: completed
-    home_score: 2
-    away_score: 0
     home_pen: null
     away_pen: null
     winner: home
@@ -609,19 +616,6 @@ matches:
     home_pen: null
     away_pen: null
     winner: home
-  R32_87:
-    status: completed
-    home_score: 1
-    away_score: 0
-    home_pen: null
-    away_pen: null
-    winner: home
-  R16_96:
-    status: scheduled
-    home_score: null
-    away_score: null
-    home_pen: null
-    away_pen: null
   R16_90:
     status: scheduled
     home_score: null
@@ -659,6 +653,12 @@ matches:
     home_pen: null
     away_pen: null
   R16_95:
+    status: scheduled
+    home_score: null
+    away_score: null
+    home_pen: null
+    away_pen: null
+  R16_96:
     status: scheduled
     home_score: null
     away_score: null
