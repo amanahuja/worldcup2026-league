@@ -193,8 +193,15 @@ function teamClasses(match, side) {
 
   if (!team) { cls.push('tbd'); return cls.join(' '); }
 
-  if (picked)          cls.push('picked');
-  if (actual !== null) cls.push(actual === team ? 'won' : 'lost');
+  if (picked) cls.push('picked');
+  if (actual !== null) {
+    // A picked team is only "correct" if the chain leading to this match is also
+    // valid (i.e. the user correctly predicted all feeder match results on this
+    // side). chain_valid is false when a now-eliminated team was predicted to
+    // reach this round — mirrors the scoring logic in scores-worker.js.
+    const isCorrect = actual === team && match.chain_valid !== false;
+    cls.push(isCorrect ? 'won' : 'lost');
+  }
 
   return cls.join(' ');
 }

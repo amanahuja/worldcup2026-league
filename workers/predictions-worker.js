@@ -422,6 +422,51 @@ export async function handleGetPublicPicks(username, env) {
                          : null;
   }
 
+  // Chain validation — mirrors isPredictionValid() in scores-worker.js.
+  // For each KO match (R16+), check that the user correctly predicted the winner
+  // of the feeder match on their picked side, recursively back to R32.
+  // R32 and THIRD are always valid (no prior round to validate).
+  // Attaches chain_valid: boolean to each bracket entry.
+  const ALL_KO_FEEDERS = {
+    ...R16_FEEDERS,
+    ...QF_FEEDERS,
+    ...SF_FEEDERS,
+    FINAL: ['SF_101', 'SF_102'],
+  };
+
+  function isPickChainValid(matchId, prediction) {
+    if (matchId.startsWith('R32_') || matchId === 'THIRD') return true;
+    const feeders = ALL_KO_FEEDERS[matchId];
+    if (!feeders) return true;
+
+    // feeders[0] supplies home; feeders[1] supplies away
+    const feederMatchId = prediction === 'home' ? feeders[0] : feeders[1];
+
+    const feederResult = results.get(feederMatchId);
+    if (!feederResult || feederResult.status !== 'completed') return false;
+
+    const feederActualSide = deriveWinner(feederResult); // 'home'|'away'|null
+    if (!feederActualSide) return false;
+
+    const userFeederPick = mergedPicks.get(feederMatchId);
+    if (!userFeederPick) return false;
+
+    // User must have predicted the side that actually won the feeder
+    if (userFeederPick !== feederActualSide) return false;
+
+    // Recurse: validate the feeder pick itself
+    return isPickChainValid(feederMatchId, userFeederPick);
+  }
+
+  for (const [id, entry] of Object.entries(bracket)) {
+    if (id.startsWith('R32_') || id === 'THIRD') {
+      entry.chain_valid = true;
+    } else {
+      const pick = mergedPicks.get(id);
+      entry.chain_valid = pick ? isPickChainValid(id, pick) : true;
+    }
+  }
+
   return new Response(JSON.stringify({
     username:         lc,
     bracket,
