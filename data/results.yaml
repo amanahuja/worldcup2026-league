@@ -1,4 +1,4 @@
-last_updated: "2026-07-06T21:00:07.084Z"
+last_updated: "2026-07-06T22:00:08.600Z"
 matches:
   G_B2:
     status: completed
@@ -504,13 +504,6 @@ matches:
     home_pen: null
     away_pen: null
     winner: away
-  R32_86:
-    status: completed
-    home_score: 3
-    away_score: 2
-    home_pen: null
-    away_pen: null
-    winner: home
   R32_73:
     status: completed
     home_score: 0
@@ -609,6 +602,13 @@ matches:
     home_pen: null
     away_pen: null
     winner: away
+  R32_86:
+    status: completed
+    home_score: 3
+    away_score: 2
+    home_pen: null
+    away_pen: null
+    winner: home
   R32_87:
     status: completed
     home_score: 1
@@ -624,28 +624,29 @@ matches:
     away_pen: null
     winner: away
   R16_93:
-    status: scheduled
-    home_score: null
-    away_score: null
-    home_pen: null
-    away_pen: null
-  R16_94:
-    status: scheduled
-    home_score: null
-    away_score: null
-    home_pen: null
-    away_pen: null
-  R16_91:
     status: completed
-    home_score: 1
-    away_score: 2
+    home_score: 0
+    away_score: 1
     home_pen: null
     away_pen: null
     winner: away
+  R16_95:
+    status: scheduled
+    home_score: null
+    away_score: null
+    home_pen: null
+    away_pen: null
   R16_90:
     status: completed
     home_score: 0
     away_score: 3
+    home_pen: null
+    away_pen: null
+    winner: away
+  R16_91:
+    status: completed
+    home_score: 1
+    away_score: 2
     home_pen: null
     away_pen: null
     winner: away
@@ -656,13 +657,19 @@ matches:
     home_pen: null
     away_pen: null
     winner: away
-  R16_95:
+  R16_94:
     status: scheduled
     home_score: null
     away_score: null
     home_pen: null
     away_pen: null
   R16_96:
+    status: scheduled
+    home_score: null
+    away_score: null
+    home_pen: null
+    away_pen: null
+  KO_84295:
     status: scheduled
     home_score: null
     away_score: null
@@ -681,12 +688,6 @@ matches:
     home_pen: null
     away_pen: null
   QF_99:
-    status: scheduled
-    home_score: null
-    away_score: null
-    home_pen: null
-    away_pen: null
-  KO_84295:
     status: scheduled
     home_score: null
     away_score: null
