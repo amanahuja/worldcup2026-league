@@ -30,10 +30,10 @@ Privacy disclosure: See [RULES.md](./RULES.md), but, basically, everything is pu
 <table>
   <tr>
     <td><img src="docs/screenshots/leaderboard.png" alt="Leaderboard" width="400"/></td>
-    <td><img src="docs/screenshots/predictions-QF.png" alt="Predictions View" width="400"/></td>
+    <td><img src="docs/screenshots/predictions-overlay.png" alt="Knockout bracket" width="400"/></td>
   </tr>
   <tr>
-    <td><img src="docs/screenshots/predictions-overlay.png" alt="Knockout bracket" width="400"/></td>
+    <td><img src="docs/screenshots/picks-view.png" alt="Share my Picks View" width="400"/></td>
     <td><img src="docs/screenshots/results-overlay.png" alt="Results with overlay" width="400"/></td>
   </tr>
 </table>
