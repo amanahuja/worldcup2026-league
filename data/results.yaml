@@ -1,4 +1,4 @@
-last_updated: "2026-07-06T20:00:07.213Z"
+last_updated: "2026-07-06T21:00:07.084Z"
 matches:
   G_B2:
     status: completed
@@ -504,10 +504,10 @@ matches:
     home_pen: null
     away_pen: null
     winner: away
-  R32_80:
+  R32_86:
     status: completed
-    home_score: 2
-    away_score: 1
+    home_score: 3
+    away_score: 2
     home_pen: null
     away_pen: null
     winner: home
@@ -560,6 +560,13 @@ matches:
     home_pen: null
     away_pen: null
     winner: home
+  R32_80:
+    status: completed
+    home_score: 2
+    away_score: 1
+    home_pen: null
+    away_pen: null
+    winner: home
   R32_82:
     status: completed
     home_score: 3
@@ -602,13 +609,6 @@ matches:
     home_pen: null
     away_pen: null
     winner: away
-  R32_86:
-    status: completed
-    home_score: 3
-    away_score: 2
-    home_pen: null
-    away_pen: null
-    winner: home
   R32_87:
     status: completed
     home_score: 1
@@ -616,31 +616,10 @@ matches:
     home_pen: null
     away_pen: null
     winner: home
-  R16_90:
-    status: completed
-    home_score: 0
-    away_score: 3
-    home_pen: null
-    away_pen: null
-    winner: away
   R16_89:
     status: completed
     home_score: 0
     away_score: 1
-    home_pen: null
-    away_pen: null
-    winner: away
-  R16_91:
-    status: completed
-    home_score: 1
-    away_score: 2
-    home_pen: null
-    away_pen: null
-    winner: away
-  R16_92:
-    status: completed
-    home_score: 2
-    away_score: 3
     home_pen: null
     away_pen: null
     winner: away
@@ -656,6 +635,27 @@ matches:
     away_score: null
     home_pen: null
     away_pen: null
+  R16_91:
+    status: completed
+    home_score: 1
+    away_score: 2
+    home_pen: null
+    away_pen: null
+    winner: away
+  R16_90:
+    status: completed
+    home_score: 0
+    away_score: 3
+    home_pen: null
+    away_pen: null
+    winner: away
+  R16_92:
+    status: completed
+    home_score: 2
+    away_score: 3
+    home_pen: null
+    away_pen: null
+    winner: away
   R16_95:
     status: scheduled
     home_score: null
