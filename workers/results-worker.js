@@ -80,7 +80,11 @@ const KO_TEAM_NAME_MAP = {
   'USA|Belgium':                   'R16_94',
   'Argentina|Egypt':               'R16_95',
   'Switzerland|Colombia':          'R16_96',
-  // QF, SF, Final, 3rd — add entries here as teams advance
+  // QF — verified 2026-07-06 (groupOrderID 6)
+  'France|Morocco':            'QF_97',
+  'Norway|England':            'QF_99',
+  // QF_98 (winner R16_93 vs winner R16_94) and QF_100 (winner R16_95 vs winner R16_96) — pending R16 results
+  // SF, Final, 3rd — add entries here as teams advance
 };
 
 // Group stage ended 2026-06-28T04:00Z (2h buffer after last whistle).
