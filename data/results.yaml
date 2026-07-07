@@ -1,4 +1,4 @@
-last_updated: "2026-07-07T06:00:07.887Z"
+last_updated: "2026-07-07T08:00:07.590Z"
 matches:
   G_B2:
     status: completed
@@ -504,20 +504,6 @@ matches:
     home_pen: null
     away_pen: null
     winner: away
-  R32_84:
-    status: completed
-    home_score: 3
-    away_score: 0
-    home_pen: null
-    away_pen: null
-    winner: home
-  R32_73:
-    status: completed
-    home_score: 0
-    away_score: 1
-    home_pen: null
-    away_pen: null
-    winner: away
   R32_76:
     status: completed
     home_score: 2
@@ -529,6 +515,27 @@ matches:
     status: completed
     home_score: 4
     away_score: 5
+    home_pen: null
+    away_pen: null
+    winner: away
+  R32_77:
+    status: completed
+    home_score: 3
+    away_score: 0
+    home_pen: null
+    away_pen: null
+    winner: home
+  R32_82:
+    status: completed
+    home_score: 3
+    away_score: 2
+    home_pen: null
+    away_pen: null
+    winner: home
+  R32_73:
+    status: completed
+    home_score: 0
+    away_score: 1
     home_pen: null
     away_pen: null
     winner: away
@@ -546,13 +553,6 @@ matches:
     home_pen: null
     away_pen: null
     winner: away
-  R32_77:
-    status: completed
-    home_score: 3
-    away_score: 0
-    home_pen: null
-    away_pen: null
-    winner: home
   R32_79:
     status: completed
     home_score: 2
@@ -567,16 +567,16 @@ matches:
     home_pen: null
     away_pen: null
     winner: home
-  R32_82:
-    status: completed
-    home_score: 3
-    away_score: 2
-    home_pen: null
-    away_pen: null
-    winner: home
   R32_81:
     status: completed
     home_score: 2
+    away_score: 0
+    home_pen: null
+    away_pen: null
+    winner: home
+  R32_84:
+    status: completed
+    home_score: 3
     away_score: 0
     home_pen: null
     away_pen: null
@@ -689,6 +689,12 @@ matches:
     home_pen: null
     away_pen: null
   KO_84295:
+    status: scheduled
+    home_score: null
+    away_score: null
+    home_pen: null
+    away_pen: null
+  KO_84682:
     status: scheduled
     home_score: null
     away_score: null
