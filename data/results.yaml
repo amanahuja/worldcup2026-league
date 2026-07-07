@@ -1,4 +1,4 @@
-last_updated: "2026-07-07T19:00:07.217Z"
+last_updated: "2026-07-07T20:00:07.678Z"
 matches:
   G_B2:
     status: completed
@@ -504,30 +504,9 @@ matches:
     home_pen: null
     away_pen: null
     winner: away
-  R32_78:
-    status: completed
-    home_score: 1
-    away_score: 2
-    home_pen: null
-    away_pen: null
-    winner: away
-  R32_83:
-    status: completed
-    home_score: 2
-    away_score: 1
-    home_pen: null
-    away_pen: null
-    winner: home
   R32_85:
     status: completed
     home_score: 2
-    away_score: 0
-    home_pen: null
-    away_pen: null
-    winner: home
-  R32_87:
-    status: completed
-    home_score: 1
     away_score: 0
     home_pen: null
     away_pen: null
@@ -557,6 +536,13 @@ matches:
     status: completed
     home_score: 3
     away_score: 4
+    home_pen: null
+    away_pen: null
+    winner: away
+  R32_78:
+    status: completed
+    home_score: 1
+    away_score: 2
     home_pen: null
     away_pen: null
     winner: away
@@ -602,6 +588,13 @@ matches:
     home_pen: null
     away_pen: null
     winner: home
+  R32_83:
+    status: completed
+    home_score: 2
+    away_score: 1
+    home_pen: null
+    away_pen: null
+    winner: home
   R32_88:
     status: completed
     home_score: 3
@@ -616,6 +609,19 @@ matches:
     home_pen: null
     away_pen: null
     winner: home
+  R32_87:
+    status: completed
+    home_score: 1
+    away_score: 0
+    home_pen: null
+    away_pen: null
+    winner: home
+  R16_96:
+    status: scheduled
+    home_score: null
+    away_score: null
+    home_pen: null
+    away_pen: null
   R16_90:
     status: completed
     home_score: 0
@@ -665,18 +671,6 @@ matches:
     home_pen: null
     away_pen: null
     winner: home
-  R16_96:
-    status: scheduled
-    home_score: null
-    away_score: null
-    home_pen: null
-    away_pen: null
-  QF_97:
-    status: scheduled
-    home_score: null
-    away_score: null
-    home_pen: null
-    away_pen: null
   KO_83462:
     status: scheduled
     home_score: null
@@ -690,6 +684,12 @@ matches:
     home_pen: null
     away_pen: null
   KO_84295:
+    status: scheduled
+    home_score: null
+    away_score: null
+    home_pen: null
+    away_pen: null
+  QF_97:
     status: scheduled
     home_score: null
     away_score: null
