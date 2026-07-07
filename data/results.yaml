@@ -1,4 +1,4 @@
-last_updated: "2026-07-07T02:00:07.317Z"
+last_updated: "2026-07-07T06:00:07.887Z"
 matches:
   G_B2:
     status: completed
@@ -504,6 +504,34 @@ matches:
     home_pen: null
     away_pen: null
     winner: away
+  R32_84:
+    status: completed
+    home_score: 3
+    away_score: 0
+    home_pen: null
+    away_pen: null
+    winner: home
+  R32_73:
+    status: completed
+    home_score: 0
+    away_score: 1
+    home_pen: null
+    away_pen: null
+    winner: away
+  R32_76:
+    status: completed
+    home_score: 2
+    away_score: 1
+    home_pen: null
+    away_pen: null
+    winner: home
+  R32_74:
+    status: completed
+    home_score: 4
+    away_score: 5
+    home_pen: null
+    away_pen: null
+    winner: away
   R32_75:
     status: completed
     home_score: 3
@@ -511,20 +539,6 @@ matches:
     home_pen: null
     away_pen: null
     winner: away
-  R32_81:
-    status: completed
-    home_score: 2
-    away_score: 0
-    home_pen: null
-    away_pen: null
-    winner: home
-  R32_85:
-    status: completed
-    home_score: 2
-    away_score: 0
-    home_pen: null
-    away_pen: null
-    winner: home
   R32_78:
     status: completed
     home_score: 1
@@ -560,9 +574,9 @@ matches:
     home_pen: null
     away_pen: null
     winner: home
-  R32_84:
+  R32_81:
     status: completed
-    home_score: 3
+    home_score: 2
     away_score: 0
     home_pen: null
     away_pen: null
@@ -571,6 +585,13 @@ matches:
     status: completed
     home_score: 2
     away_score: 1
+    home_pen: null
+    away_pen: null
+    winner: home
+  R32_85:
+    status: completed
+    home_score: 2
+    away_score: 0
     home_pen: null
     away_pen: null
     winner: home
@@ -595,34 +616,6 @@ matches:
     home_pen: null
     away_pen: null
     winner: home
-  R32_73:
-    status: completed
-    home_score: 0
-    away_score: 1
-    home_pen: null
-    away_pen: null
-    winner: away
-  R32_76:
-    status: completed
-    home_score: 2
-    away_score: 1
-    home_pen: null
-    away_pen: null
-    winner: home
-  R32_74:
-    status: completed
-    home_score: 4
-    away_score: 5
-    home_pen: null
-    away_pen: null
-    winner: away
-  R16_94:
-    status: completed
-    home_score: 1
-    away_score: 4
-    home_pen: null
-    away_pen: null
-    winner: away
   R16_90:
     status: completed
     home_score: 0
@@ -655,6 +648,13 @@ matches:
     status: completed
     home_score: 0
     away_score: 1
+    home_pen: null
+    away_pen: null
+    winner: away
+  R16_94:
+    status: completed
+    home_score: 1
+    away_score: 4
     home_pen: null
     away_pen: null
     winner: away
