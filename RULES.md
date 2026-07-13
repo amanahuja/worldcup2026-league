@@ -74,7 +74,7 @@ Points are awarded for correctly predicting the outcome of each match:
 | Third-place playoff | 3 pts |
 | Final | 10 pts |
 
-**Maximum possible score: 91 points**
+**Maximum possible score: 167 points**
 (72 × 1 + 16 × 2 + 8 × 3 + 4 × 4 + 2 × 5 + 1 × 3 + 1 × 10)
 
 ### A Few Other Things
