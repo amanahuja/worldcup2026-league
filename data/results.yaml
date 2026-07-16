@@ -714,13 +714,13 @@ matches:
     home_pen: null
     away_pen: null
     winner: away
-  KO_85182:
+  THIRD:
     status: scheduled
     home_score: null
     away_score: null
     home_pen: null
     away_pen: null
-  KO_85183:
+  FINAL:
     status: scheduled
     home_score: null
     away_score: null

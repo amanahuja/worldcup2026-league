@@ -88,7 +88,9 @@ const KO_TEAM_NAME_MAP = {
   // SF — verified 2026-07-13 (groupOrderID 7)
   'France|Spain':              'SF_101',
   'England|Argentina':         'SF_102',
-  // Final, 3rd — add entries once SF results are in (groupOrderID 8)
+  // Final + 3rd — verified 2026-07-15 (groupOrderID 8)
+  'France|England':            'THIRD',
+  'Spain|Argentina':           'FINAL',
 };
 
 // Group stage ended 2026-06-28T04:00Z (2h buffer after last whistle).
