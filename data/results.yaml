@@ -1,4 +1,4 @@
-last_updated: "2026-07-16T23:00:57.566Z"
+last_updated: "2026-07-18T07:01:00.388Z"
 matches:
   G_B2:
     status: completed
@@ -504,6 +504,20 @@ matches:
     home_pen: null
     away_pen: null
     winner: away
+  R32_82:
+    status: completed
+    home_score: 3
+    away_score: 2
+    home_pen: null
+    away_pen: null
+    winner: home
+  R32_87:
+    status: completed
+    home_score: 1
+    away_score: 0
+    home_pen: null
+    away_pen: null
+    winner: home
   R32_73:
     status: completed
     home_score: 0
@@ -560,13 +574,6 @@ matches:
     home_pen: null
     away_pen: null
     winner: home
-  R32_82:
-    status: completed
-    home_score: 3
-    away_score: 2
-    home_pen: null
-    away_pen: null
-    winner: home
   R32_81:
     status: completed
     home_score: 2
@@ -609,10 +616,17 @@ matches:
     home_pen: null
     away_pen: null
     winner: home
-  R32_87:
+  R16_93:
     status: completed
-    home_score: 1
-    away_score: 0
+    home_score: 0
+    away_score: 1
+    home_pen: null
+    away_pen: null
+    winner: away
+  R16_96:
+    status: completed
+    home_score: 4
+    away_score: 3
     home_pen: null
     away_pen: null
     winner: home
@@ -644,13 +658,6 @@ matches:
     home_pen: null
     away_pen: null
     winner: away
-  R16_93:
-    status: completed
-    home_score: 0
-    away_score: 1
-    home_pen: null
-    away_pen: null
-    winner: away
   R16_94:
     status: completed
     home_score: 1
@@ -665,13 +672,6 @@ matches:
     home_pen: null
     away_pen: null
     winner: home
-  R16_96:
-    status: completed
-    home_score: 4
-    away_score: 3
-    home_pen: null
-    away_pen: null
-    winner: home
   QF_97:
     status: completed
     home_score: 2
@@ -679,9 +679,9 @@ matches:
     home_pen: null
     away_pen: null
     winner: home
-  QF_98:
+  QF_100:
     status: completed
-    home_score: 2
+    home_score: 3
     away_score: 1
     home_pen: null
     away_pen: null
@@ -693,9 +693,9 @@ matches:
     home_pen: null
     away_pen: null
     winner: away
-  QF_100:
+  QF_98:
     status: completed
-    home_score: 3
+    home_score: 2
     away_score: 1
     home_pen: null
     away_pen: null
